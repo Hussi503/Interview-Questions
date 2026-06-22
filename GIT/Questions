@@ -1,0 +1,18 @@
+LEVEL 1 (Basic) - 3 Questions
+
+1. Difference between git merge and git rebase? When to use each?
+2. How do you resolve merge conflicts?
+3. What is the difference between git reset and git revert?
+
+LEVEL 2 (Intermediate) - 2 Questions
+
+1. Explain GitFlow vs trunk-based development. Which one for microservices?
+2. How do you squash multiple commits into one? Why would you do this?
+
+LEVEL 3 (Advanced) - 5 Questions
+
+1. Developer force-pushed to main and wiped last 10 commits. How to recover?
+2. File with passwords committed 2 months ago. How to remove from entire history?
+3. Merged feature branch but need to undo after 5 more commits. How?
+4. Production hotfix needed but main has unfinished features. How to handle?
+5. CI passes on PR but fails after merge to main. Why and how to prevent?
