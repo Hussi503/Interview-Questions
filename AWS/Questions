@@ -23,6 +23,16 @@ How do you troubleshoot high CPU utilization on an EC2 instance?
 How have you implemented Auto Scaling in your project?
 -------------------------------------------------------------------------------------
 
+Wipro
+--------------------------------------------------------------------------------------
+
+
+What is an application gateway and load balancer?
+Suppose you have deployed a web application on an EC2 instance inside a VPC. The instance is running and health checks are passing, but users are unable to access the application from the internet. What will you do?
+In that case, what components in the VPC would you verify?
+Suppose an EC2 instance is showing high CPU utilization (above 90%) in CloudWatch. How will you identify the root cause?
+----------------------------------------------------------------------------------------------------------------------------
+
 1. How do you integrate AWS with Jenkins?
 2. Why is IAM role better than access keys?
 3. What permissions are required for Jenkins to create EC2/VPC?
@@ -34,3 +44,5 @@ How have you implemented Auto Scaling in your project?
 9. How do you check the active ports on that instance?
 10. How do you migrate objects from one S3 bucket to another?
 11. If an instance is stopped, how do you check in AWS Cloud which instance was stopped and when?
+
+
