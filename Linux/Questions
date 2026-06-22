@@ -1,0 +1,51 @@
+What is Linux and why is it used in DevOps?
+Explain the Linux file system hierarchy.
+What is the difference between Hard Link and Soft Link?
+What are inode numbers?
+What is the difference between cp, mv, and rsync?
+What is the difference between df and du?
+How do you find large files on a Linux server?
+What are the purposes of /etc, /var, /tmp, and /proc directories?
+How do you create, modify, and delete users?
+Explain Linux file permissions (rwx).
+What is the difference between chmod and chown?
+What are SUID, SGID, and Sticky Bit?
+What is umask?
+What is the difference between /etc/passwd and /etc/shadow?
+How do you grant sudo access to a user?
+What is a process in Linux?
+What is the difference between a process and a thread?
+Explain ps, top, and htop commands.
+What is the difference between kill, killall, and pkill?
+How do you identify a high CPU-consuming process?
+What is process priority?
+What are nice and renice commands?
+What are Zombie and Orphan processes?
+How do you check memory utilization?
+What is swap memory?
+What is OOMKilled?
+How do you identify memory leaks?
+What is LVM and why is it used?
+What is the difference between ext4 and xfs?
+How do you mount and unmount a filesystem?
+How do you check inode utilization?
+How do you troubleshoot disk space issues?
+How do you check IP addresses in Linux?
+What is the difference between netstat and ss?
+How do you check whether a port is listening?
+What is the difference between ping, traceroute, and nslookup?
+How do you troubleshoot DNS issues?
+How do you check established TCP connections?
+What is the difference between SCP and RSYNC?
+How do you capture packets using tcpdump?
+How do you troubleshoot SSH connection failures?
+Server CPU is 100%. How will you troubleshoot?
+Disk utilization is 100%. What steps will you follow?
+Application is down, but the process is running. How will you investigate?
+Port 8080 is inaccessible. How will you troubleshoot?
+How do you analyze logs in Linux?
+How do you identify a memory issue in production?
+A filesystem becomes read-only. How will you recover it?
+A server becomes slow after deployment. How will you find the root cause?
+
+How do you perform Linux troubleshooting in production environments?
