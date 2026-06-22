@@ -46,3 +46,10 @@ What are Terraform modules and how have you used them?
 20. What causes CIDR overlap errors?
 21. How do you handle “resource already exists” errors?
 22. What causes provider version conflicts?
+23. How do you create multiple identical EC2 instances in Terraform?
+24. Difference between count and for_each?
+25. When should you use count?
+26. When should you use for_each?
+27. How do you create EC2 instances with different sizes?
+28. How do you create 5 identical EC2 instances?
+29. How do you tag EC2 instances dynamically?
