@@ -1,15 +1,65 @@
 CGI
-**What is Terraform State and why is it important?**
+
+1.**What is Terraform State and why is it important?**
 
 Ans:Terraform state is a file where Terraform stores the current information about the infrastructure it manages. It maintains the mapping between Terraform configuration files and the real resources deployed in cloud providers like Azure or AWS.
 The state file contains resource IDs, attributes, dependencies, and outputs. Terraform uses this state during plan and apply operations to compare the desired configuration with the actual infrastructure and identify required changes.
 It is important because Terraform is declarative. The state helps Terraform understand what resources already exist, detect configuration drift, and perform incremental changes instead of recreating everything.
 In production environments, we usually store the state remotely using backends like Azure Storage Account with state locking enabled, so multiple team members can work safely without state corruption.
 
-What happens if the Terraform State file gets corrupted?
-How do you recover from state file issues?
-Difference between count and for_each?
-Explain Terraform backend and state locking.
+2.   What happens if the Terraform State file gets corrupted?
+
+ans:Terraform state corruption means Terraform lost or has invalid tracking information about the infrastructure. The actual cloud resources are not deleted; only the state mapping is affected.
+    First, we recover the state from backups such as S3 bucket versioning or Azure Blob versioning. After restoring the state, we run terraform plan to validate the state.
+    If no backup is available, we recreate the state by using terraform import to bring existing cloud resources back under Terraform management.
+    To prevent this, we use remote backend, versioning, encryption, access control, and state locking.
+3. How do you recover from state file issues?
+Ans: Terraform state issues can happen due to accidental deletion, corruption, manual modification, or state lock problems. First, I identify the issue type.
+     If the state file is deleted or corrupted, the actual cloud resources are not deleted; only Terraform's tracking information is lost.
+     First approach is to recover the state from the remote backend backup. In production, we store state remotely using S3/Azure Storage with versioning enabled, so we restore the previous working state version.
+     After restoring, I validate using terraform state list and terraform plan to make sure Terraform is correctly matching the existing infrastructure.
+     If no backup is available, I recreate the state by importing existing resources using terraform import, so Terraform can manage those resources again without recreating them.
+4.    Difference between count and for_each?
+ans: Both count and for_each are Terraform meta-arguments used to create multiple resources. The main difference is how Terraform identifies each resource.
+     count uses a numeric index. Resources are created with indexes starting from 0.
+     Example:
+             resource "aws_instance" "server" {
+                   count = 3
+                   ami = "ami-123"
+                }
+
+               Terraform creates:
+
+                     aws_instance.server[0]
+                     aws_instance.server[1]
+                     aws_instance.server[2]
+
+        Count is good when all resources are identical and only the number changes.
+
+        for_each uses a map or set of values, and each resource has a unique key.
+      Example:
+
+            resource "aws_instance" "server" {
+
+            for_each = {
+                web  = "t2.micro"
+                app  = "t2.small"
+                db   = "t2.large"
+               }
+
+            instance_type = each.value
+           }
+
+           Creates:
+
+              aws_instance.server["web"]
+              aws_instance.server["app"]
+              aws_instance.server["db"]
+5. Explain Terraform backend and state locking.
+Ans: Terraform backend defines where Terraform stores its state file and how it accesses it. By default Terraform stores state locally, but in production we use remote backends like AWS S3 or Azure Storage Account.
+     Remote backend is important because multiple team members or CI/CD pipelines can work on the same infrastructure. Everyone accesses the same centralized state instead of having different local state files.
+     The backend stores resource information like resource IDs, attributes, dependencies, and outputs. Terraform uses this state during plan and apply to compare desired configuration with actual infrastructure.
+     State locking ensures only one Terraform operation can modify the state at a time. When one user runs apply, Terraform locks the state, performs changes, updates the state, and releases the lock. This prevents race conditions and state corruption.
 Why do we use DynamoDB with Terraform?
 What are Terraform modules and how do you structure them?
 How does Terraform identify infrastructure drift?
