@@ -1,0 +1,10 @@
+Explain the complete request flow from a user accessing an application hosted in AWS.
+Difference between Security Groups and NACLs?
+How does a NAT Gateway work internally?
+How would you design a highly available architecture across multiple Availability Zones?
+Difference between ALB, NLB, and CLB?
+How do you provide cross-account access in AWS?
+What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
+How would you troubleshoot connectivity issues between private and public subnets?
+How does EKS integrate with IAM?
+How would you optimize AWS infrastructure costs?
