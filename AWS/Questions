@@ -1,3 +1,5 @@
+CGI Questions:
+---------------------------------------------------------------------------------------
 Explain the complete request flow from a user accessing an application hosted in AWS.
 Difference between Security Groups and NACLs?
 How does a NAT Gateway work internally?
@@ -8,3 +10,15 @@ What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
 How would you troubleshoot connectivity issues between private and public subnets?
 How does EKS integrate with IAM?
 How would you optimize AWS infrastructure costs?
+
+------------------------------------------------------------------------------------
+CapGemini
+------------------------------------------------------------------------------------
+Explain your current AWS architecture end-to-end.
+How do you design a highly available application in AWS?
+Explain the complete request flow from Route 53 → ALB → EKS/EC2.
+How do you secure workloads running in AWS?
+Difference between Security Groups and NACLs with real use cases.
+How do you troubleshoot high CPU utilization on an EC2 instance?
+How have you implemented Auto Scaling in your project?
+-------------------------------------------------------------------------------------
