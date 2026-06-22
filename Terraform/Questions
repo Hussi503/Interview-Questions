@@ -23,3 +23,20 @@ How do you handle multiple environments using Terraform?
 What are Terraform modules and how have you used them?
 ----------------------------------------------------------------
 
+
+1. How does Terraform state actually work, and why is it critical in production?
+2. What happens if two people run 𝐭𝐞𝐫𝐫𝐚𝐟𝐨𝐫𝐦 𝐚𝐩𝐩𝐥𝐲 at the same time? How do you prevent it?
+3. Explain a real scenario where Terraform wanted to recreate production resources-and how you avoided downtime.
+4. Difference between 𝐜𝐨𝐮𝐧𝐭 and 𝐟𝐨𝐫_𝐞𝐚𝐜𝐡, and why changing between them can destroy resources.
+5. How do you manage Terraform state securely across multiple teams and environments?
+6. What is infrastructure drift, and how do you detect and fix it safely?
+7. How do you refactor Terraform code without impacting live infrastructure?
+8. What happens when a resource is deleted manually from the cloud but still exists in Terraform state?
+9. How do Terraform modules help at scale, and what mistakes make them hard to reuse?
+10. Explain implicit vs explicit dependencies. When does Terraform get it wrong?
+11. How do you handle secrets in Terraform without exposing them in state files?
+12. What are Terraform workspaces, and why are they risky in large organizations?
+13. How do you recover from a failed or partial 𝐭𝐞𝐫𝐫𝐚𝐟𝐨𝐫𝐦 𝐚𝐩𝐩𝐥𝐲?
+14. How do provider version mismatches break infrastructure, and how do you prevent this?
+15. Tell me about a real Terraform incident you faced and how you fixed it.
+
