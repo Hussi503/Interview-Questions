@@ -1,6 +1,6 @@
 CGI
-----------------------------------------------------------
 **What is Terraform State and why is it important?**
+
 Ans:Terraform state is a file where Terraform stores the current information about the infrastructure it manages. It maintains the mapping between Terraform configuration files and the real resources deployed in cloud providers like Azure or AWS.
 The state file contains resource IDs, attributes, dependencies, and outputs. Terraform uses this state during plan and apply operations to compare the desired configuration with the actual infrastructure and identify required changes.
 It is important because Terraform is declarative. The state helps Terraform understand what resources already exist, detect configuration drift, and perform incremental changes instead of recreating everything.
