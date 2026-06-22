@@ -39,4 +39,7 @@ What are Terraform modules and how have you used them?
 13. How do you recover from a failed or partial 𝐭𝐞𝐫𝐫𝐚𝐟𝐨𝐫𝐦 𝐚𝐩𝐩𝐥𝐲?
 14. How do provider version mismatches break infrastructure, and how do you prevent this?
 15. Tell me about a real Terraform incident you faced and how you fixed it.
-
+16. Terraform apply failed – how do you troubleshoot?
+17. What is a Terraform state lock error?
+18. How do you fix a corrupted Terraform state?
+19. What is terraform force-unlock?
