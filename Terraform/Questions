@@ -43,3 +43,6 @@ What are Terraform modules and how have you used them?
 17. What is a Terraform state lock error?
 18. How do you fix a corrupted Terraform state?
 19. What is terraform force-unlock?
+20. What causes CIDR overlap errors?
+21. How do you handle “resource already exists” errors?
+22. What causes provider version conflicts?
