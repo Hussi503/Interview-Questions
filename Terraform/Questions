@@ -1,0 +1,10 @@
+What is Terraform State and why is it important?
+What happens if the Terraform State file gets corrupted?
+How do you recover from state file issues?
+Difference between count and for_each?
+Explain Terraform backend and state locking.
+Why do we use DynamoDB with Terraform?
+What are Terraform modules and how do you structure them?
+How does Terraform identify infrastructure drift?
+What is Terraform Import and when would you use it?
+How would you manage Terraform code for multiple environments?
