@@ -1,1 +1,26 @@
+CGI
+----------------------------------------------------------
+Explain the complete Kubernetes architecture.
+What happens internally when you create a Pod?
+Difference between Deployment, StatefulSet, and DaemonSet?
+How does Kubernetes Service work?
+Difference between ClusterIP, NodePort, and LoadBalancer?
+How do Readiness and Liveness Probes work?
+What would you do if a Pod is stuck in Pending state?
+How would you troubleshoot CrashLoopBackOff?
+Explain Taints, Tolerations, and Node Affinity.
+How does Kubernetes perform rolling updates and rollbacks?
+How does Ingress route traffic to applications?
+How would you troubleshoot an application returning 502/503 errors?
+
+---------------------------------------------------------------------
+CapGemini
+---------------------------------------------------------------------
+Explain Kubernetes architecture in detail.
+How does the scheduler decide where to place Pods?
+Difference between Deployment, StatefulSet, DaemonSet, and Job.
+How do rolling updates and rollbacks work internally?
+Explain Kubernetes networking architecture.
+How does Ingress communicate with services?
+-------------------------------------------------------------------
 
