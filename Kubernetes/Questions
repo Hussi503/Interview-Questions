@@ -23,6 +23,16 @@ How do rolling updates and rollbacks work internally?
 Explain Kubernetes networking architecture.
 How does Ingress communicate with services?
 -------------------------------------------------------------------
+
+Wipro
+-------------------------------------------------------------------
+Can you explain multi-stage Docker?
+How do you push the image to ECR?
+Have you ever come across a crash-loop back-off error? How did you debug it?
+What is HPA (Horizontal Pod Autoscaler) and how is it useful?
+-------------------------------------------------------------------------
+
+
 What are static pods in Kubernetes?
 You mentioned ingress controller. If you are getting 431 or 413 errors, how do you troubleshoot?
 What is status code 413?
