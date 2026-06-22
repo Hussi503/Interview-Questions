@@ -64,3 +64,41 @@ Suppose while executing terraform plan it shows that some resources are being de
 27. How do you create EC2 instances with different sizes?
 28. How do you create 5 identical EC2 instances?
 29. How do you tag EC2 instances dynamically?
+
+
+ 2. Terraform – Core Concepts
+1. What is Terraform and why do we use it?
+2. What are Terraform providers?
+3. What are Terraform provisioners?
+4. Difference between providers and provisioners?
+5. Why are provisioners not recommended in production?
+6. What is terraform init, plan, and apply?
+7. What happens internally during terraform apply?
+
+🟦 3. Terraform Versioning
+1. Why do we lock Terraform versions?
+2. What is required_version?
+3. How do you lock provider versions?
+4. What does ~> 5.0 mean in provider versioning?
+5. What problems occur if versions are not pinned?
+6. How do you upgrade Terraform safely?
+
+🟦 4. Terraform Errors & Failures
+1. Terraform apply failed – how do you troubleshoot?
+2. What is a Terraform state lock error?
+3. How do you fix a corrupted Terraform state?
+4. What is terraform force-unlock?
+5. What causes CIDR overlap errors?
+6. How do you handle “resource already exists” errors?
+7. What causes provider version conflicts?
+
+🟦 5. Terraform + EC2 Scenarios
+1. How do you create multiple identical EC2 instances in Terraform?
+2. Difference between count and for_each?
+3. When should you use count?
+4. When should you use for_each?
+5. How do you create EC2 instances with different sizes?
+6. How do you create 5 identical EC2 instances?
+7. How do you tag EC2 instances dynamically?
+8. Why is Auto Scaling preferred over multiple EC2 instances?
+
