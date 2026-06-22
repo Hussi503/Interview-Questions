@@ -23,6 +23,17 @@ How do you handle multiple environments using Terraform?
 What are Terraform modules and how have you used them?
 ----------------------------------------------------------------
 
+Wipro
+----------------------------------------------------------
+Do you have experience in creating infrastructure with Terraform?
+What are the services you created using Terraform?
+May I know what is a Terraform state file?
+Where do you store the Terraform state file?
+What is provider.tf?
+What is variable.tf?
+Suppose while executing terraform plan it shows that some resources are being deleted — what will be your next plan of action?
+-----------------------------------------------------------------------------------------------------------------------------------
+
 
 1. How does Terraform state actually work, and why is it critical in production?
 2. What happens if two people run 𝐭𝐞𝐫𝐫𝐚𝐟𝐨𝐫𝐦 𝐚𝐩𝐩𝐥𝐲 at the same time? How do you prevent it?
