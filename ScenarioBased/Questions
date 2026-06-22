@@ -1,3 +1,14 @@
-Production application is inaccessible after deployment. How will you troubleshoot?
-One Kubernetes node suddenly goes down. What happens and how do you recover?
-Terraform apply failed after creating some resources. What steps will you take?
+
+1. How do you implement cross-account access in Amazon Web Services using IAM roles?
+2. What is the recommended folder structure for a production-grade Terraform project?
+3. How do you call a Terraform module from another module or root module?
+4. When designing a VPC architecture, should a Load Balancer be placed in a public subnet or private subnet? Why?
+5. How do you restrict pod-to-pod communication in Kubernetes inside a cluster?
+6. What steps would you take if a Kubernetes pod is stuck in CrashLoopBackOff?
+7. How do you debug a failed CI/CD pipeline in GitLab? What are the first things you check?**
+8. How do you securely store and manage secrets in Kubernetes or cloud environments?
+9. How do you design a rollback strategy for a failed production deployment?
+10. If two engineers run Terraform apply at the same time, what problem can occur and how do you prevent it?
+11. Production application is inaccessible after deployment. How will you troubleshoot?
+12. One Kubernetes node suddenly goes down. What happens and how do you recover?
+13. Terraform apply failed after creating some resources. What steps will you take?
