@@ -22,3 +22,7 @@
 21. Have you worked with Docker volumes? What happens to volume if container is removed?
 22. Can you create a Dockerfile for a Python application?
 23. If requirements.txt is at remote location, how will you copy it in Dockerfile?
+24. What are the kinds of Docker volumes that are available?
+25. Can you tell me with Docker volume on the host /app/db and your container it should be mounted to /opt/data.
+     What is the command that you use to run the Docker container with this mapping?The container name should be test. Can you give that command?
+26. In Docker, how do you inspect a container?
