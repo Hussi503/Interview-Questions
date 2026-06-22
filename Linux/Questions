@@ -47,4 +47,34 @@ How do you analyze logs in Linux?
 How do you identify a memory issue in production?
 A filesystem becomes read-only. How will you recover it?
 A server becomes slow after deployment. How will you find the root cause?
-How do you perform Linux troubleshooting in production environments?
+How do you perform Linux troubleshooting in production environments?EVEL 1 (Basic) - 5 Questions
+
+1. What is Linux and why is it widely used in DevOps?
+2. How do file permissions work in Linux? Explain chmod 777 and why it's dangerous.
+3. How do you monitor CPU, memory, and disk usage in Linux? (top, free, df, du)
+4. What are zombie processes and how do you handle them?
+5. How do you check and manage systemd services? (systemctl)
+
+LEVEL 2 (Intermediate) - 5 Questions
+
+1. How does the Linux boot process work?
+2. Disk is full but df -h shows free space. Why? What do you check?
+3. What are inodes and why are they important? What happens when inodes are exhausted?
+4. How do you troubleshoot "No space left on device" when df shows space?
+5. What is the difference between hard links and symbolic links?
+
+LEVEL 3 (Advanced) - 5 Questions
+
+1. A server is at 95% CPU but no process shows high CPU in top. What's happening?
+2. df -h shows 80% used but du -sh /* totals only 50%. Where's the space?
+3. Process stuck in "D" state (uninterruptible sleep). How to recover without reboot?
+4. Script works manually but fails in cron. Why and how to fix?
+5. ulimit -n shows 1024. Changed limits.conf and rebooted. Still 1024. Why?
+
+Real-Time Scenarios - 5 Questions
+
+1. System is slow but CPU usage is low. What could be wrong? (I/O wait, network, etc.)
+2. How do you debug a memory leak in production?
+3. What is strace and when do you use it? Give a real example.
+4. How do you recover from "Too many open files" error?
+5. How do you harden a Linux server for production? (List 5 things)
