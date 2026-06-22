@@ -1,1 +1,24 @@
 
+1. Docker images vs Docker containers - what's the difference?
+2. What are the advantages of containerizing applications?
+3. What is a Dockerfile and what instructions do you use in it?
+4. How do you reduce Docker image size using multi-stage builds?
+5. Why should containers run as non-root?
+6. What is image immutability?
+7. Difference between ADD and COPY in Dockerfile
+8. Difference between CMD and ENTRYPOINT - can we use both?
+9. What happens if both CMD and ENTRYPOINT are defined?
+10. What challenges do you face when containerizing legacy monolithic applications?
+11. How do you make a legacy application stateless for containers?
+12. How do you handle filesystem dependencies and background jobs in containers?
+13. What is the "one process per container" principle?
+14. How do sidecars help in containerizing legacy applications?
+15. What security considerations do you take while containerizing old applications?
+16. How is the Docker client different from the Docker daemon?
+17. What is Docker networking and which commands create bridge/overlay networks?
+18. What is the difference between Docker, Dockerfile, and Docker Compose?
+19. What are three best practices to secure a Docker container?
+20. What is the difference between a Dockerfile and a Docker registry?
+21. Have you worked with Docker volumes? What happens to volume if container is removed?
+22. Can you create a Dockerfile for a Python application?
+23. If requirements.txt is at remote location, how will you copy it in Dockerfile?
