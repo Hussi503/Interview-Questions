@@ -17,3 +17,9 @@
 17. CI/CD pipeline is failing after Terraform apply – what do you check?
 18. AWS region goes down – how do you recover your application?
 19. CloudWatch shows high CPU but low traffic – what could be the issue?
+
+1. Jenkins pipeline failed while creating AWS resources – what do you check first?
+2. Terraform apply failed in Jenkins but works locally – why?
+3. EC2 created but provisioning failed – how do you debug?
+4. How do you rollback a failed deployment?
+5. How do you make CI/CD pipelines idempotent?
