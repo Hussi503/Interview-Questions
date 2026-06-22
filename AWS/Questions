@@ -22,3 +22,9 @@ Difference between Security Groups and NACLs with real use cases.
 How do you troubleshoot high CPU utilization on an EC2 instance?
 How have you implemented Auto Scaling in your project?
 -------------------------------------------------------------------------------------
+
+1. How do you integrate AWS with Jenkins?
+2. Why is IAM role better than access keys?
+3. What permissions are required for Jenkins to create EC2/VPC?
+4. How do you test AWS access from Jenkins?
+5.How does Jenkins deploy infrastructure using Terraform?
