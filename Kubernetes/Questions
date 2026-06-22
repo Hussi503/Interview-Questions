@@ -23,4 +23,14 @@ How do rolling updates and rollbacks work internally?
 Explain Kubernetes networking architecture.
 How does Ingress communicate with services?
 -------------------------------------------------------------------
-
+What are static pods in Kubernetes?
+You mentioned ingress controller. If you are getting 431 or 413 errors, how do you troubleshoot?
+What is status code 413?
+What are the major challenges you faced recently?
+How do you get the metrics of your pods, worker nodes, and traffic? How do you get visibility of those?
+How do Prometheus and Grafana work together for observability?
+If there is a DB connectivity issue from pods, what steps do you take to troubleshoot?
+How do you check Kubernetes networking and namespace communication for DB connectivity?
+If the issue is from DB side, what do you check?
+How do you get the deployments and services which have label app=test?
+Can you print numbers 1 to 10 using a for loop?
