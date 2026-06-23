@@ -72,3 +72,55 @@ Can you print numbers 1 to 10 using a for loop?
 24. What is a DaemonSet? What are examples of DaemonSets? 
 25. If a pod is in a pending state, can you get logs from it? 
 26. If the describe pod says the node is out of capacity, what will you do?
+
+
+What is Kubernetes and why is it used?
+Explain Kubernetes architecture.
+What are the Control Plane components?
+What are the Worker Node components?
+What is a Pod?
+Why is a Pod considered the smallest deployable unit?
+What is the difference between a Pod and a Container?
+What is a ReplicaSet?
+What is a Deployment?
+Difference between Deployment and ReplicaSet?
+What is a StatefulSet and when should you use it?
+What is a DaemonSet?
+What are Jobs and CronJobs?
+What is a Namespace?
+What are Labels and Selectors?
+What is a Service in Kubernetes?
+Explain ClusterIP, NodePort, and LoadBalancer services.
+What is an ExternalName service?
+What are Endpoints?
+What is Ingress?
+Difference between Ingress and LoadBalancer?
+What is an Ingress Controller?
+What is a ConfigMap?
+What is a Secret?
+Difference between ConfigMap and Secret?
+What are Requests and Limits?
+What happens when a container exceeds its memory limit?
+What is OOMKilled?
+What are Liveness, Readiness, and Startup Probes?
+Difference between Liveness and Readiness Probes?
+What is a Persistent Volume (PV)?
+What is a Persistent Volume Claim (PVC)?
+Difference between PV and PVC?
+What are Storage Classes?
+What is a Headless Service?
+What are Taints and Tolerations?
+What are Node Selectors and Node Affinity?
+What are Pod Affinity and Anti-Affinity?
+What is HPA?
+What is VPA?
+What is Cluster Autoscaler?
+What is etcd and why is it important?
+What is CNI?
+What is kube-proxy?
+What is CoreDNS?
+What is a Rolling Update?
+What is a Rollback?
+How do you troubleshoot CrashLoopBackOff?
+How do you troubleshoot ImagePullBackOff?
+A Pod is not coming to Running state. How will you troubleshoot it?
