@@ -1,9 +1,71 @@
 CGI Questions:
 ---------------------------------------------------------------------------------------
-Explain the complete request flow from a user accessing an application hosted in AWS.
-Difference between Security Groups and NACLs?
-How does a NAT Gateway work internally?
-How would you design a highly available architecture across multiple Availability Zones?
+1.Explain the complete request flow from a user accessing an application hosted in AWS.
+
+User opens:   https://myapp.com
+Flow:
+User ->Route 53 -> cloudfront -> AWS WAF -> Application Load Balancer -> EC2 / ECS / EKS -> RDS Database
+
+1. User sends request
+   User browser says: "I want to open myapp.com"
+2. Route 53 (DNS)
+   Route 53 finds where the application is running.
+      Example:
+         myapp.com  ---> ALB address
+        It sends the user request to Load Balancer.
+3. CloudFront (CDN)
+   CloudFront checks:
+  "Do I already have this content cached?"
+  If yes:
+    CloudFront ---> User
+      Fast response.
+    If no:
+     CloudFront ---> ALB
+4. AWS WAF (Security)
+  Before reaching application: WAF checks:
+                                    Is this a normal request?
+                                    Is it an attack?
+                                    Too many requests?
+                        Example:
+                           Normal request  ---> Allow
+                           Attack request  ---> Block
+5. Application Load Balancer (ALB)
+       ALB receives the request.
+      It checks:
+            Which application?
+            Which server is free?
+            Is the server healthy?
+          Example:
+
+          ALB
+
+       /    |    \
+      /     |     \
+   EC2-1  EC2-2  EC2-3
+
+It sends traffic to one healthy server.
+
+6. Application Server (EC2/ECS/EKS)
+   Your application runs here.
+    Example:
+      User asks:
+            Show my orders
+            Application says:
+            "I need data from database"
+
+7. Database (RDS)
+     Application connects to RDS:   Application  ---> RDS
+     Database returns the data.
+8. Response comes back
+   Same way back: RDS--> Application --> ALB --> CloudFront -->  User
+    User sees the page
+*******************************************************************************************************************************************************************************************************************************************************
+2. Difference between Security Groups and NACLs?
+   Security Groups operate at the instance or ENI level and are stateful, meaning return traffic is automatically allowed. NACLs operate at subnet level and are stateless, meaning inbound and outbound traffic must be explicitly allowed. 
+   Security Groups only support allow rules, while NACLs support both allow and deny rules.
+*********************************************************************************************************************************************************************************************************************************************************
+3. How does a NAT Gateway work internally?
+4. How would you design a highly available architecture across multiple Availability Zones?
 Difference between ALB, NLB, and CLB?
 How do you provide cross-account access in AWS?
 What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
