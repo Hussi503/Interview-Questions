@@ -155,5 +155,67 @@ Suppose while executing terraform plan it shows that some resources are being de
 5. How do you create EC2 instances with different sizes?
 6. How do you create 5 identical EC2 instances?
 7. How do you tag EC2 instances dynamically?
+
+What is Terraform and why is it used?
+What are the advantages of Infrastructure as Code (IaC)?
+Explain the Terraform workflow.
+What are Providers in Terraform?
+What are Resources?
+What are Data Sources?
+Difference between Resource and Data Source?
+What are Variables and Outputs?
+What are Local Values?
+What is the Terraform State file?
+Why is the State file important?
+What is Terraform Refresh?
+Difference between terraform plan and terraform apply?
+What is terraform init?
+What is terraform validate?
+What is terraform fmt?
+What is terraform destroy?
+What is a Backend in Terraform?
+What is Remote State?
+Why do we use S3 as a backend?
+Why is DynamoDB used with Terraform?
+What is State Locking?
+What is State Drift?
+How do you detect and resolve state drift?
+What is terraform import?
+What are Modules in Terraform?
+Difference between Root Module and Child Module?
+What are Input Variables?
+What are Output Variables?
+What is count in Terraform?
+What is for_each and how is it different from count?
+What are Dynamic Blocks?
+What is depends_on?
+What are Lifecycle Rules?
+What is create_before_destroy?
+What is prevent_destroy?
+What is ignore_changes?
+What are Provisioners?
+Difference between local-exec and remote-exec?
+What are Workspaces?
+What is Terraform Cloud?
+What is Terragrunt?
+How do you manage secrets in Terraform?
+How do you secure the Terraform State file?
+How do you manage multiple environments using Terraform?
+What is a Rolling Update in Terraform?
+Terraform apply failed midway. How will you recover?
+State file got corrupted. How will you recover it?
+How do you troubleshoot state lock issues?
+Infrastructure has changed manually outside Terraform. How will you bring it back to the desired state?
+• Terraform state file is locked. How do you resolve it?
+• Someone manually deleted an AWS resource. How will you fix it?
+• terraform apply failed after creating some resources. What will you do?
+• How do you manage dev, test, and prod environments?
+• How do you avoid accidental deletion of production resources?
+• How do you share outputs between modules?
+
+How do you migrate local state to a remote backend?
+• How do you recover from state file corruption?
+• How do you handle secrets securely in Terraform?
+• How do you design reusable Terraform modules for large-scale infrastructure?
 8. Why is Auto Scaling preferred over multiple EC2 instances?
 
