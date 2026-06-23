@@ -23,3 +23,56 @@
 3. EC2 created but provisioning failed – how do you debug?
 4. How do you rollback a failed deployment?
 5. How do you make CI/CD pipelines idempotent?
+
+
+. What happens if two engineers run terraform apply at the same time?
+• Terraform uses state locking (remote backend like S3 + DynamoDB).
+• One apply proceeds, the other fails to acquire the lock.
+• Without locking, state corruption and duplicate resources can occur.
+
+2. Why does Kubernetes show Pods as Running but users still face issues?
+• Pod status only shows container health, not application health.
+• Possible causes: failed readiness probes, network issues, downstream • dependency latency, or partial AZ failure.
+• This is why readiness checks and observability matter.
+
+3. What causes CI/CD pipelines to fail intermittently?
+• Flaky tests
+• Dependency version drift
+• Shared runners or resource exhaustion
+• Race conditions in parallel jobs
+Stable pipelines require determinism, not retries.
+
+4. How do you prevent unnecessary redeployments in CI/CD?
+• Use proper change detection (path-based triggers).
+• Separate build, test, and deploy stages.
+• Avoid rebuilding artifacts when inputs haven’t changed.
+
+5. Why is infrastructure drift dangerous?
+• Manual console changes break IaC assumptions.
+• Terraform may try to “fix” production unexpectedly.
+• Drift leads to unpredictable applies and outages if not detected early.
+
+6. How do you safely share secrets across environments?
+• Never hardcode secrets in repos or Terraform state.
+• Use secret managers (Vault / cloud-native services).
+• Inject secrets at runtime with strict access control.
+
+7. What’s the difference between liveness and readiness probes?
+• Liveness decides when to restart a container.
+• Readiness decides when traffic should be sent.
+• Misconfigured probes cause traffic drops or restart loops.
+
+8. How do you debug high latency when CPU and memory look normal?
+• Look at p95/p99 latency, not averages.
+• Check network, retries, timeouts, and downstream services.
+• Infra health ≠ user experience.
+
+9. When should you scale vertically vs horizontally?
+• Horizontal scaling improves availability and resilience.
+• Vertical scaling is simpler but has limits and restart impact.
+• The choice depends on statefulness and failure tolerance.
+
+10. What’s the biggest mistake engineers make during outages?
+• Restarting things without understanding the blast radius.
+• Fixing symptoms instead of isolating root cause.
+• Making changes without rollback plans.
