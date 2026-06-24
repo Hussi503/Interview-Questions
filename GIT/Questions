@@ -16,3 +16,33 @@ LEVEL 3 (Advanced) - 5 Questions
 3. Merged feature branch but need to undo after 5 more commits. How?
 4. Production hotfix needed but main has unfinished features. How to handle?
 5. CI passes on PR but fails after merge to main. Why and how to prevent?
+
+
+Narayana questions:
+-------------------------------------------------------------------------4
+
+
+1. What is the difference between git add and git commit?
+2. What is the difference between git pull and git fetch?
+3. What is the difference between git config and git blame?
+4. What is the difference between git reset and git revert? When would you use each?
+5. How do you remove a wrongly committed file?
+6. What happens if you delete a commit accidentally, and how do you recover using git
+reflog?
+7. What is the difference between git merge and git rebase?
+8. What is a hotfix branch, and how do you create one?
+9. How do you rollback a commit already pushed to remote?
+10. Explain the branching strategy in your organization.
+11. What is git cherry-pick, and when would you use it?
+12. How do you resolve merge conflicts?
+13. How do you ensure that a new code commit triggers a Jenkins job?
+14. You merged wrong code into master — how do you fix it?
+15. A hotfix was applied only to master but not develop — what's the risk?
+16. How do you avoid conflicts when multiple teams work on the same branch?
+17. How do you handle long-lived feature branches that cause conflicts?
+18. How do you manage parallel releases?
+19. What happens if someone commits directly to main, and how do you prevent it?
+20. How do you rollback a release tag?
+21. How do you ensure branch protection?
+22. From where can you create a hotfix branch — from production or develop?
+23. How do you deliver a bug fix for the last release without impacting the next release?
