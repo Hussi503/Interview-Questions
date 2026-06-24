@@ -22,3 +22,100 @@ What are your short-term and long-term career goals?
 Where do you see yourself in the next five years?
 What are your strengths and areas of improvement?
 Why should we hire you for this role?
+
+GENERAL & PROJECT QUESTIONS (55 questions)
+1. What are your roles and responsibilities?
+2. Explain about your current project.
+3. What are the advantages of Argo CD?
+4. Explain your end-to-end DevOps workflow from code commit to production.
+5. How do you ensure reliability across CI/CD, Terraform, and Kubernetes?
+6. How do you handle failures in production calmly and systematically?
+7. How do you design systems that are easy to operate and recover?
+8. How would you redesign CI/CD if given full ownership?
+9. How would you migrate from Jenkins to GitHub Actions?
+10. How would you introduce GitOps using Argo CD?
+11. How would you improve reliability across multiple teams?
+12. How would you reduce cloud costs by 30%?
+13. How would you improve MTTR across the organization?
+14. How would you handle scaling DevOps for 10+ teams?
+15. What would you do in your first 90 days in this role?
+16. How do you future-proof DevOps platforms?
+17. Where do you see yourself in the next 3-5 years?
+18. Why should we hire you? What differentiates you?
+19. Have you worked on any project from scratch?
+20. If given a project from scratch, can you design and automate end-to-end?
+21. Suppose there are 10 microservices using different technologies — how would you design
+and automate?
+22. What approach do you take to create a CI/CD pipeline?
+23. What are the step-by-step phases in creating a CI/CD pipeline?
+24. Which steps belong to CI and which to CD?
+25. Can you automate these steps using a pipeline script?
+26. Can you write a complete Jenkins pipeline for this automation?
+27. Your day-to-day tasks involve automating manual tasks — give an example.
+28. What tool/language did you use to automate it?
+
+29. How big is your team? DevOps team size?
+30. What is your release process?
+31. Suppose you deployed to production but the app returns a 500 error, and CPU/memory are
+fine — how do you troubleshoot step by step?
+32. A Docker container works locally but fails in Kubernetes — possible root causes and debug
+commands?
+33. Why execute kubectl exec -it when you can get logs from describe?
+34. Can you explain your current project architecture?
+35. How many environments are you managing (dev, qa, prod)?
+36. Explain your production architecture end-to-end.
+37. What is the most critical production incident you handled?
+38. How do you ensure zero downtime deployments?
+39. How do you measure reliability (SLI/SLO/SLA)?
+40. What monitoring stack are you using and why?
+41. Production is down, the CEO is on call — what do you do first?
+42. The dev team blames infrastructure — how do you respond?
+43. How do you prevent the same issue from happening again?
+44. Can you explain two critical situations faced during deployments and how you resolved
+them?
+45. Can you explain any great achievement throughout your DevOps career?
+46. What deployment strategies are you following?
+47. How will you troubleshoot a pod that is stuck or not reachable?
+48. How will you reduce costs for the organization?
+49. Tell me about yourself and your day-to-day responsibilities as a DevOps Engineer.
+50. What does a normal production day look like for you?
+51. How do you collaborate with developers to release changes safely?
+52. Describe a recent production incident you handled. What was the root cause, and how did
+you fix it?
+53. What was the worst incident you faced, and what did you learn from it?
+54. Tell me about a mistake you made in production and what you learned.
+55. What was the last piece of toil you eliminated, and how often was it occurring?
+
+🔹 LEADERSHIP & MENTORING (32 questions)
+1. How do you handle conflict between Dev and Ops?
+2. How do you push back on unrealistic deadlines?
+3. How do you say "no" to business requests?
+4. How do you manage multiple stakeholders?
+5. How do you mentor junior engineers?
+6. How do you delegate tasks and ensure knowledge is not siloed?
+7. How do you handle disagreements with your manager?
+8. How do you handle failure caused by your decision?
+9. How do you communicate risks to non-technical stakeholders?
+10. How do you handle high-pressure situations?
+11. How do you ensure transparency in delivery?
+12. How do you handle last-minute change requests before release?
+13. Tell me about a failed release you handled.
+14. How do you coordinate Dev, QA, and Ops during releases?
+15. How do you manage hotfix releases during peak traffic?
+16. How do you decide rollback vs forward fix?
+17. What metrics do you track for release health?
+18. How do you ensure release accountability?
+19. Tell me about a major production incident you led.
+20. How do you handle pressure from management during incidents?
+21. How do you handle blame between teams?
+22. How do you conduct RCAs and prevent repeat incidents?
+23. How do you balance speed vs stability?
+24. How do you measure DevOps success?
+25. What does DevOps mean to you beyond tools?
+26. What responsibilities are expected from a senior DevOps engineer?
+27. How does a DevOps engineer add business value?
+28. How do you handle ownership in DevOps roles?
+29. What KPIs matter most for DevOps teams?
+30. How do you improve DevOps maturity in an organization?
+31. How do you handle accountability during failures?
+32. How do you ensure DevOps practices scale with team growth?
