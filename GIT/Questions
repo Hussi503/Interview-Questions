@@ -44,5 +44,30 @@ reflog?
 19. What happens if someone commits directly to main, and how do you prevent it?
 20. How do you rollback a release tag?
 21. How do you ensure branch protection?
+
+=================================================================================================================================================================================================
+
+GIT - The "We Lost Code in Production" Scenarios
+1. Developer accidentally force-pushed to main branch and wiped out last 10 commits. How do you recover?
+    * Hint: reflog, ORIG_HEAD, backups
+2. You merged a feature branch but now need to undo it because of a critical bug. However, 5 other commits happened after the merge. What do you do?
+    * Hint: git revert -m, not reset
+3. Your team has 50 developers working on same repo. Feature branches take 2 weeks to merge. Merge conflicts are a nightmare. How do you solve this?
+    * Hint: Trunk-based development, smaller PRs, frequent rebasing, merge queues
+4. Production hotfix needs to go out NOW but main branch has unfinished features. How do you handle this?
+    * Hint: Cherry-pick from main to release branch, or create hotfix branch from tag
+5. Someone committed a file with passwords 2 months ago. It's buried in history. How do you remove it from entire Git history?
+    * Hint: git filter-branch, BFG Repo-Cleaner, git-filter-repo
+6. Your CI pipeline runs tests on PR. Tests pass but after merge, main branch build fails. Why? How to prevent?
+    * Hint: Merge skew, not rebasing on latest main, different merge strategies
+7. Git rebase interactive says "Cannot rebase: You have unstaged changes." You don't want to commit them yet. What do you do?
+    * Hint: git stash, git stash pop
+8. What's your branching strategy for microservices with independent releases vs monorepo? Defend your choice.
+    * Hint: GitFlow vs GitHub Flow vs Trunk-based
+9. Your team uses Git tags for releases. Someone deleted a release tag. How do you recreate it?
+    * Hint: Find commit hash from reflog or CI logs, recreate tag
+10. Developer says "I committed to wrong branch and pushed. Now 50 people pulled that branch with wrong commit. Help!" What do you do?
+    * Hint: Communicate, revert commit, don't force push
+
 22. From where can you create a hotfix branch — from production or develop?
 23. How do you deliver a bug fix for the last release without impacting the next release?
