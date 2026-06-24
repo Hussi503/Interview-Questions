@@ -227,7 +227,35 @@ ans:  A Load Balancer distributes user traffic across application servers for hi
 *************************************************************************************************************************************************************************************************************
 17. Suppose you have deployed a web application on an EC2 instance inside a VPC. The instance is running and health checks are passing, but users are unable to access the application from the internet. What will you do?
 In that case, what components in the VPC would you verify?'
-Suppose an EC2 instance is showing high CPU utilization (above 90%) in CloudWatch. How will you identify the root cause?
+ans: If the EC2 instance is running and health checks are passing, but users cannot access the application from the internet, I would troubleshoot from the outside in.
+      First, I would verify whether the EC2 instance is deployed in a public subnet and has a route to the Internet Gateway.
+      Then I would check the Route Table associated with the subnet and confirm that:
+              0.0.0.0/0 --> Internet Gateway
+       Next, I would verify the Internet Gateway is attached to the VPC.
+     After that, I would check the Security Group attached to the EC2 instance and ensure the required ports such as 80 or 443 are allowed from the internet.
+     Then I would verify the Network ACLs associated with the subnet and make sure inbound and outbound traffic is not being blocked.
+     Next, I would connect to the instance and verify that the application is actually listening on the expected port:
+       netstat -tulpn
+       ss -tulpn
+       curl localhost:80
+     I would also check application logs and web server logs for any errors.
+    If DNS is being used, I would verify that Route 53 records point to the correct public endpoint.
+  Finally, I would use VPC Flow Logs and application logs to identify where the traffic is being dropped.
+**********************************************************************************************************************************************************************************************************************
+18.Suppose an EC2 instance is showing high CPU utilization (above 90%) in CloudWatch. How will you identify the root cause?
+Ans: If I receive a CloudWatch alert showing CPU utilization above 90%, first I would analyze the CloudWatch metrics to understand whether the spike is sudden, continuous, or occurring during specific time periods.
+     Then I would log in to the EC2 instance using SSH or Session Manager and identify which process is consuming the CPU.
+      I would use commands such as:
+             top
+             htop
+             ps aux --sort=-%cpu
+     Once I identify the process, I would determine whether it belongs to the application, web server, database client, or some background process.
+     Next, I would review application logs, system logs, and web server logs to identify any errors, excessive requests, infinite loops, or resource-intensive operations.
+     I would also check whether there were any recent deployments, configuration changes, scheduled jobs, or unusual traffic spikes around the time the issue started.
+     If the high CPU is caused by legitimate traffic growth, I would verify whether Auto Scaling has triggered correctly and scale the application if needed.
+     If the issue is application-related, I would collect evidence such as logs, process details, and metrics and work with the development team to resolve the root cause.
+     If the process is stuck or behaving abnormally, I would follow the change process to restart the service or replace the instance if required.
+      Finally, I would document the findings and implement preventive measures such as CloudWatch alarms, Auto Scaling policies, or application optimizations.
 ----------------------------------------------------------------------------------------------------------------------------
 
 1. How do you integrate AWS with Jenkins?
