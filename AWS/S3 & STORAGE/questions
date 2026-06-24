@@ -1,0 +1,12 @@
+1. If an S3 bucket in us-east-1 is down, how will you restore it?
+2. Can you restore an S3 bucket if the entire AWS region is down?
+3. What is the correct approach to handle S3 regional outages?
+4. Is S3 globally available or region-specific?
+5. What is the difference between restore and failover in S3?
+6. Without S3 versioning, what options are there to restore data?
+7. Can deleted objects be recovered without versioning?
+8. Does Cross-Region Replication work without versioning?
+9. What happens if there is no backup and no replication?
+10. Why is versioning mandatory for production S3 buckets?
+11. What is S3, and what are the different storage classes?
+12. Explain S3 lifecycle policies.
