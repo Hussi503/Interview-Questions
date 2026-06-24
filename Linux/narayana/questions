@@ -100,3 +100,29 @@ LINUX - Beyond Basics (The "Real Production" Questions)
     * Hint: Ansible, parallel SSH, inventory management
 15. Linux server boots to emergency mode. How do you recover without reinstalling?
     * Hint: Check /etc/fstab, mount issues, fsck, journalctl -xb
+===============================================================================================================================================================
+
+
+SCRIPTING/PYTHON - The "Automate This Now" Questions
+1. Write Python script to find all S3 buckets older than 90 days and move to Glacier.
+    * Hint: boto3, list_buckets, get creation date, lifecycle policy or copy
+2. Write script to parse nginx logs and find top 10 IPs with most 404 errors.
+    * Hint: Regex, Counter, dictionary, awk first then Python
+3. Write script to check all EC2 instances across regions and stop those with "Environment: Dev" tag after 7 PM.
+    * Hint: boto3, pagination, tags, datetime, error handling
+4. Write idempotent script that ensures a specific security group rule exists.
+    * Hint: Check first, create if missing, handle duplicates, idempotent design
+5. Write Python script to backup PostgreSQL database and upload to S3 with timestamp.
+    * Hint: subprocess for pg_dump, boto3 upload, error handling, cleanup
+6. Write function to retry AWS API call with exponential backoff.
+    * Hint: tenacity library, custom decorator, time.sleep, jitter
+7. Write script to monitor disk space and send alert to Slack if >90%.
+    * Hint: shutil.disk_usage, requests for Slack webhook, cron job
+8. How do you handle rate limiting when using boto3 to list all resources?
+    * Hint: Retry with backoff, paginators, concurrent.futures with limits
+9. Write script to find unused Elastic IPs and release them.
+    * Hint: boto3 ec2, describe_addresses, check AssociationId, prompt before delete
+10. Write Python script to parse Kubernetes events and send critical ones to PagerDuty.
+    * Hint: Kubernetes Python client, watch events, filter, alerting
+
+
