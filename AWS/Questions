@@ -207,7 +207,7 @@ ans: When I notice high CPU utilization on an EC2 instance, I first verify the i
    If a rogue process is causing the issue and it is safe to do so, I can stop or restart the process after following the change management process.
    Finally, I implement preventive measures such as CloudWatch alarms, Auto Scaling policies, and application performance monitoring to avoid future incidents.
 ****************************************************************************************************************************************************************************************************************************
-How have you implemented Auto Scaling in your project?
+15. How have you implemented Auto Scaling in your project?
 Ans: Yes, I have implemented Auto Scaling Groups in my project to ensure both high availability and cost optimization.
      First, I created a Launch Template containing the AMI, instance type, Security Groups, IAM role, key pair, and User Data scripts required to bootstrap the application when a new instance is launched.
      Then I created an Auto Scaling Group across multiple Availability Zones and attached it to an Application Load Balancer target group. This ensures traffic is distributed only to healthy instances.
@@ -221,9 +221,12 @@ Ans: Yes, I have implemented Auto Scaling Groups in my project to ensure both hi
 -------------------------------------------------------------------------------------
 Wipro
 --------------------------------------------------------------------------------------
-What is an application gateway and load balancer?
-Suppose you have deployed a web application on an EC2 instance inside a VPC. The instance is running and health checks are passing, but users are unable to access the application from the internet. What will you do?
-In that case, what components in the VPC would you verify?
+16. What is an application gateway and load balancer?
+ans:  A Load Balancer distributes user traffic across application servers for high availability, whereas a Gateway Load Balancer distributes traffic across security appliances
+     like firewalls and IDS/IPS systems for centralized traffic inspection and security enforcement.
+*************************************************************************************************************************************************************************************************************
+17. Suppose you have deployed a web application on an EC2 instance inside a VPC. The instance is running and health checks are passing, but users are unable to access the application from the internet. What will you do?
+In that case, what components in the VPC would you verify?'
 Suppose an EC2 instance is showing high CPU utilization (above 90%) in CloudWatch. How will you identify the root cause?
 ----------------------------------------------------------------------------------------------------------------------------
 
