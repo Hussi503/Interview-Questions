@@ -294,3 +294,56 @@ gives ImagePullBackOff. Why?
 142. How do you design a multi-region Kubernetes setup?
 
 
+KUBERNETES - The "Production is Down" Questions
+1. Pod is in CrashLoopBackOff. kubectl logs shows nothing. Pod ran once 3 days ago. How do you debug?
+    * Hint: Previous logs (--previous), describe pod, events, init containers, liveness probe
+2. Node is NotReady. What do you check first? How do you recover?
+    * Hint: kubelet status, disk pressure, memory pressure, docker/containerd, network
+3. Your deployment is stuck in Progressing state for hours. What's happening?
+    * Hint: Rollout stuck, pod pending, image pull error, probe failures, PVC issues
+4. How do you drain a node safely for maintenance without disrupting critical workloads?
+    * Hint: kubectl drain, PodDisruptionBudget, ignore daemonsets, force if needed
+5. Service of type ClusterIP works internally but NodePort doesn't. Why?
+    * Hint: Security groups, firewall, nodePort range, kube-proxy, network policy
+6. Ingress is configured but getting 404. How do you debug?
+    * Hint: Ingress controller logs, service endpoints, ingress resource syntax, path matching
+7. etcd is running out of disk space. What happens? How do you recover?
+    * Hint: Compaction, defrag, backup/restore, increase disk, monitor
+8. Your pod can't connect to database. NetworkPolicy allows it. Still can't connect. What else?
+    * Hint: DNS resolution, service name, port, endpoint slices, security groups
+9. HPA is not scaling despite high CPU. What do you check?
+    * Hint: Metrics server, resource requests set, HPA configuration, custom metrics
+10. How do you implement blue-green deployment in Kubernetes without downtime?
+    * Hint: Two deployments, service selector switch, ingress routing, traffic splitting
+11. Pod takes 30 seconds to start. Readiness probe fails for 30 seconds. Users get 503. How fix?
+    * Hint: Adjust initialDelaySeconds, startup probe for slow apps, improve app startup
+12. You have stateful application (database) in Kubernetes. How do you handle backups?
+    * Hint: Volume snapshots, Velero, cron job with dump, sidecar container
+13. kubectl get pods shows Running but application not responding. How debug?
+    * Hint: kubectl exec, check process inside, curl localhost, check logs, service endpoints
+14. How do you upgrade Kubernetes cluster with zero downtime for applications?
+    * Hint: Node upgrades one by one, PDB, pod anti-affinity, multiple replicas
+15. Your cluster has 100 nodes. etcd is slow. How do you optimize?
+    * Hint: Defrag, tune queries, reduce watch load, separate event etcd, use SSD
+16. Pod stuck in Terminating for hours. How do you force delete safely?
+    * Hint: kubectl delete --force, remove finalizers, check kubelet, API server
+17. How do you implement canary deployments in Kubernetes? Show the YAML approach.
+    * Hint: Two deployments, service with label selector, traffic splitting, ingress canary
+18. ConfigMap updated but pods don't see changes. Why? How to force reload?
+    * Hint: Environment variables don't update, volume mounts update eventually, rolling restart
+19. Your application needs to run on specific nodes with GPU. How do you ensure scheduling?
+    * Hint: NodeSelector, node affinity, taints and tolerations, device plugins
+20. How do you monitor etcd health and performance? What metrics matter?
+    * Hint: Leader elections, latency, DB size, failed proposals, snapshot status
+21. RBAC is configured but pod can't list pods in its namespace. What's wrong?
+    * Hint: ServiceAccount, Role, RoleBinding, mount token, automountServiceAccountToken
+22. How do you implement PodSecurityPolicies (or Pod Security Standards) in production?
+    * Hint: PSP deprecated, PSS with admission controllers, baseline/restricted profiles
+23. Your cluster has memory leak. Pods get OOMKilled randomly. How do you find which pod leaks?
+    * Hint: Metrics server, Prometheus, container_memory_working_set_bytes, profiling
+24. How do you handle secrets in Kubernetes without storing in Git?
+    * Hint: External secrets operator, sealed secrets, HashiCorp Vault, AWS Secrets Manager
+25. CoreDNS pods are restarting frequently. DNS resolution intermittent. What do you check?
+    * Hint: CoreDNS logs, configmap, resource limits, node DNS, conntrack table
+
+
