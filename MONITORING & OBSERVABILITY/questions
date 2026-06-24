@@ -1,0 +1,39 @@
+1. What is monitoring, and why is it important?
+2. What is the difference between monitoring and observability?
+3. What are the three pillars of observability (metrics, logs, traces)?
+4. How do you correlate logs, metrics, and traces during incidents?
+5. How will you design monitoring for your organization?
+6. How will you create a monitoring dashboard for your organization?
+7. What is Prometheus, and what is its architecture?
+8. Does Prometheus use a push or pull model?
+9. What is a metric? What are the types of metrics (Counter, Gauge, Histogram, Summary)?
+10. What is an exporter? Name common exporters (Node Exporter, Blackbox Exporter).
+11. What is a scrape configuration?
+12. What is PromQL? Give examples of basic queries.
+13. What is Alertmanager, and how do alerts work in Prometheus?
+14. What is a recording rule?
+15. How do you alert when CPU utilization is 80% in Prometheus?
+16. How does Prometheus work with Kubernetes?
+17. What is ServiceMonitor?
+18. What is federation in Prometheus?
+19. How do you handle high-cardinality metrics?
+20. How do you scale Prometheus?
+21. How do you manage Prometheus data retention?
+22. How do you secure Prometheus endpoints?
+
+23. What is Grafana?
+24. What is the difference between Grafana and Kibana?
+25. What are dashboards, panels, and data sources in Grafana?
+26. How does Grafana integrate with Prometheus?
+27. What are variables in Grafana, and how do you use them?
+28. How do you create alerts in Grafana vs Prometheus Alertmanager?
+29. Grafana dashboard is responding slow — how will you troubleshoot?
+30. How do you share and provision Grafana dashboards?
+31. How do you secure Grafana and manage folder permissions?
+32. How do you design effective dashboards that reduce alert fatigue?
+33. What are the Golden Signals of Monitoring (latency, traffic, errors, saturation)?
+34. What is SLI, SLO, and SLA? How do you define them?
+35. What is an error budget, and how is it calculated?
+36. What is synthetic monitoring, and how is it used?
+37. How do you centralize logs from EKS pods?
+38. Why do teams use Prometheus and Grafana with EKS?
