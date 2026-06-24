@@ -57,3 +57,36 @@ removed?
 25. What are cgroups and namespaces?
 26. What are dangling images and how do you clean them?
 27. How do you manage container logs to prevent disk space issues?
+
+
+DOCKER - The "Container Won't Start" Nightmares
+1. Container exits immediately. docker logs shows nothing. How do you debug?
+    * Hint: docker inspect, check exit code, override entrypoint to sleep, check permissions
+2. Your Docker image is 2GB. How do you reduce to 200MB without breaking the app?
+    * Hint: Multi-stage builds, alpine base, clean apt cache, combine RUN layers, .dockerignore
+3. Container runs as root. Security team is furious. How do you fix this without breaking the app?
+    * Hint: USER directive, --user flag, rootless docker, capability dropping
+4. Your application needs to write files to host. Container can't write. Permissions are 777. Still can't write. Why?
+    * Hint: SELinux, mount propagation, user namespace remapping
+5. docker build works on your laptop but fails on Jenkins agent with "no such file". Why?
+    * Hint: Context path differences, files not copied, .dockerignore, symlinks
+6. How do you debug why container is using 100% CPU without exec'ing into it?
+    * Hint: docker stats, docker top, /sys/fs/cgroup, inspect from host
+7. Your container needs to access database on host. How do you connect?
+    * Hint: host.docker.internal (Mac/Windows), --network=host, use host IP
+8. Docker containers are losing data on restart. How do you persist data properly?
+    * Hint: Volumes, bind mounts, named volumes, volume drivers
+9. How do you scan Docker images for vulnerabilities in CI/CD pipeline?
+    * Hint: Trivy, Clair, Snyk, Docker Scout, fail build on critical
+10. Container exits with code 137. What does this mean? How do you fix?
+    * Hint: OOMKilled, increase memory limit, optimize memory usage
+11. You have 10 microservices that need to talk to each other. How do you orchestrate locally?
+    * Hint: Docker Compose, networks, service discovery, depends_on
+12. Docker build is slow. Every RUN command invalidates cache. How do you optimize?
+    * Hint: Order layers by frequency of change, combine RUN, use cache mounts
+13. Your container can't resolve DNS. Host can. What's wrong?
+    * Hint: /etc/resolv.conf in container, docker daemon DNS settings, network mode
+14. How do you limit container resources (CPU, memory, disk) and why?
+    * Hint: --memory, --cpus, --storage-opt, prevent noisy neighbor
+15. Container logs are too verbose and filling disk. How do you manage log rotation?
+    * Hint: Docker logging drivers, max-size, max-file, json-file options
