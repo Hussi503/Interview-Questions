@@ -1,0 +1,29 @@
+1. What are the prerequisites for using Ansible? (Python)
+2. What language is Ansible written in?
+3. Is Ansible idempotent? Why is that important?
+4. How does Ansible use SSH to connect to remote servers?
+5. What are the types of modules in Ansible (core vs extra)?
+6. What is an Ansible playbook? Write one to install Nginx.
+7. How do you perform a dry run for an Ansible playbook?
+8. What is an Ansible role? Write a role to install and start Nginx.
+9. How do you structure an Ansible role?
+10. What is Ansible Galaxy, and how does it help manage roles and dependencies?
+11. What is an Ansible ad-hoc command?
+12. What is an Ansible loop, and when would you use it?
+13. What is dynamic inventory? Give a practical use case.
+14. How do you install Nginx on a group of servers but skip a specific server?
+15. How do you run a playbook for different machines with different users and ports?
+16. How do you handle sensitive information like API keys or passwords in Ansible?
+17. How do you handle failures in a playbook (rollback, continue on failure)?
+18. What is a callback plugin in Ansible?
+19. What is Ansible Tower/AWX, and how do you implement RBAC?
+20. Can you create infrastructure using Ansible? How is it different from Terraform?
+
+21. How would you use Ansible to automate the deployment of a cloud infrastructure?
+22. Write an Ansible playbook to deploy a Docker container.
+23. Write an Ansible playbook to configure HAProxy as a load balancer.
+24. How do you automate MySQL database backup and restore using Ansible?
+25. How do you manage user accounts and permissions on Linux servers with Ansible?
+26. How does Ansible use Jinja2 templating to generate configuration files?
+27. How do you create an empty file using an Ansible playbook?
+28. What is Ansible cowsay?
