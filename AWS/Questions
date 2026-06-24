@@ -194,14 +194,33 @@ ans: Security Groups and NACLs are both used to control network traffic in AWS, 
          I can add a deny rule in the NACL to block that IP range before traffic even reaches any EC2 instances in the subnet.
      In general, Security Groups act as the first line of defense for individual instances, while NACLs provide an additional layer of security at the subnet level.
 ********************************************************************************************************************************************************************************************************************************************************************
-How do you troubleshoot high CPU utilization on an EC2 instance?
+14. How do you troubleshoot high CPU utilization on an EC2 instance?
+ans: When I notice high CPU utilization on an EC2 instance, I first verify the issue using CloudWatch metrics. I check whether the CPU spike is sudden, continuous, or occurs only during specific time periods.
+     Next, I connect to the instance using Session Manager or SSH and identify the process consuming the CPU using commands such as:
+         top
+         htop
+         ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu
+    Once I identify the process, I determine whether it is expected application behavior or an abnormal process.
+   Then I check the application logs, system logs, and web server logs to understand why the process is consuming high CPU. I also verify whether there were recent deployments, configuration changes, batch jobs, or increased user traffic.
+   if the issue is application-related, I coordinate with the development team and provide logs, metrics, and timestamps for analysis.
+   If the traffic increase is legitimate, I may temporarily scale out using Auto Scaling Groups or increase instance capacity while the root cause is being investigated.
+   If a rogue process is causing the issue and it is safe to do so, I can stop or restart the process after following the change management process.
+   Finally, I implement preventive measures such as CloudWatch alarms, Auto Scaling policies, and application performance monitoring to avoid future incidents.
+****************************************************************************************************************************************************************************************************************************
 How have you implemented Auto Scaling in your project?
+Ans: Yes, I have implemented Auto Scaling Groups in my project to ensure both high availability and cost optimization.
+     First, I created a Launch Template containing the AMI, instance type, Security Groups, IAM role, key pair, and User Data scripts required to bootstrap the application when a new instance is launched.
+     Then I created an Auto Scaling Group across multiple Availability Zones and attached it to an Application Load Balancer target group. This ensures traffic is distributed only to healthy instances.
+     We configured a minimum capacity of 2 instances, a desired capacity of 2, and a maximum capacity of 6 instances.
+    For scaling policies, we used CloudWatch metrics. For example:
+          Scale out when CPU utilization is above 70% for 5 minutes.
+          Scale in when CPU utilization drops below 30% for a specific period.
+    When traffic increased, Auto Scaling automatically launched additional instances using the Launch Template and registered them with the Load Balancer. When traffic reduced, unnecessary instances were terminated automatically.
+    This helped us handle traffic spikes without manual intervention while also reducing infrastructure costs during low-usage periods.
+*******************************************************************************************************************************************************************************************************************************8
 -------------------------------------------------------------------------------------
-
 Wipro
 --------------------------------------------------------------------------------------
-
-
 What is an application gateway and load balancer?
 Suppose you have deployed a web application on an EC2 instance inside a VPC. The instance is running and health checks are passing, but users are unable to access the application from the internet. What will you do?
 In that case, what components in the VPC would you verify?
