@@ -1,0 +1,70 @@
+Linux & Shell python questions
+---------------------------------
+
+1. If a Linux server is down, how do you troubleshoot and what commands do you use to
+check?
+2. What are the different types of file permissions, how do you change them, and what
+does chmod 777 mean?
+3. What does the curl command do?
+4. Can you explain a shell script you recently wrote?
+5. How do you get the current date and time in a shell script?
+6. How do you format date output in Linux?
+7. Where is shell scripting used in CI/CD pipelines?
+8. How do you log timestamps in deployment scripts?
+9. How would you monitor disk usage on a Linux server using a Bash script?
+10. How do you alert when disk usage crosses a threshold (e.g., 80%)?
+11. How would you convert a Bash monitoring script into Python?
+12. Why would you prefer Python over Bash for system monitoring?
+13. How do you handle permission errors and missing mount points in Python scripts?
+14. How do you implement logging in Python for production scripts?
+15. What does -f mean in an if condition?
+16. What does ${file%.txt} mean?
+17. Is timestamp a predefined shell function?
+18. What will be the output filename after running a script?
+19. What's the difference between parentheses () and curly braces {} in shell scripting?
+20. How comfortable are you with Shell scripting and Python?
+21. Write a script to check the top ten services consuming CPU and rotate logs older than seven
+days.
+22. How does Linux interpret the number 7 as days, not hours or minutes, in your script?
+23. What automation have you implemented with Shell or Python scripting?
+24. How did you identify a resource issue related to log rotation and fix it?
+25. Write a Python method for log rotation that deletes files older than 7 days.
+26. Can a Python function return two variables?
+27. What is the difference between a set, list, and tuple in Python?
+28. Have you used list comprehension? Demonstrate with a use case.
+29. When would you prefer using tuples over lists? What is the memory advantage?
+30. How is a list stored in memory vs how is a tuple stored in memory?
+31. Write a Python script to delete log files older than 30 days with a dry_run flag.
+32. What are common failure modes when interacting with cloud APIs, and how do you handle
+them?
+33. How do you implement retries with exponential backoff in automation scripts?
+34. Why should you avoid catching generic exceptions in production code?
+35. How do you ensure your automation scripts are idempotent and production-ready?
+36. Why are proper exit codes important in CI/CD pipelines?
+37. Do you use Linux? What is Linux and why is it widely used in DevOps?
+38. What is the difference between hard links and soft links?
+39. What is the difference between find and locate?
+40. What are log rotation, inodes, and runlevels?
+41. How do you check if a port is open or listening?
+42. How do you configure a static IP address?
+43. How do you mount and unmount filesystems?
+44. How do you check disk partitions and disk usage?
+45. What are sticky bit, setuid, and setgid?
+46. What is the difference between #!/bin/bash and #!/bin/sh?
+47. How does Bash interpret a script internally?
+48. What is the difference between sourcing a script and executing it?
+49. What are positional parameters, and what is the difference between $@ and $*?
+50. How does variable scope work in Bash?
+51. What is the difference between [[ ]] and [ ]?
+52. When would you use a case statement vs an if-else statement?
+53. When would you use a for loop vs a while loop?
+54. How do you break out of nested loops?
+55. How do you define and use functions in Bash, and how do you pass arguments to them?
+56. What is the difference between a return value and an exit code?
+57. What is set -e, set -u, and set -o pipefail?
+58. How do you handle failures gracefully and log errors in Bash scripts?
+59. How do you debug a Bash script running in production?
+60. What are practical use cases for awk, sed, and grep?
+61. How do you parse logs and handle large files efficiently in Bash?
+62. What is the difference between cut and awk?
+63. How do you schedule a script to run automatically after reboot?
