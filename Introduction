@@ -1,0 +1,53 @@
+“As a DevOps Engineer, my typical day starts by checking the health of our production and staging environments using CloudWatch and Grafana dashboards. I make sure all our EC2 instances, EKS clusters, and Jenkins jobs are running fine and that there are no active alerts.
+
+After that, I attend the daily stand-up with developers and QA to discuss any ongoing deployments or blockers. Once that’s done, I usually review Jenkins pipelines — making sure builds and deployments are successful. If there are failed jobs, I troubleshoot the issue,
+fix pipeline scripts, or modify the build stages if needed.
+
+A big part of my work involves managing infrastructure using Terraform and Ansible. I write and update Terraform modules for provisioning AWS resources like EC2, S3, IAM, and EKS. For configuration management, I use Ansible to automate setup tasks across multiple servers.
+
+I also work closely with Docker and Kubernetes — building container images, pushing them to ECR, and deploying them to our EKS clusters using Helm charts. During the day, I monitor logs through CloudWatch or ELK and handle any alerts or incidents that come up, 
+performing root cause analysis when required.
+
+Towards the end of the day, I usually work on optimizing CI/CD processes, automating repetitive manual steps, and updating documentation in Confluence or Jira. Overall, my focus is on keeping deployments smooth, infrastructure stable, and improving automation across our environments.” 
+ 
+
+
+“In our CI/CD setup, the process starts when developers push code changes to GitHub. A webhook automatically triggers Jenkins, which pulls the latest code and initiates the build process.
+During the build stage, we run unit tests, static code analysis, and security scans using tools like SonarQube to maintain code quality and compliance. Once the build passes, Jenkins creates a Docker image, tags it with the build number and commit ID, 
+and pushes it to Amazon ECR for version control.
+In the deployment phase, Jenkins triggers a Helm release to update our Kubernetes workloads running on Amazon EKS. We use a rolling update strategy to ensure zero downtime, and maintain Helm value files for environment-specific configurations.
+Post-deployment, Jenkins runs smoke tests and health checks to verify that the services are functioning correctly. If any issues are detected, Jenkins automatically triggers a rollback to the previous stable version using Helm’s revision history.
+Notifications for every build and deployment status are integrated with Slack and email, so the entire team stays informed. We also use CloudWatch and Grafana for continuous monitoring and alerting to ensure system stability.
+This CI/CD pipeline is fully automated and version-controlled, helping us deliver faster, more reliable, and consistent deployments across all environments.”
+
+=====================================================================================
+
+"In my current role as a DevOps Engineer, I'm responsible for building and maintaining highly available CI/CD and cloud infrastructure across dev, QA, staging, and production.
+My day starts by checking production health using CloudWatch and Grafana dashboards to ensure all systems are running smoothly.
+For CI/CD, I manage Jenkins pipelines integrated with GitHub, SonarQube, and Nexus. I've implemented automated workflows that reduced deployment time by 40% and enabled zero-downtime deployments using blue-green strategy.
+On infrastructure, I use Terraform with reusable modules for VPCs, EC2 Auto Scaling, RDS, and EKS. We use remote state with DynamoDB locking for team collaboration.
+For containers, I build optimized Docker images and deploy them on Amazon EKS using Helm charts. I ensure proper resource limits, probes, and autoscaling for production workloads.
+Security is a priority – I manage secrets using AWS Secrets Manager and implement IAM roles for service accounts to follow least-privilege principles.
+For monitoring, I've designed observability using Prometheus, Grafana, and CloudWatch with alerts routed to Slack for quick incident response.
+Throughout the day, I collaborate with development teams, troubleshoot pipeline failures, and continuously optimize automation processes.
+My focus is on keeping deployments smooth, infrastructure stable, and improving automation across all environments."
+ 
+
+
+P0 incident I handled was a sudden spike in 5xx errors on a production application behind Application Load Balancer.
+We got alerts from Prometheus showing error rate and latency spikes. First, I checked ALB metrics in CloudWatch and saw that target response errors were increasing, which meant the issue was from backend, not the load balancer.
+I immediately checked the application layer:
+* kubectl get pods → pods were running
+* kubectl logs → saw database connection timeout errors
+Then I validated the DB layer and found that the RDS instance had hit max connections, so new requests were failing.
+Immediate actions:
+* Increased DB connection limit temporarily
+* Restarted a few application pods to clear stale connections
+* Reduced traffic pressure by scaling replicas and enabling retries
+Root cause:
+* A recent deployment introduced inefficient connection handling (no proper pooling), causing connection exhaustion under load
+Prevention steps:
+* Implemented proper DB connection pooling
+* Added alerts on DB connections threshold
+* Set up rate limiting at ALB level
+* Included DB load testing as part of pre-release validation
