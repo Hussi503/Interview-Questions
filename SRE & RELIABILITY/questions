@@ -1,0 +1,23 @@
+1. What is Site Reliability Engineering (SRE)?
+2. How do you measure application availability (e.g., 99.99%)?
+3. What is Mean Time to Recovery (MTTR), and how do you reduce it?
+4. How do you reduce toil in incident response and day-to-day operations?
+5. How do you handle a high-severity (P1/P0) production outage?
+6. Walk through how you handle a P1 production incident.
+7. How do you stabilize production during an outage?
+8. What steps do you follow during incident triage?
+9. How do you communicate during outages and manage stakeholders?
+10. What is your incident management lifecycle?
+11. How do you conduct a blameless postmortem and root cause analysis (RCA)?
+12. How do you prevent repeated incidents?
+13. How do you perform Root Cause Analysis (RCA)?
+14. How do you handle on-call responsibilities and avoid alert fatigue?
+
+15. How do you design actionable alerts and build effective runbooks?
+16. How do you test disaster recovery plans?
+17. How do you perform capacity planning for a rapidly growing service?
+18. How do you reduce alert fatigue without missing real incidents?
+19. How do you design systems that fail gracefully?
+20. What is the difference between reactive and proactive reliability engineering?
+21. How do you measure DevOps success?
+22. What KPIs matter most for DevOps teams?
