@@ -15,3 +15,94 @@ Can you explain the pipeline flow and the different stages you had in the pipeli
 What security measures did you take in the pipeline?
 How was the branching strategy in your project?
 ---------------------------------------------------------------------
+
+
+Narayana Questions
+--------------------------------------------------------------------
+1. Write a pipeline code to automate Jenkins.
+2. Explain the concept of "pipeline as code" in Jenkins.
+3. How do you manually trigger a Jenkins job when manual checking is required?
+4. What are agents and runners in Jenkins?
+5. How do you deploy a new Jenkins deployment with zero downtime?
+6. Explain how to create multi-stage jobs in Jenkins.
+7. A job works fine in dev environment but not in production — how do you troubleshoot?
+8. A stage failed in a Jenkins pipeline due to a credentials issue — how do you fix it?
+9. What is Continuous Integration and Continuous Deployment?
+10. Explain a CI/CD pipeline in detail from code commit to production.
+11. How do you implement security in CI/CD pipelines?
+12. A pipeline takes a long time to complete — how do you troubleshoot and optimize?
+13. What is the difference between declarative and scripted pipelines?
+14. What are the typical stages in a Jenkins pipeline?
+15. How do you connect Jenkins to an EC2 instance and authenticate to AWS?
+16. What is the difference between IAM user credentials and IAM roles in Jenkins?
+17. How do you securely store secrets in Jenkins?
+18. What happens if a Jenkins pipeline fails in the resource creation stage?
+19. Explain sshagent in Jenkins.
+20. How do you deploy code from Jenkins to EC2?
+21. A Jenkins pipeline failed while creating AWS resources — what do you check first?
+22. Terraform apply failed in Jenkins but works locally — why?
+23. EC2 was created but provisioning failed — how do you debug?
+24. How do you make CI/CD pipelines idempotent?
+25. What is the difference between Continuous Delivery and Continuous Deployment?
+26. What tools have you used for CI/CD, and how does CI/CD fit into DevOps?
+27. How do you handle rollback in CI/CD?
+28. What are common CI/CD failures, and how do you debug them?
+29. Design a CI/CD pipeline using Jenkins for a containerized application.
+30. How do you integrate Jenkins with Docker and securely push images to a registry?
+31. How does Jenkins authenticate with a Kubernetes cluster?
+32. What are different ways to deploy to Kubernetes from Jenkins?
+33. Why would you use Helm instead of kubectl?
+34. How do you perform post-deployment validation and handle rollbacks?
+35. How do you manage environment separation (dev/stage/prod) in CI/CD?
+36. A pipeline was triggered but no job is running — how do you debug?
+37. A Jenkins job is stuck in pending state — what could be the reason?
+38. The build passed but the application is not accessible — what will you check?
+39. Docker image build suddenly started failing — what are common causes?
+40. Artifact version mismatch issue — how do you fix it?
+41. Rollback failed in production — what went wrong?
+42. Post-deployment smoke test failed — what will you do?
+43. Deployment succeeded but pods are crashing — how do you debug?
+44. How do you design a production-grade Jenkins pipeline with approval gates?
+45. How do you manage Jenkins agents at scale and reduce blast radius?
+46. Jenkins vs GitHub Actions vs Argo CD — when would you use each?
+47. What are the operational challenges of Jenkins?
+48. How is GitHub Actions different from Jenkins architecturally?
+49. Why is Argo CD not considered a CI tool?
+50. Explain GitOps and how Argo CD implements it.
+51. Push-based vs pull-based deployment — compare Jenkins and Argo CD.
+52. How would you design CI with Jenkins and CD with Argo CD?
+53. How do you implement approvals in Jenkins and GitHub Actions?
+54. What does agent any mean in a Jenkins pipeline?
+55. What is a declarative pipeline, and how do you write one?
+56. Why do we use static agents and dynamic agents?
+57. What exactly happens in the checkout stage?
+58. What is a webhook, and how does it work?
+59. How do you integrate a webhook from Git to Jenkins?
+60. You have five environments (Dev, SIT, UAT, Pre-Prod, Prod). How do you manage them in
+a pipeline?
+61. How do you handle deployments from different branches (develop vs release)?
+62. Have you written Jenkins pipelines using declarative syntax?
+63. How do you reduce Jenkins build time and optimize pipelines?
+64. Where are Jenkins builds actually executed (VM, Docker, Kubernetes)?
+65. Have you worked on parallel releases? How do you handle them?
+66. What is your release process?
+67. Do you have experience with Jenkins Shared Libraries?
+68. Can you write a sample Jenkins Shared Library and show how to call it?
+69. How would you configure a CI/CD pipeline with the latest tools and technologies?
+70. You have API scripts to execute daily using a CI/CD pipeline — how would you set it up
+step by step?
+71. Are you solely responsible for managing CI/CD pipeline activities?
+72. Are you maintaining existing pipelines or creating them from scratch?
+73. What does "CI/CD optimization" mean? Can you give more details?
+74. How do you design a CI/CD pipeline that supports frequent releases without breaking
+production?
+75. How do you design a CI/CD platform that serves hundreds of microservices?
+76. How do you avoid writing separate pipelines for thousands of microservices?
+77. How do you reuse pipeline logic across environments and microservices?
+78. How do you trigger a pipeline in one repository from changes in another?
+79. What is a quality gate, and how do you integrate SonarQube?
+80. How do you integrate security scanning tools like Trivy into pipelines?
+81. How do you perform image vulnerability scanning at build time and registry level?
+82. How do you enforce pipeline security from code commit to deployment?
+
+
