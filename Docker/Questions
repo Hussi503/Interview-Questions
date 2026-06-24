@@ -26,3 +26,34 @@
 25. Can you tell me with Docker volume on the host /app/db and your container it should be mounted to /opt/data.
      What is the command that you use to run the Docker container with this mapping?The container name should be test. Can you give that command?
 26. In Docker, how do you inspect a container?
+
+Narayana
+------------------------------
+1. What is the difference between a Docker image and a Docker container?
+2. What are the advantages of containerizing applications?
+3. What is a Dockerfile, and what instructions do you use in it?
+4. How do you reduce Docker image size using multi-stage builds?
+5. Why should containers run as non-root?
+6. What is image immutability?
+7. What is the difference between ADD and COPY in a Dockerfile?
+8. What is the difference between CMD and ENTRYPOINT? Can you use both?
+9. What happens if both CMD and ENTRYPOINT are defined?
+10. What challenges do you face when containerizing legacy monolithic applications?
+11. How do you make a legacy application stateless for containers?
+12. How do you handle filesystem dependencies and background jobs in containers?
+13. What is the "one process per container" principle?
+14. How do sidecars help in containerizing legacy applications?
+15. What security considerations do you take while containerizing old applications?
+16. How is the Docker client different from the Docker daemon?
+17. What is Docker networking, and which commands create bridge/overlay networks?
+18. What is the difference between Docker, Dockerfile, and Docker Compose?
+19. What are three best practices to secure a Docker container?
+20. What is the difference between a Dockerfile and a Docker registry?
+21. Have you worked with Docker volumes? What happens to a volume if the container is
+removed?
+22. Can you create a Dockerfile for a Python application?
+23. If requirements.txt is at a remote location, how will you copy it in a Dockerfile?
+24. What is the difference between volumes and bind mounts? When would you use each?
+25. What are cgroups and namespaces?
+26. What are dangling images and how do you clean them?
+27. How do you manage container logs to prevent disk space issues?
