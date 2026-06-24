@@ -106,3 +106,39 @@ production?
 82. How do you enforce pipeline security from code commit to deployment?
 
 
+
+
+JENKINS / CI-CD - The "Pipeline Failed at 2 AM" Questions
+1. Your Jenkins master crashed. No backup. How do you recover pipelines and jobs?
+    * Hint: Jenkins home directory backup, job configs in XML, SCM sync plugin
+2. Pipeline runs fine on Jenkins master but fails on agent with "command not found". Why?
+    * Hint: PATH differences, tools not installed on agent, agent labels
+3. How do you implement CI/CD for database migrations without breaking production?
+    * Hint: Flyway/Liquibase, backward-compatible changes, blue-green with schema versioning
+4. Your pipeline takes 45 minutes. Developers complain. How do you reduce it to under 10 minutes?
+    * Hint: Parallel stages, caching dependencies, incremental builds, better hardware, splitting jobs
+5. A pipeline stage fails intermittently. Sometimes works, sometimes fails. How do you debug?
+    * Hint: Race conditions, flaky tests, resource constraints, network timeouts, retry logic
+6. How do you implement approval gates in Jenkins pipeline without stopping the entire pipeline?
+    * Hint: input step with timeout, pipeline: Build Flow plugin, manual triggers
+7. Jenkins agent runs out of disk space after 10 builds. How do you clean up automatically?
+    * Hint: Workspace cleanup plugin, docker system prune, custom cleanup scripts
+8. You need to promote the same build artifact from dev to prod without rebuilding. How?
+    * Hint: Store artifacts in repository (Nexus/Artifactory), use build numbers, promote using same artifact
+9. Multiple teams use same Jenkins. One team's pipeline consumes all resources. How do you isolate?
+    * Hint: Kubernetes plugin with dynamic agents, resource quotas, separate controllers
+10. Your pipeline has 20 stages. One stage fails. How do you resume from failed stage without restarting whole pipeline?
+    * Hint: Pipeline checkpointing, restart from stage (Blue Ocean), design idempotent stages
+11. Secrets in Jenkins are exposed in console logs. How do you prevent this?
+    * Hint: Mask passwords plugin, credential binding, avoid echo, use withCredentials
+12. How do you version control Jenkins pipelines? Show a real example with shared libraries.
+    * Hint: Jenkinsfile in SCM, shared library structure, versioned Groovy code
+13. Your Jenkins pipeline needs to deploy to 1000 servers. How do you do it efficiently without overloading?
+    * Hint: Rolling updates, batches, Ansible parallel, SSH multiplexing, PSSH
+14. Pipeline fails with "java.io.IOException: No space left on device" but df shows space available. Why?
+    * Hint: Inode exhaustion, per-user quota, docker overlay, tmpfs mount
+15. How do you handle pipeline failures due to external dependencies (like GitHub down, Docker Hub rate limiting)?
+    * Hint: Retry logic, fallback mirrors, caching, circuit breakers
+
+
+
