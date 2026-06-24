@@ -76,3 +76,17 @@ Stable pipelines require determinism, not retries.
 • Restarting things without understanding the blast radius.
 • Fixing symptoms instead of isolating root cause.
 • Making changes without rollback plans.
+
+
+
+REAL SCENARIO QUESTIONS (The "We Actually Fired Someone For This" Ones)
+1. "It's 2 AM. PagerDuty wakes you up. Production database is down. All developers are asleep. You have 15 minutes to fix or company loses $1M per hour. What do you do?"
+2. "A developer accidentally deleted the entire /etc directory on a critical server. No backups. How do you recover?"
+3. "Your CI/CD pipeline deployed to production. Now customers can't login. The last good deployment was 3 hours ago. 5000 transactions lost in that time. How do you handle this?"
+4. "Your manager says 'We need to move everything to Kubernetes by next month.' The team has no K8s experience. What's your plan?"
+5. "Security team found a critical vulnerability in base image. 500 microservices use it. How do you remediate in 24 hours?"
+6. "AWS bill doubled this month. No one changed anything. Where do you start investigating?"
+7. "Developer says 'It works on my machine' but fails in dev environment. How do you respond and resolve?"
+8. "Your Terraform state file was accidentally deleted from S3. Local copies are 2 days old. How do you recover?"
+9. "Kubernetes cluster is completely unreachable. API server down. etcd might be corrupted. You have 1 hour to recover production."
+10. "Someone committed AWS keys to public GitHub. They've been there for 3 months. What's your incident response?"
