@@ -68,3 +68,35 @@ them?
 61. How do you parse logs and handle large files efficiently in Bash?
 62. What is the difference between cut and awk?
 63. How do you schedule a script to run automatically after reboot?
+==========================================================================================================================================================
+LINUX - Beyond Basics (The "Real Production" Questions)
+1. A server is running at 95% CPU but none of your application processes show high CPU in top. What's happening? How do you find the culprit?
+    * Hint: Interrupts, kernel threads, IO wait
+2. Your application randomly crashes at 3 AM every Sunday. No pattern in logs. How do you debug?
+    * Hint: Cron jobs, log rotation, memory pressure, systemd timers
+3. You run df -h and see 80% disk usage. You run du -sh /* and total is only 50% of what df shows. Where did the space go?
+    * Hint: Deleted files held open by processes, inode usage
+4. A process is stuck in "D" state (uninterruptible sleep). How do you identify and resolve without rebooting?
+    * Hint: IO issues, NFS problems, kernel bugs
+5. You have 10,000 files in a directory. rm -rf * is taking forever. Why? How would you delete them faster?
+    * Hint: rm has to unlink each file sequentially, xargs, find with delete
+6. User reports "Permission denied" but you check and permissions are 755 and user is in the group. What else could cause this?
+    * Hint: SELinux, AppArmor, filesystem mount options (noexec), parent directory permissions
+7. Server is running but SSH is timing out. You're not in the same network. How do you recover?
+    * Hint: Out-of-band management (iLO, DRAC, IPMI), AWS Systems Manager Session Manager, serial console
+8. systemctl status service shows "active (exited)". Is it running or not? What does this mean?
+    * Hint: Oneshot services, forking issues
+9. Your script runs fine manually but fails in cron. Why? How do you fix?
+    * Hint: Environment variables, PATH, interactive vs non-interactive shell
+10. ulimit -n shows 1024 but your application needs 10000 open files. You changed limits.conf and rebooted. Still 1024. Why?
+    * Hint: Systemd overrides, PAM modules, process-level limits
+11. A server suddenly lost network connectivity. You reboot and it comes back. What logs would you check to find root cause?
+    * Hint: dmesg, /var/log/messages, system logs, hardware errors
+12. How do you trace system calls of a process in real-time? Give a real debugging example.
+    * Hint: strace, ltrace
+13. Your application writes logs but they're not showing up in the log file. Process is running. What's wrong?
+    * Hint: Buffering, filesystem full, wrong path, symlink issues, log rotation
+14. You have 100 servers. How do you check which ones have a specific package installed without logging into each?
+    * Hint: Ansible, parallel SSH, inventory management
+15. Linux server boots to emergency mode. How do you recover without reinstalling?
+    * Hint: Check /etc/fstab, mount issues, fsck, journalctl -xb
