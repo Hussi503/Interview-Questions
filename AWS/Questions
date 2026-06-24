@@ -120,19 +120,80 @@ ans: Cross-account access in AWS is typically implemented using IAM Roles.
         When access is required, the user or application assumes the role, AWS STS generates temporary security credentials, and those credentials are used to access resources in Account B.
         This is more secure than sharing long-term access keys because the credentials are temporary and can be controlled through IAM policies and trust relationships.
 **************************************************************************************************************************************************************************************************************************************************************************
-What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
-How would you troubleshoot connectivity issues between private and public subnets?
-How does EKS integrate with IAM?
-How would you optimize AWS infrastructure costs?
+7. What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
+ans: When an EC2 instance in an Auto Scaling Group becomes unhealthy, AWS automatically detects the unhealthy state and replaces the instance to maintain the desired capacity.
+     The health check can come from:
+     EC2 Status Checks
+        Load Balancer Health Checks (ALB/NLB)
+        For example, if the desired capacity is 3 instances and one instance becomes unhealthy due to application failure, OS crash, memory issues, or failing health checks:
+          Auto Scaling detects the unhealthy instance.
+          The instance is marked as Unhealthy.
+          If attached to a Load Balancer, traffic is stopped to that instance.
+          Auto Scaling terminates the unhealthy instance.
+          Auto Scaling launches a new EC2 instance using the configured Launch Template or Launch Configuration.
+         The new instance runs the bootstrap process (User Data scripts, application startup, configuration).
+         Once health checks pass, the instance is registered with the Load Balancer and starts receiving traffic.
+This process is called self-healing, and it ensures that the Auto Scaling Group always maintains the desired number of healthy instances.
+******************************************************************************************************************************************************************************************************
+8. How would you troubleshoot connectivity issues between private and public subnets?
+Ans: "I would start by checking Security Groups because they are the most common cause. Then I would verify NACLs, Route Tables, and VPC Flow Logs. If the network configuration looks correct, 
+     I would test connectivity using telnet or curl and verify that the application is actually listening on the required port. This systematic approach helps quickly identify whether the issue is at the network, OS, or application layer.
+**********************************************************************************************************************************************************************************************************
+9. How does EKS integrate with IAM?
+ans: EKS integrates with IAM primarily for authentication and authorization. IAM controls who can access the EKS cluster, while Kubernetes RBAC controls what actions they can perform inside the cluster.
+     When a user or service tries to access the EKS cluster using kubectl, AWS IAM first authenticates the identity. EKS uses the AWS IAM Authenticator to validate the IAM user or IAM role.
+     Once authentication succeeds, the IAM identity is mapped to Kubernetes users or groups through access entries (or historically through the aws-auth ConfigMap).
+     After the mapping is completed, Kubernetes RBAC determines what permissions that user or role has within the cluster, such as viewing pods, creating deployments, or managing namespaces.
+     For workloads running inside EKS, we commonly use IAM Roles for Service Accounts (IRSA). With IRSA, a Kubernetes Service Account is associated with an IAM Role, allowing pods to securely access
+     AWS services like S3, DynamoDB, or Secrets Manager without storing AWS access keys inside the container.
+10. How would you optimize AWS infrastructure costs?
+ans: Cost optimization starts with understanding the workload patterns. First, I analyze CloudWatch metrics such as CPU, memory, disk, and network utilization to identify underutilized resources.
+     For long-running and predictable workloads, I use Reserved Instances or Savings Plans to reduce costs. For non-production environments, batch jobs, or fault-tolerant workloads, I use Spot Instances to take advantage of unused AWS capacity at a lower cost.
+     I also implement Auto Scaling Groups so that instances automatically scale out during peak traffic and scale in during low traffic periods, ensuring we only pay for the resources we actually need.
+     Next, I perform right-sizing by identifying oversized EC2 instances, RDS instances, and EBS volumes. AWS Cost Explorer and AWS Compute Optimizer help provide recommendations, but I always validate those recommendations against actual workload metrics before implementing them.
+     I also optimize storage costs by using appropriate S3 storage classes, such as Standard, Intelligent-Tiering, and Glacier for archival data.
+     Additionally, I regularly identify and remove unused resources such as unattached EBS volumes, old snapshots, unused Elastic IPs, idle Load Balancers, and unused NAT Gateways.
+      Finally, I use AWS Budgets and Cost Explorer to monitor spending trends and proactively identify unexpected cost increases.
 
 ------------------------------------------------------------------------------------
 CapGemini
 ------------------------------------------------------------------------------------
-Explain your current AWS architecture end-to-end.
-How do you design a highly available application in AWS?
-Explain the complete request flow from Route 53 → ALB → EKS/EC2.
-How do you secure workloads running in AWS?
-Difference between Security Groups and NACLs with real use cases.
+11. Explain your current AWS architecture end-to-end.
+ans: In my current project, the application is hosted in AWS using a highly available multi-AZ architecture.
+     We have a VPC spread across multiple Availability Zones. Within the VPC, we have public and private subnets.
+     Public subnets host the Application Load Balancer and NAT Gateways, while application workloads run in private subnets.
+     The user accesses the application using a custom domain. DNS resolution is handled by Route 53. The request reaches the Application Load Balancer, which performs health checks and forwards traffic to the application layer.
+     The application layer runs on EC2 instances managed by Auto Scaling Groups (or EKS if Kubernetes is used). Auto Scaling ensures high availability and automatic scaling during traffic spikes.
+     The application servers communicate with backend databases running on RDS in Multi-AZ mode. This provides automatic failover in case of database failures.
+     For outbound internet access from private instances, we use NAT Gateways. Security is enforced through IAM roles, Security Groups, NACLs, and KMS encryption.
+     Infrastructure provisioning is automated using Terraform modules. Application deployments are performed through GitHub Actions CI/CD pipelines.
+     Monitoring and alerting are handled through CloudWatch, and logs are centralized for troubleshooting and operational visibility.
+     This architecture provides scalability, high availability, security, and automated deployments.
+*******************************************************************************************************************************************************************************************************************************************
+12. How do you secure workloads running in AWS?
+ans:  First, at the network layer, I place application servers in private subnets and expose only the required entry points through an Application Load Balancer. I use Security Groups to allow only necessary traffic and Network ACLs for additional subnet-level control.
+      For identity and access management, I follow the principle of least privilege using IAM roles instead of access keys wherever possible. For applications running on EC2 or EKS, I use IAM Roles or IRSA to securely access AWS services.
+      For data protection, I enable encryption at rest using KMS for services such as EBS, S3, and RDS. I also enforce encryption in transit using HTTPS/TLS.
+      Sensitive information such as database passwords, API keys, and certificates are stored in Secrets Manager or Systems Manager Parameter Store rather than being hardcoded in applications.
+      For monitoring and auditing, I use CloudTrail to track API activity and CloudWatch for monitoring, alerting, and log collection.
+      I also enable vulnerability scanning, regularly patch operating systems and container images, and use services such as AWS WAF to protect against common web attacks.
+      Finally, I continuously review security findings and compliance recommendations using security monitoring tools and periodic access reviews.
+************************************************************************************************************************************************************************************************************************************************************
+13. Difference between Security Groups and NACLs with real use cases.
+ans: Security Groups and NACLs are both used to control network traffic in AWS, but they operate at different layers.
+     Security Groups operate at the EC2 instance or ENI level and are stateful. This means if I allow inbound traffic on a port, the return traffic is automatically allowed. Security Groups only support allow rules.
+
+     NACLs (Network Access Control Lists) operate at the subnet level and are stateless. This means I must explicitly allow both inbound and outbound traffic. NACLs support both allow and deny rules and are evaluated in rule number order.
+     Security Group Use Case
+         Suppose I have an Application Load Balancer and application servers.
+         I can configure the application server Security Group to allow port 8080 traffic only from the ALB Security Group.
+         This ensures nobody can directly access the application servers even if they know the private IP.
+     NACL Use Case
+         Suppose my company wants to block traffic from a specific IP range due to suspicious activity.
+         Security Groups cannot create deny rules, but NACLs can.
+         I can add a deny rule in the NACL to block that IP range before traffic even reaches any EC2 instances in the subnet.
+     In general, Security Groups act as the first line of defense for individual instances, while NACLs provide an additional layer of security at the subnet level.
+********************************************************************************************************************************************************************************************************************************************************************
 How do you troubleshoot high CPU utilization on an EC2 instance?
 How have you implemented Auto Scaling in your project?
 -------------------------------------------------------------------------------------
