@@ -1,4 +1,4 @@
-1. Explain the serverless services in AWS.
+**1. Explain the serverless services in AWS**
 
 2. How do you ensure an application is highly available in AWS?
 3. What is the difference between a public subnet and a private subnet?
