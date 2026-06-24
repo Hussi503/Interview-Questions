@@ -6,68 +6,120 @@ User opens:   https://myapp.com
 Flow:
 User ->Route 53 -> cloudfront -> AWS WAF -> Application Load Balancer -> EC2 / ECS / EKS -> RDS Database
 
-1. User sends request
-   User browser says: "I want to open myapp.com"
-2. Route 53 (DNS)
-   Route 53 finds where the application is running.
-      Example:
-         myapp.com  ---> ALB address
-        It sends the user request to Load Balancer.
-3. CloudFront (CDN)
-   CloudFront checks:
-  "Do I already have this content cached?"
-  If yes:
-    CloudFront ---> User
-      Fast response.
-    If no:
-     CloudFront ---> ALB
-4. AWS WAF (Security)
-  Before reaching application: WAF checks:
+        1. User sends request
+           User browser says: "I want to open myapp.com"
+        2. Route 53 (DNS)
+             Route 53 finds where the application is running.
+          Example:
+           myapp.com  ---> ALB address
+           It sends the user request to Load Balancer.
+        3. CloudFront (CDN)
+             CloudFront checks:
+             "Do I already have this content cached?"
+             If yes:
+                CloudFront ---> User
+                 Fast response.
+            If no:
+                CloudFront ---> ALB
+      4. AWS WAF (Security)
+             Before reaching application: WAF checks:
                                     Is this a normal request?
                                     Is it an attack?
                                     Too many requests?
                         Example:
                            Normal request  ---> Allow
                            Attack request  ---> Block
-5. Application Load Balancer (ALB)
-       ALB receives the request.
-      It checks:
-            Which application?
-            Which server is free?
-            Is the server healthy?
-          Example:
+      5. Application Load Balancer (ALB)
+             ALB receives the request.
+              It checks:
+                       Which application?
+                       Which server is free?
+                       Is the server healthy?
+                   Example:
 
-          ALB
+                      ALB
 
-       /    |    \
-      /     |     \
-   EC2-1  EC2-2  EC2-3
+                    /    |    \
+                   /     |     \
+                EC2-1  EC2-2  EC2-3
 
-It sends traffic to one healthy server.
+            It sends traffic to one healthy server.
 
-6. Application Server (EC2/ECS/EKS)
-   Your application runs here.
-    Example:
-      User asks:
-            Show my orders
-            Application says:
-            "I need data from database"
-
-7. Database (RDS)
-     Application connects to RDS:   Application  ---> RDS
-     Database returns the data.
-8. Response comes back
-   Same way back: RDS--> Application --> ALB --> CloudFront -->  User
-    User sees the page
+      6. Application Server (EC2/ECS/EKS)
+               Your application runs here.
+               Example:
+                  User asks:
+                     Show my orders
+                      Application says:
+                     "I need data from database"
+ 
+      7. Database (RDS)
+                  Application connects to RDS:   Application  ---> RDS
+                  Database returns the data.
+      8. Response comes back
+            Same way back: RDS--> Application --> ALB --> CloudFront -->  User
+             User sees the page
 *******************************************************************************************************************************************************************************************************************************************************
 2. Difference between Security Groups and NACLs?
-   Security Groups operate at the instance or ENI level and are stateful, meaning return traffic is automatically allowed. NACLs operate at subnet level and are stateless, meaning inbound and outbound traffic must be explicitly allowed. 
-   Security Groups only support allow rules, while NACLs support both allow and deny rules.
+        Security Groups operate at the instance or ENI level and are stateful, meaning return traffic is automatically allowed. NACLs operate at subnet level and are stateless, meaning inbound and outbound traffic must be explicitly allowed. 
+        Security Groups only support allow rules, while NACLs support both allow and deny rules.
 *********************************************************************************************************************************************************************************************************************************************************
 3. How does a NAT Gateway work internally?
+ ans:     NAT Gateway stands for Network Address Translation Gateway. It is used when private EC2 instances need internet access but should not be accessible from the internet.
+
+          Internally, the NAT Gateway is deployed in a public subnet and attached to an Elastic IP. Private subnet route tables are configured to send internet-bound traffic (0.0.0.0/0) to the NAT Gateway.
+
+         For example, when a private EC2 instance wants to download software updates:
+
+                 The EC2 instance sends a request with its private IP address.
+                 The route table forwards the traffic to the NAT Gateway.
+                 The NAT Gateway replaces (translates) the private IP with its Elastic IP.
+                 The request goes to the internet using the Elastic IP.
+                 The external server sends the response back to the Elastic IP.
+                 NAT Gateway keeps a connection tracking table and knows which private EC2 initiated the request.
+                 It translates the destination back to the private IP and sends the response to the correct EC2 instance.
+                 Because the internet only sees the NAT Gateway's Elastic IP, the private EC2's IP address is never exposed.
+         Also, NAT Gateway allows only outbound initiated connections. Internet users cannot directly start connections to private EC2 instances through the NAT Gateway.
+************************************************************************************************************************************************************************************************************************************************************
 4. How would you design a highly available architecture across multiple Availability Zones?
-Difference between ALB, NLB, and CLB?
-How do you provide cross-account access in AWS?
+
+Ans:  First, I will understand the application requirements from the development team, such as expected traffic, scalability, availability, and database requirements.
+
+      Then I will create a VPC and divide it across at least two Availability Zones. Within each Availability Zone, I will create public and private subnets.
+
+      In the public subnets, I will deploy an Application Load Balancer. The Load Balancer will receive requests from internet users and distribute traffic across application servers running in private subnets located in multiple Availability Zones.
+
+      The application servers will be part of an Auto Scaling Group so that instances can automatically scale based on load and also provide self-healing if an instance fails.
+
+      For the database layer, I will use a Multi-AZ database deployment so that a standby database is available in another Availability Zone. If the primary database fails, traffic can automatically fail over to the standby instance.
+
+      For outbound internet connectivity from private instances, I will deploy NAT Gateways in each Availability Zone to avoid a single point of failure.
+
+      In this design, if one Availability Zone becomes unavailable, the Load Balancer automatically routes traffic to healthy application servers in the other Availability Zone, ensuring high availability and minimal downtime.
+****************************************************************************************************************************************************************************************************************************************************************
+5.Difference between ALB, NLB, and CLB?
+ans:    Application Load Balancer (ALB) operates at Layer 7, the Application Layer. It understands HTTP and HTTPS traffic and can make routing decisions based on URL paths, hostnames, headers, and query strings.
+       For example:
+          /api → API servers
+         /images → Image servers
+         app.company.com → App servers
+         admin.company.com → Admin servers
+         ALB also supports SSL termination, WebSockets, and container-based workloads such as ECS and Kubernetes.
+         
+        Network Load Balancer (NLB) operates at Layer 4, the Transport Layer. It handles TCP, UDP, and TLS traffic. It does not inspect HTTP requests, so it cannot perform path-based or host-based routing.
+         Because NLB works at Layer 4, it provides very high performance, low latency, and can handle millions of requests per second. It is commonly used for gaming applications, databases, messaging systems, and other high-performance workloads.
+
+       Classic Load Balancer (CLB) is the older generation AWS load balancer. It supports basic Layer 4 and Layer 7 functionality but lacks many modern features available in ALB and NLB. For new deployments, AWS recommends using ALB or NLB instead of CLB
+*************************************************************************************************************************************************************************************************************************************************************************
+6. How do you provide cross-account access in AWS?
+ans: Cross-account access in AWS is typically implemented using IAM Roles.
+     Suppose we have Account A and Account B. Users or applications in Account A need access to resources in Account B.
+        In Account B, I create an IAM Role with the required permissions, such as access to S3 buckets, EC2 instances, or other AWS resources.
+        Then I configure a Trust Policy on that role, allowing Account A to assume the role using AWS STS (Security Token Service).
+        In Account A, the user or application is granted permission to call sts:AssumeRole on the role in Account B.
+        When access is required, the user or application assumes the role, AWS STS generates temporary security credentials, and those credentials are used to access resources in Account B.
+        This is more secure than sharing long-term access keys because the credentials are temporary and can be controlled through IAM policies and trust relationships.
+**************************************************************************************************************************************************************************************************************************************************************************
 What happens when an EC2 instance in an Auto Scaling Group becomes unhealthy?
 How would you troubleshoot connectivity issues between private and public subnets?
 How does EKS integrate with IAM?
