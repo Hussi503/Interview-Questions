@@ -1,0 +1,22 @@
+1. How will you manage secrets in your organization?
+2. How will you store environmental variables?
+3. What is SonarQube?
+4. How do you manage compliance in Docker/Kubernetes?
+5. How do you check vulnerabilities for container images?
+6. What compliance issues have you faced and resolved?
+7. How do you centrally manage security standards across AWS accounts?
+8. How do you implement DevSecOps in CI/CD?
+9. What security checks should be mandatory in pipelines?
+10. How do you manage secrets securely in CI/CD?
+11. How do you enforce least privilege access?
+12. How do you secure Docker images and Kubernetes workloads?
+13. How do you handle security incidents and vulnerability remediation?
+14. How do you balance security with delivery speed?
+15. How do you audit CI/CD pipelines?
+16. What security vulnerabilities have you worked on in your project?
+17. Working on a banking project — what key security challenges and how were they
+mitigated?
+18. How do you secure AWS credentials in production environments?
+19. How do you audit user actions across multiple AWS accounts?
+20. How do you detect compromised IAM credentials?
+21. How do you prevent DDoS attacks in AWS?
