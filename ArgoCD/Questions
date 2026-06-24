@@ -1,0 +1,9 @@
+1. What is Argo CD, and why are we using it? Is it an alternative to Jenkins?
+2. How does Argo CD work? What does it continuously monitor?
+3. What could cause an Argo CD application to be "out of sync"?
+4. What are the different sync modes in Argo CD?
+5. What is prune policy and self-healing in Argo CD?
+6. How do you install Argo CD and set up RBAC?
+7. Have you worked with roles in Argo CD?
+8. Can you explain Argo CD configuration? What is an application and application set?
+9. How did you configure Argo CD in the first place?
