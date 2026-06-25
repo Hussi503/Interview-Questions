@@ -177,11 +177,11 @@
 ### ✅ Answer
     In large AWS environments, managing IAM manually becomes difficult and error-prone, so I always follow an IAM-as-Code and least-privilege approach.
 
-   For IAM management, I create roles, policies, and permissions using Terraform rather than through the AWS Console. This ensures all access controls are version-controlled, peer-reviewed, 
-   and auditable. Instead of creating IAM users wherever possible, I use IAM Roles and temporary credentials through AWS STS. For cross-account access, I use role assumption rather than sharing credentials.
+     For IAM management, I create roles, policies, and permissions using Terraform rather than through the AWS Console. This ensures all access controls are version-controlled, peer-reviewed, 
+     and auditable. Instead of creating IAM users wherever possible, I use IAM Roles and temporary credentials through AWS STS. For cross-account access, I use role assumption rather than sharing credentials.
 
-   For auditing, AWS CloudTrail is the primary service I use. CloudTrail records all API activities such as who created resources, modified Security Groups, deleted infrastructure, or changed IAM policies. 
-   The logs are stored in a centralized S3 bucket with retention policies and encryption enabled.
+     For auditing, AWS CloudTrail is the primary service I use. CloudTrail records all API activities such as who created resources, modified Security Groups, deleted infrastructure, or changed IAM policies. 
+     The logs are stored in a centralized S3 bucket with retention policies and encryption enabled.
 
 # 📊 Monitoring & CloudWatch
 
