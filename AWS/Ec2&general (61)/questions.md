@@ -35,6 +35,13 @@
  
 
 ### 🔹 Q3. What is the difference between a Public Subnet and a Private Subnet?
+   ### ✅ Answer
+        A Public Subnet has a route to an Internet Gateway (IGW) in its route table, which allows resources inside that subnet to communicate directly with the internet. Typically, we place internet-facing components such as
+        Application Load Balancers, Bastion Hosts, or public web servers in public subnets because they need to receive traffic from external users.
+
+         A Private Subnet, on the other hand, does not have a direct route to the Internet Gateway. Resources inside private subnets cannot be accessed directly from the internet. We usually place backend application servers,
+         databases, Redis clusters, internal services, and Kubernetes worker nodes in private subnets for security reasons. If these resources need outbound internet access for downloading patches, updates, or container images, 
+         we route the traffic through a NAT Gateway deployed in a public subnet.
 
 ### 🔹 Q4. What is a VPC?
 
