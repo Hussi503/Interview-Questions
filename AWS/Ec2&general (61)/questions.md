@@ -71,6 +71,23 @@
       I check the subnet's NACL to ensure both inbound and outbound rules allow SSH traffic and ephemeral ports. Even if the Security Group allows traffic, a NACL deny rule can still block the connection.
 
 ### 🔹 Q7. What is the difference between blocking a CIDR using Security Groups vs NACLs?
+### ✅ Answer
+      The key difference is that Security Groups cannot explicitly deny or block a CIDR, whereas NACLs support both Allow and Deny rules.
+
+      Security Groups are stateful firewalls that work on an allow-only model. If I want to restrict access from a specific CIDR, I can only do it indirectly by not allowing that CIDR in the Security Group rules. 
+      There is no option to create a "Deny 10.10.10.0/24" rule.
+
+      NACLs, however, are stateless and support explicit deny rules. If I need to immediately block a malicious IP range, suspicious traffic, or a specific CIDR across an entire subnet, I can add a Deny rule in the NACL. 
+      The traffic will be dropped before it reaches the EC2 instances.
+     ### Real-Time Example
+       Suppose my web application is running on multiple EC2 instances in a subnet, and a suspicious CIDR block 203.0.113.0/24 is sending unwanted requests.
+       With Security Groups, I cannot create a deny rule for that CIDR. I would have to modify allow rules, which may become difficult to manage.
+       With NACLs, I can simply add a rule like:
+         Rule 100: Deny 203.0.113.0/24
+         Port: Any
+         Protocol: Any
+
+       The traffic gets blocked at the subnet boundary before reaching any EC2 instance.
 
 ### 🔹 Q8. Can CIDR blocking be enforced at the subnet level?
 
