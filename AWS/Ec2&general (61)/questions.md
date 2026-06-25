@@ -90,14 +90,59 @@
        The traffic gets blocked at the subnet boundary before reaching any EC2 instance.
 
 ### 🔹 Q8. Can CIDR blocking be enforced at the subnet level?
+### ✅ Answer
+
+      Yes, CIDR blocking can be enforced at the subnet level using Network ACLs (NACLs).
+      Since NACLs are attached to subnets and support both Allow and Deny rules, we can block a specific IP address or CIDR range before the traffic reaches any resource inside that subnet. 
+      This makes NACLs useful when we want to enforce a network-wide restriction for all EC2 instances, Load Balancers, or other resources within a subnet.
 
 ### 🔹 Q9. Why is OS-level firewall blocking not preferred in AWS?
+### ✅ Answer
 
+     In AWS, OS-level firewalls such as iptables, firewalld, or Windows Firewall are generally not the preferred primary security mechanism because AWS already provides centralized network security controls through Security Groups and NACLs.
+
+      From a production operations perspective, managing firewall rules at the OS level becomes difficult when you have hundreds of EC2 instances. Every server must be configured, monitored, and kept consistent. 
+      If a new instance is launched through an Auto Scaling Group, the firewall rules must also be applied correctly, otherwise it can create connectivity issues.
+
+      Security Groups and NACLs are managed centrally at the AWS network layer. They provide better visibility, easier auditing, infrastructure-as-code support through Terraform, and consistent security enforcement across all instances. 
+      This makes them much easier to manage at scale.
 ### 🔹 Q10. How does NAT Gateway work?
+### ✅ Answer
+
+       A NAT Gateway allows resources in a private subnet to access the internet while preventing the internet from initiating connections back to those resources.
+
+       In a production environment, application servers, EKS worker nodes, and backend services are usually deployed in private subnets for security reasons. 
+       These servers may still need internet access to download OS patches, pull Docker images from Docker Hub or ECR, install packages, or communicate with external APIs. Since private subnets do not have direct internet access, we use a NAT Gateway.
+
+       Internally, the NAT Gateway is deployed in a public subnet and is associated with an Elastic IP. When a private EC2 instance sends traffic to the internet, the route table of the private subnet forwards that traffic to the NAT Gateway.
+        The NAT Gateway replaces the private IP of the EC2 instance with its own public Elastic IP and sends the request to the internet. When the response comes back, the NAT Gateway tracks the connection, translates the traffic back to
+        the original private IP, and forwards it to the EC2 instance.
+
+        The important point is that communication is outbound only. Internet users cannot directly initiate connections to resources in private subnets through a NAT Gateway.
 
 ### 🔹 Q11. How do you secure EC2 instances in a Private Subnet and allow access from outside?
+### ✅ Answer
+     In production environments, we never expose application EC2 instances directly to the internet. Instead, we deploy the EC2 instances in private subnets and expose only the required entry point such as 
+     an Application Load Balancer (ALB) or Bastion Host in public subnets.
+
+     For application access, users connect to the public ALB, and the ALB forwards traffic to EC2 instances in private subnets. The EC2 Security Group is configured to accept traffic only from the ALB Security Group, 
+     ensuring that no direct internet traffic can reach the servers.
+
+     For administrative access, earlier we used Bastion Hosts, but nowadays the preferred approach is AWS Systems Manager Session Manager, which allows secure shell access without opening port 22 to the internet.
+     This eliminates the need for public IPs and significantly reduces the attack surface.
 
 ### 🔹 Q12. Have you worked with VPC Endpoints? In what use case?
+### ✅ Answer
+     Yes, I have worked with VPC Endpoints in production environments. We use them when resources inside private subnets need to access AWS services without traversing the public internet or requiring a NAT Gateway.
+
+     A VPC Endpoint creates a private connection between the VPC and AWS services such as S3, DynamoDB, ECR, Secrets Manager, SSM, CloudWatch, and others. This improves security because traffic remains within the AWS network and never leaves to the internet.
+
+     One common use case I implemented was for EKS worker nodes running in private subnets. The nodes needed to pull container images from ECR and communicate with AWS services. Instead of routing traffic through a NAT Gateway,
+     we configured VPC Endpoints for ECR, S3, and Systems Manager. This reduced NAT Gateway data processing costs and improved security by keeping traffic private.
+
+     Another common scenario is accessing S3 from private EC2 instances. By using an S3 Gateway Endpoint, the instances can access S3 directly without internet connectivity.
+
+     From a production perspective, VPC Endpoints are often used for security, compliance requirements, and cost optimization, especially when large amounts of traffic are going to AWS services.
 
 ---
 
