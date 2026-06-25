@@ -44,10 +44,31 @@
          we route the traffic through a NAT Gateway deployed in a public subnet.
 
 ### 🔹 Q4. What is a VPC?
+### ✅ Answer
+      A VPC (Virtual Private Cloud) is a logically isolated network within AWS where we launch and manage our cloud resources such as EC2 instances, Load Balancers, RDS databases, EKS clusters, and other services. 
+      It gives us complete control over networking, including IP address ranges, subnets, route tables, security groups, and network access.
+
+      In real production environments, the first thing we design before deploying applications is the VPC architecture. For example, we create a VPC with a CIDR range like 10.0.0.0/16, divide it into public and private subnets
+      across multiple Availability Zones, deploy Load Balancers in public subnets, application servers in private subnets, and databases in separate private subnets. This provides both security and high availability.
 
 ### 🔹 Q5. How many subnets can be created in a VPC?
+### ✅ Answer
+
+      AWS allows up to around 200 subnets per VPC by default, but practically the number depends on the VPC CIDR range and subnet design. In production, we create subnets based on architecture requirements rather than trying to reach the maximum limit.
 
 ### 🔹 Q6. How do Security Groups and NACLs affect EC2 connectivity?
+### ✅ Answer
+
+      Security Groups and NACLs both control network traffic to and from an EC2 instance, but they operate at different levels and serve different purposes.
+
+      A Security Group acts as a virtual firewall at the instance level. It controls traffic entering and leaving the EC2 instance. Security Groups are stateful, which means if an inbound request is allowed,
+      the response traffic is automatically allowed without needing an explicit outbound rule. In production, Security Groups are our primary mechanism for controlling access to EC2 instances.
+
+      A NACL (Network Access Control List) operates at the subnet level and applies to all resources within that subnet. NACLs are stateless, meaning if you allow inbound traffic, you must also explicitly
+      allow the corresponding outbound traffic. NACLs provide an additional layer of security and are often used for broader subnet-level restrictions.
+
+      For example, if I am unable to SSH to an EC2 instance, I first verify that the Security Group allows inbound port 22 from my source IP. If that looks correct and connectivity still fails, 
+      I check the subnet's NACL to ensure both inbound and outbound rules allow SSH traffic and ephemeral ports. Even if the Security Group allows traffic, a NACL deny rule can still block the connection.
 
 ### 🔹 Q7. What is the difference between blocking a CIDR using Security Groups vs NACLs?
 
