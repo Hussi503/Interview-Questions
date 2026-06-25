@@ -21,6 +21,18 @@
        Overall, serverless is best suited for event-driven applications, automation tasks, APIs, data processing pipelines, and workloads with variable traffic patterns.
 
 ### 🔹 Q2. How do you ensure an application is highly available in AWS?
+  ### ✅ Answer
+        In production, high availability means eliminating single points of failure across every layer of the application. Typically, I deploy application servers in an Auto Scaling Group spread across at least two Availability Zones 
+        and place them behind an Application Load Balancer. If one instance or even an entire Availability Zone goes down, the load balancer automatically routes traffic to healthy instances in the other AZ.
+
+         For the database layer, I use Multi-AZ deployments, such as RDS Multi-AZ, so AWS automatically performs failover if the primary database becomes unavailable. Static content is stored in S3, which is highly durable by design, 
+         and Route 53 is used for DNS-based routing and health checks. I also configure CloudWatch alarms and monitoring to proactively detect failures and trigger notifications.
+    
+         In one of my projects, Sitecore applications were deployed across multiple App Service instances with Azure-like HA concepts, but in AWS the equivalent approach would be ALB + Auto Scaling across multiple AZs with Multi-AZ databases. 
+         This ensures that infrastructure failures, instance failures, or traffic spikes do not impact application availability.
+
+         So, my approach is always to design HA at compute, load balancer, database, storage, and monitoring layers rather than relying on a single component to provide availability.
+ 
 
 ### 🔹 Q3. What is the difference between a Public Subnet and a Private Subnet?
 
