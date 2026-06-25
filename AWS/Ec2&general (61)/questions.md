@@ -149,21 +149,62 @@
 # 🔐 Security & IAM
 
 ### 🔹 Q13. What is a Security Group and why is it needed for EC2?
-
+### ✅ Answer
+     A Security Group is a stateful virtual firewall that controls inbound and outbound traffic for AWS resources such as EC2 instances, Load Balancers, RDS databases, and EKS nodes. 
+     It is one of the primary security mechanisms in AWS and is attached directly to the resource rather than the subnet.
+     Security Groups are needed because, by default, we should follow the principle of least privilege, meaning only the required ports and sources should be allowed. 
+     Without proper Security Group rules, either the application becomes inaccessible or resources become unnecessarily exposed to the internet, creating security risks.
 ### 🔹 Q14. How will you block a particular CIDR block in AWS permanently?
+### ✅ Answer
+    If I need to permanently block a particular CIDR block in AWS, my preferred approach depends on the scope of the block.
+    For subnet-level blocking, I would use a Network ACL (NACL) because it supports explicit Deny rules. I can add a rule to deny the specific CIDR range,
+    and the traffic will be blocked before reaching any resource in that subnet.
 
+   For internet-facing applications behind an ALB, CloudFront, or API Gateway, I would typically use AWS WAF. WAF allows me to create IP sets and block malicious IP addresses or CIDR ranges centrally. 
+   This is usually the preferred enterprise approach because it is easier to manage, audit,  and update compared to NACLs.
+
+   If the requirement is organization-wide and long-term, I would manage the blocking rules through Terraform or CloudFormation so the configuration remains permanent, version-controlled, and automatically reapplied during infrastructure changes.
 ### 🔹 Q15. When would you use AWS WAF instead of Security Groups?
+### ✅ Answer
+    I use Security Groups for network-level access control, whereas I use AWS WAF for application-layer protection.
 
+    Security Groups operate at Layer 3 and Layer 4 (IP, TCP, UDP) and are mainly used to control which IPs or resources can access specific ports. 
+    For example, allowing HTTPS traffic on port 443 to an ALB or allowing database access only from application servers.
+
+    AWS WAF operates at Layer 7 (HTTP/HTTPS) and can inspect the actual web requests. This allows it to block SQL Injection attacks, Cross-Site Scripting (XSS), malicious bots, 
+    rate-limit requests, geo-block traffic from specific countries, and filter requests based on URLs, headers, cookies, or request patterns.
 ### 🔹 Q16. How do you manage IAM at scale and audit AWS environments?
+### ✅ Answer
+    In large AWS environments, managing IAM manually becomes difficult and error-prone, so I always follow an IAM-as-Code and least-privilege approach.
+
+   For IAM management, I create roles, policies, and permissions using Terraform rather than through the AWS Console. This ensures all access controls are version-controlled, peer-reviewed, 
+   and auditable. Instead of creating IAM users wherever possible, I use IAM Roles and temporary credentials through AWS STS. For cross-account access, I use role assumption rather than sharing credentials.
+
+   For auditing, AWS CloudTrail is the primary service I use. CloudTrail records all API activities such as who created resources, modified Security Groups, deleted infrastructure, or changed IAM policies. 
+   The logs are stored in a centralized S3 bucket with retention policies and encryption enabled.
 
 ---
 
 # 📊 Monitoring & CloudWatch
 
 ### 🔹 Q17. What are CloudWatch Metrics and how do you set up alerts in CloudWatch?
+### ✅ Answer
+    CloudWatch Metrics are time-series data points that help us monitor the health, performance, and utilization of AWS resources. AWS automatically publishes standard metrics 
+    for services like EC2, ALB, RDS, EKS, Lambda, NAT Gateway, and others.
+
+    For example, on EC2 I regularly monitor CPU Utilization, Network In/Out, Disk Operations, and Status Check metrics. For ALBs, I monitor Request Count, 
+    Target Response Time, HTTP 4XX/5XX errors, and Healthy Host Count. These metrics help us proactively identify performance bottlenecks before users are impacted.
+
+    To set up alerts, I create a CloudWatch Alarm on a specific metric and define a threshold. When the threshold is breached for a configured period, the alarm changes state 
+    and triggers an SNS notification, which can send emails, Slack messages, PagerDuty alerts, or even invoke Lambda functions for automated remediation.
 
 ### 🔹 Q18. How do you enable Detailed Monitoring for EC2 instances?
+### ✅ Answer
+     By default, EC2 instances use Basic Monitoring, where metrics are sent to CloudWatch every 5 minutes. If we need faster visibility and quicker alerting, we enable Detailed Monitoring, which publishes metrics every 1 minute.
 
+     We can enable Detailed Monitoring during EC2 instance creation or later through the AWS Console, CLI, Terraform, or CloudFormation. In production environments, I usually enable it on critical application servers,
+     EKS worker nodes, and instances that participate in Auto Scaling, while avoiding unnecessary costs on non-critical systems.
+     For memory and disk metrics, I still need to install and configure the CloudWatch Agent on the EC2 instance.
 ---
 
 # 🖥️ EC2 Administration & Troubleshooting
