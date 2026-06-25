@@ -183,8 +183,6 @@
    For auditing, AWS CloudTrail is the primary service I use. CloudTrail records all API activities such as who created resources, modified Security Groups, deleted infrastructure, or changed IAM policies. 
    The logs are stored in a centralized S3 bucket with retention policies and encryption enabled.
 
----
-
 # 📊 Monitoring & CloudWatch
 
 ### 🔹 Q17. What are CloudWatch Metrics and how do you set up alerts in CloudWatch?
