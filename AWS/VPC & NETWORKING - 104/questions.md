@@ -40,7 +40,14 @@ It reaches a public resource, usually an Application Load Balancer (ALB) or Ngin
 The load balancer then forwards the traffic to targets (private EC2 instances) in a private subnet using their private IPs.
 
 From a routing perspective, the public subnet has a route to the IGW, while the private subnet has no direct internet route. Security groups ensure only the load balancer can access the private instances on required ports (like 80/443 or application ports).
-### 9. What is the role of Internet Gateway and NAT Gateway?  
+### 9. What is the role of Internet Gateway and NAT Gateway? 
+The Internet Gateway (IGW) and NAT Gateway serve different but complementary roles in enabling internet connectivity within a VPC.
+
+The Internet Gateway is used to allow direct inbound and outbound internet access for resources in a public subnet. It acts as a bridge between the VPC and the internet, and resources must have a public or elastic IP along with a route (0.0.0.0/0) pointing to the IGW to communicate externally.
+
+The NAT Gateway, on the other hand, is used to allow outbound-only internet access for resources in private subnets. It is deployed in a public subnet and is associated with an Internet Gateway. Private subnet traffic is routed to the NAT Gateway, which forwards the request to the internet and returns the response, without exposing the private instances to inbound internet traffic.
+
+In production, we use IGW to expose only necessary components like load balancers or bastion hosts, while NAT Gateway ensures backend services in private subnets can still access external services securely. This combination helps maintain a secure, layered architecture with controlled internet exposure.
 
 ---
 
