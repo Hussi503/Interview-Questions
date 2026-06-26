@@ -6,7 +6,7 @@
 ## Capgemini
 
 ### CI/CD Pipeline & Deployment
-#### 1. Explain your CI/CD pipeline architecture.
+### 1. Explain your CI/CD pipeline architecture.
 In my projects, the CI/CD pipeline is designed to be fully automated, scalable, and environment-consistent, primarily using tools like GitHub Actions/Jenkins for CI and Terraform for infrastructure provisioning.
 
 The flow starts when a developer pushes code to a Git repository. The CI stage gets triggered, where we perform code checkout, run unit tests, linting, and security scans (like Snyk or SonarQube). Once validation passes, we build the artifact—for example, a Docker image for container workloads or a ZIP package for Lambda—and push it to a repository like ECR or S3.
