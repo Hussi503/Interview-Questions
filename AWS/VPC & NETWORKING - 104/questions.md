@@ -25,6 +25,13 @@ A private subnet cannot directly access the internet because it doesn’t have a
 
 The flow works like this: the private subnet’s route table points internet-bound traffic (0.0.0.0/0) to the NAT Gateway, and the NAT Gateway, which is associated with an Internet Gateway, forwards the request to the internet. The response is then routed back through the NAT Gateway to the private instance.
 ### 6. How would you connect your VPC to a customer's AWS account privately?  
+To connect a VPC to a customer’s AWS account privately, we typically use VPC Peering or AWS PrivateLink, depending on the use case and scalability needs.
+
+In simple setups, we use VPC Peering, which establishes a direct private connection between two VPCs using AWS’s internal network. Both VPCs exchange routes in their route tables, allowing instances to communicate using private IPs without traversing the internet. However, peering is one-to-one and doesn’t scale well for large environments.
+
+In more secure and scalable production setups, we prefer AWS PrivateLink. Here, the service provider exposes a service via a Network Load Balancer, and the customer connects using an Interface Endpoint in their VPC. This ensures traffic stays completely private, avoids CIDR overlap issues, and provides better control and isolation.
+
+In enterprise scenarios involving multiple VPCs and accounts, we may also use a Transit Gateway to centrally manage connectivity, but for strictly private and controlled cross-account access, PrivateLink is usually the preferred approach.
 ### 8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
 ### 9. What is the role of Internet Gateway and NAT Gateway?  
 
