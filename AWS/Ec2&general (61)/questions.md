@@ -169,23 +169,53 @@ For internet-facing applications behind an ALB, CloudFront, or API Gateway, I wo
 If the requirement is organization-wide and long-term, I would manage the blocking rules through **Terraform or CloudFormation** so the configuration remains permanent, version-controlled, and automatically reapplied during infrastructure changes.
      
 ### 🔹 Q15. When would you use AWS WAF instead of Security Groups?
+
 ### ✅ Answer
-    I use Security Groups for network-level access control, whereas I use AWS WAF for application-layer protection.
 
-    Security Groups operate at Layer 3 and Layer 4 (IP, TCP, UDP) and are mainly used to control which IPs or resources can      access specific ports. 
-    For example, allowing HTTPS traffic on port 443 to an ALB or allowing database access only from application servers.
+I use Security Groups for network-level access control, whereas I use AWS WAF for application-layer protection.
 
-    AWS WAF operates at Layer 7 (HTTP/HTTPS) and can inspect the actual web requests. This allows it to block SQL Injection attacks, Cross-Site Scripting (XSS), malicious bots, 
-    rate-limit requests, geo-block traffic from specific countries, and filter requests based on URLs, headers, cookies, or request patterns.
+Security Groups operate at **Layer 3 and Layer 4 (IP, TCP, UDP)** and are mainly used to control which IPs or resources can access specific ports.  
+For example:
+- Allowing HTTPS traffic on port 443 to an ALB  
+- Allowing database access only from application servers  
+
+AWS WAF operates at **Layer 7 (HTTP/HTTPS)** and can inspect the actual web requests. This allows it to:
+- Block SQL Injection attacks  
+- Prevent Cross-Site Scripting (XSS)  
+- Block malicious bots  
+- Rate-limit requests  
+- Geo-block traffic from specific countries  
+- Filter requests based on URLs, headers, cookies, or request patterns  
+
+---
+
 ### 🔹 Q16. How do you manage IAM at scale and audit AWS environments?
+
 ### ✅ Answer
-    In large AWS environments, managing IAM manually becomes difficult and error-prone, so I always follow an IAM-as-Code and least-privilege approach.
 
-     For IAM management, I create roles, policies, and permissions using Terraform rather than through the AWS Console. This ensures all access controls are version-controlled, peer-reviewed, 
-     and auditable. Instead of creating IAM users wherever possible, I use IAM Roles and temporary credentials through AWS STS. For cross-account access, I use role assumption rather than sharing credentials.
+In large AWS environments, managing IAM manually becomes difficult and error-prone, so I always follow an **IAM-as-Code and least-privilege approach**.
 
-     For auditing, AWS CloudTrail is the primary service I use. CloudTrail records all API activities such as who created resources, modified Security Groups, deleted infrastructure, or changed IAM policies. 
-     The logs are stored in a centralized S3 bucket with retention policies and encryption enabled.
+For IAM management, I create roles, policies, and permissions using **Terraform** rather than through the AWS Console. This ensures all access controls are:
+- Version-controlled  
+- Peer-reviewed  
+- Auditable  
+
+Instead of creating IAM users wherever possible, I use:
+- **IAM Roles**
+- Temporary credentials through **AWS STS**
+
+For cross-account access, I use **role assumption** rather than sharing credentials.
+
+For auditing, **AWS CloudTrail** is the primary service I use. CloudTrail records all API activities such as:
+- Resource creation  
+- Security Group changes  
+- Infrastructure deletion  
+- IAM policy updates  
+
+The logs are stored in a centralized **S3 bucket** with:
+- Retention policies  
+- Encryption enabled  
+``
 
 # 📊 Monitoring & CloudWatch
 
