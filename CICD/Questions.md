@@ -6,7 +6,12 @@
 ## Capgemini
 
 ### CI/CD Pipeline & Deployment
-1. Explain your CI/CD pipeline architecture.
+#### 1. Explain your CI/CD pipeline architecture.
+In my projects, the CI/CD pipeline is designed to be fully automated, scalable, and environment-consistent, primarily using tools like GitHub Actions/Jenkins for CI and Terraform for infrastructure provisioning.
+The flow starts when a developer pushes code to a Git repository. The CI stage gets triggered, where we perform code checkout, run unit tests, linting, and security scans (like Snyk or SonarQube). Once validation passes, we build the artifact—for example, a Docker image for container workloads or a ZIP package for Lambda—and push it to a repository like ECR or S3.
+In the CD stage, we use Infrastructure as Code (Terraform/CloudFormation) to deploy the application. The pipeline updates the infrastructure if needed and deploys the new artifact. For services like Lambda or ECS, we use versioning and deployment strategies like blue-green or rolling deployments to ensure zero downtime.
+We also maintain multiple environments (dev, staging, prod) with separate configurations, and use environment-specific variables or secrets stored in Secrets Manager or Parameter Store. Monitoring is integrated using CloudWatch and alerts, and rollback mechanisms are in place in case of deployment failure.
+Overall, the pipeline ensures faster releases, consistency across environments, minimal manual intervention, and high reliability, which is critical for production-grade DevOps workflows.
 2. How is Jenkins integrated with Kubernetes?
 3. How do you implement automated deployments?
 4. What strategies do you use for deployment rollbacks?
