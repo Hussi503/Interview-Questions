@@ -13,6 +13,12 @@
 # 🔷 VPC Fundamentals
 
 ### 4. What is an internet gateway?  
+An Internet Gateway (IGW) is a highly available and scalable AWS-managed component that enables communication between a VPC
+and the public internet. It acts as a bridge for inbound and outbound internet traffic for resources inside the VPC.
+
+In a production setup, attaching an IGW to a VPC alone is not enough—we must configure route tables to direct traffic (typically 0.0.0.0/0) to the IGW. Only subnets associated with this route are considered public subnets. Additionally, resources like EC2 instances need a public IP or Elastic IP to communicate with the internet.
+
+From a real-world perspective, IGW is used to expose only required components, such as load balancers or bastion hosts.
 ### 5. How can a private subnet access the internet?  
 ### 6. How would you connect your VPC to a customer's AWS account privately?  
 ### 8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
