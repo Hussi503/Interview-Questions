@@ -33,6 +33,13 @@ In more secure and scalable production setups, we prefer AWS PrivateLink. Here, 
 
 In enterprise scenarios involving multiple VPCs and accounts, we may also use a Transit Gateway to centrally manage connectivity, but for strictly private and controlled cross-account access, PrivateLink is usually the preferred approach.
 ### 8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
+In a production setup, traffic from the internet never directly reaches a private EC2 instance
+
+The request comes from the internet through the Internet Gateway (IGW) attached to the VPC.
+It reaches a public resource, usually an Application Load Balancer (ALB) or Nginx/Reverse Proxy, which is placed in a public subnet with a public IP.
+The load balancer then forwards the traffic to targets (private EC2 instances) in a private subnet using their private IPs.
+
+From a routing perspective, the public subnet has a route to the IGW, while the private subnet has no direct internet route. Security groups ensure only the load balancer can access the private instances on required ports (like 80/443 or application ports).
 ### 9. What is the role of Internet Gateway and NAT Gateway?  
 
 ---
