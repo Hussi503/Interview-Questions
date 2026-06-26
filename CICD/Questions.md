@@ -18,8 +18,16 @@ We also maintain multiple environments (dev, staging, prod) with separate config
 Overall, the pipeline ensures faster releases, consistency across environments, minimal manual intervention, and high reliability, which is critical for production-grade DevOps workflows.
 
 2. How is Jenkins integrated with Kubernetes?
-3. How do you implement automated deployments?
-4. What strategies do you use for deployment rollbacks?
+## 3. How do you implement automated deployments?
+In production, automated deployments are implemented through a CI/CD pipeline where deployment is fully triggered based on code changes, removing any manual intervention. Typically, when code is pushed to a repository, the CI stage builds and tests the application, and once it passes, the CD stage automatically deploys it to the target environment.
+
+We use pipeline tools like Jenkins or GitHub Actions, integrated with IaC tools like Terraform or Helm, to ensure consistent and repeatable deployments. For containerized applications, the pipeline builds a Docker image, pushes it to a registry like ECR, and deploys it to Kubernetes using Helm charts or kubectl manifests. For serverless, we deploy using CloudFormation/CDK/Terraform with versioning.
+
+From a production perspective, we never directly deploy to live systems—we implement deployment strategies like blue-green, rolling, or canary releases to ensure zero downtime and minimize risk. We also add approval gates for production, along with automated smoke tests and health checks post-deployment.
+
+Additionally, configurations and secrets are managed externally using Parameter Store or Secrets Manager, ensuring secure deployments across environments. This approach enables fast, reliable, and consistent releases while maintaining high availability and rollback capability.
+
+5. What strategies do you use for deployment rollbacks?
 
 ---
 
