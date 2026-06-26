@@ -3,10 +3,35 @@
 3. What is the correct approach to handle S3 regional outages?
 4. Is S3 globally available or region-specific?
 5. What is the difference between restore and failover in S3?
+ans: The key difference between restore and failover in S3 is in how you handle failures and recovery strategy.
+    👉Restore is a reactive approach — it’s used when data is lost, deleted, or corrupted. For example:
+           Recovering objects using versioning
+           Restoring data from Glacier or Deep Archive
+           Reprocessing data from upstream systems
+     In this case, the system experiences downtime or disruption, and we bring data back after the issue.
+    👉 Failover, on the other hand, is a proactive high-availability strategy. Instead of recovering after failure, we switch to another active or standby system. In S3, this is typically achieved using:
+           Cross-Region Replication (CRR)
+           CloudFront origin failover
+           Route53 failover routing
+     So if the primary region or bucket is unavailable, traffic is automatically redirected to a secondary replicated bucket with minimal downtime.
+
 6. Without S3 versioning, what options are there to restore data?
+ans: If S3 versioning is not enabled, recovery options are very limited, and that’s why in production we always enable versioning by default.
+     In such cases, recovery depends on how the data was originally designed and ingested:
+         👉 First option is external backup or replication — if we had Cross-Region Replication (CRR), downstream data copies (like in another S3 bucket, data lake layer, or warehouse), we can restore from there.
+         👉 Second option is reprocessing from source systems — for example, if the data came from APIs, databases, or streaming systems like Kafka/Kinesis, we can re-run the ingestion pipeline to rebuild the data.
+         👉 Third option is Glacier restore, but only if lifecycle policies had moved older copies to Glacier before deletion. Otherwise, this won’t help.
 7. Can deleted objects be recovered without versioning?
+ans:  No — deleted objects cannot be recovered if versioning is not enabled. Once an object is deleted in a non-versioned 
+      bucket, it is permanently removed, and S3 does not retain any history or backup internally.
 8. Does Cross-Region Replication work without versioning?
+ans: No, Cross-Region Replication (CRR) does NOT work without versioning — it is a mandatory requirement.
+     CRR is fundamentally built on object versioning, because S3 tracks replication at the version level — 
+     every new object, update, or delete marker is treated as a separate version and then replicated to 
+     the destination bucket. Without versioning, S3 has no mechanism to reliably track and replicate changes.
 9. What happens if there is no backup and no replication?
+ans: If there’s no versioning, backup, or replication, then S3 data loss is permanent. In production, this is unacceptable — 
+     we always enforce versioning, replication, and lifecycle policies as baseline safeguards to prevent such irreversible situations
 10. Why is versioning mandatory for production S3 buckets?
 11. What is S3, and what are the different storage classes?
 12. Explain S3 lifecycle policies.
