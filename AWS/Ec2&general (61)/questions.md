@@ -155,17 +155,18 @@
      Security Groups are needed because, by default, we should follow the principle of least privilege, meaning only the required ports and sources should be allowed. 
      Without proper Security Group rules, either the application becomes inaccessible or resources become unnecessarily exposed to the internet, creating security risks.
 ### 🔹 Q14. How will you block a particular CIDR block in AWS permanently?
+
 ### ✅ Answer
-    If I need to permanently block a particular CIDR block in AWS, my preferred approach depends on the scope of the block.
-    For subnet-level blocking, I would use a Network ACL (NACL) because it supports explicit Deny rules. 
-    
-    I can add a rule to deny the specific CIDR range,and the traffic will be blocked before reaching any resource in that  
-    subnet.
-    
-    For internet-facing applications behind an ALB, CloudFront, or API Gateway, I would typically use AWS WAF. WAF allows me     to create IP sets and block malicious IP addresses or CIDR ranges centrally. This is usually the preferred enterprise        approach because it is easier to manage, audit,  and update compared to NACLs.
 
-    If the requirement is organization-wide and long-term, I would manage the blocking rules through Terraform   or              CloudFormation so the configuration remains permanent, version-controlled, and automatically reapplied during                infrastructure changes.
+If I need to permanently block a particular CIDR block in AWS, my preferred approach depends on the scope of the block.
 
+For subnet-level blocking, I would use a **Network ACL (NACL)** because it supports explicit **Deny** rules.
+
+I can add a rule to deny the specific CIDR range, and the traffic will be blocked before reaching any resource in that subnet.
+
+For internet-facing applications behind an ALB, CloudFront, or API Gateway, I would typically use **AWS WAF**. WAF allows me to create **IP sets** and block malicious IP addresses or CIDR ranges centrally. This is usually the preferred enterprise approach because it is easier to manage, audit, and update compared to NACLs.
+
+If the requirement is organization-wide and long-term, I would manage the blocking rules through **Terraform or CloudFormation** so the configuration remains permanent, version-controlled, and automatically reapplied during infrastructure changes.
      
 ### 🔹 Q15. When would you use AWS WAF instead of Security Groups?
 ### ✅ Answer
