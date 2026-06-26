@@ -12,11 +12,11 @@
 
 # 🔷 VPC Fundamentals
 
-4. What is an internet gateway?  
-5. How can a private subnet access the internet?  
-6. How would you connect your VPC to a customer's AWS account privately?  
-8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
-9. What is the role of Internet Gateway and NAT Gateway?  
+## 4. What is an internet gateway?  
+## 5. How can a private subnet access the internet?  
+## 6. How would you connect your VPC to a customer's AWS account privately?  
+## 8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
+## 9. What is the role of Internet Gateway and NAT Gateway?  
 
 ---
 
