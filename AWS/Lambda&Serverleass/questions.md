@@ -8,9 +8,8 @@ For deployments, we follow a CI/CD-based approach instead of manual uploads. The
 
 ## 2. How do you establish a secure connection between Lambda and S3?
 
-In production, security between Lambda and S3 is handled entirely via IAM roles and policies, avoiding hardcoded credentials. We assign an execution role to Lambda with least-privilege access, for example allowing only `s3:GetObject` on a specific bucket or path. The S3 bucket policy can also restrict access to only that Lambda role for additional control.
-
-If the Lambda runs inside a VPC, we use a VPC endpoint for S3 to ensure traffic doesn’t traverse the public internet. For sensitive data, we enforce encryption at rest using SSE-S3 or SSE-KMS and in transit via HTTPS. Additionally, we use IAM condition keys or resource-based policies to tightly control who can access the data. This setup ensures secure, auditable, and compliant communication between Lambda and S3 in real environments.
+in production, a secure connection between Lambda and S3 is established primarily using IAM roles with least-privilege access, not credentials. We attach an execution role to the Lambda function that explicitly allows only required actions like s3:GetObject or s3:PutObject on a specific bucket or prefix, avoiding wildcard permissions. Additionally, we enforce security at the S3 side using bucket policies to allow access only from that Lambda role, ensuring tighter control.
+For network-level security, if Lambda is running inside a VPC, we configure a VPC Gateway Endpoint for S3, so traffic stays within the AWS private network and does not traverse the public internet. From a data protection standpoint, we enable encryption at rest using SSE-S3 or SSE-KMS, and ensure all communication happens over HTTPS for encryption in transit.
 
 ---
 
