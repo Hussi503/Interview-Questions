@@ -12,19 +12,22 @@ in production, a secure connection between Lambda and S3 is established primaril
 
 For network-level security, if Lambda is running inside a VPC, we configure a VPC Gateway Endpoint for S3, so traffic stays within the AWS private network and does not traverse the public internet. From a data protection standpoint, we enable encryption at rest using SSE-S3 or SSE-KMS, and ensure all communication happens over HTTPS for encryption in transit.
 
+In more secure environments, we also use KMS key policies, IAM condition keys, and resource-level restrictions to further lock down access.
+
 ---
 
 ## 3. Explain AWS Lambda functionality and its purpose
 
-Lambda works on an event-driven execution model where the function is triggered by AWS services like API Gateway, S3, DynamoDB streams, or messaging services like SQS/SNS. When an event occurs, Lambda provisions the required runtime, executes the function, and scales automatically based on concurrency. It abstracts away infrastructure management, patching, and scaling concerns.
+AWS Lambda is a serverless compute service that executes code in response to events without requiring infrastructure management. It follows an event-driven model where services like API Gateway, S3, SQS, or DynamoDB trigger the function, and AWS automatically handles provisioning, scaling, and high availability. In production, Lambda works by allocating a runtime environment, executing the function, and scaling horizontally based on the number of incoming events, with concurrency controls and built-in retry mechanisms for resilience.
 
-The primary purpose of Lambda in production is to enable building scalable, loosely coupled architectures. It is heavily used in microservices, automation, real-time processing, and backend APIs. It integrates natively with AWS services, making it ideal for event processing pipelines. However, we optimize its usage by managing cold starts, setting memory/timeouts properly, and handling idempotency and retries to ensure reliability at scale.
+The primary purpose of Lambda is to enable highly scalable, loosely coupled architectures, especially in microservices and event-driven systems. It’s widely used for building backend APIs, real-time data processing, automation tasks, and integrating AWS services. From a DevOps perspective, we focus on optimizing cold starts, configuring memory and timeout properly, and ensuring idempotent design for retries. Combined with native integrations and pay-per-use pricing, Lambda helps reduce operational overhead while maintaining scalability, cost efficiency, and faster time to market in production environments.
 
 ---
 
 ## 4. Do you have exposure to API Gateway and Lambda functions?
 
-Yes, in production we commonly use API Gateway integrated with Lambda to build serverless APIs. API Gateway acts as the entry point, handling request routing, authentication (IAM, Cognito, or JWT), throttling, and caching, while Lambda executes the backend logic.
+Yes, while I haven’t worked on API Gateway and Lambda extensively in a production project, I do have a good understanding of how they integrate and I’ve implemented them in lab and POC setups. Typically, API Gateway acts as the entry point that exposes REST or HTTP endpoints, and it triggers Lambda functions to execute backend logic in a serverless architecture.
 
-In real-time scenarios, we design REST or HTTP APIs where API Gateway triggers Lambda functions for each request. We also configure stages (dev, staging, prod), implement custom authorizers for security, and enable logging via CloudWatch for observability. For deployments, we integrate API Gateway and Lambda into CI/CD pipelines and use stage variables or environment configs to manage environments. This setup allows us to build highly scalable, cost-efficient, and secure APIs without managing backend servers.
-``
+I understand how to configure routes, integrate Lambda as a backend, and secure APIs using mechanisms like IAM roles or JWT-based authentication. I’m also familiar with setting up stages for different environments and enabling logging through CloudWatch for basic debugging and monitoring.
+
+From a DevOps perspective, I know how this setup is deployed using IaC tools like Terraform or CloudFormation, and how CI/CD pipelines automate deployments. Although I haven’t handled this in a live production system yet, I’m comfortable with the concepts and can quickly work on it in real-time environments.
