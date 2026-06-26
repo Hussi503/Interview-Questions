@@ -19,7 +19,11 @@ and the public internet. It acts as a bridge for inbound and outbound internet t
 In a production setup, attaching an IGW to a VPC alone is not enough—we must configure route tables to direct traffic (typically 0.0.0.0/0) to the IGW. Only subnets associated with this route are considered public subnets. Additionally, resources like EC2 instances need a public IP or Elastic IP to communicate with the internet.
 
 From a real-world perspective, IGW is used to expose only required components, such as load balancers or bastion hosts.
-### 5. How can a private subnet access the internet?  
+### 5. How can a private subnet access the internet? 
+
+A private subnet cannot directly access the internet because it doesn’t have a route to an Internet Gateway and its resources don’t have public IPs. In production, we enable outbound internet access using a NAT Gateway (or NAT instance in older setups) placed in a public subnet.
+
+The flow works like this: the private subnet’s route table points internet-bound traffic (0.0.0.0/0) to the NAT Gateway, and the NAT Gateway, which is associated with an Internet Gateway, forwards the request to the internet. The response is then routed back through the NAT Gateway to the private instance.
 ### 6. How would you connect your VPC to a customer's AWS account privately?  
 ### 8. How does traffic flow from the internet to a private EC2 instance in a VPC?  
 ### 9. What is the role of Internet Gateway and NAT Gateway?  
