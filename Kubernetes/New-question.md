@@ -322,10 +322,10 @@ To take a backup, I use a command like:
 
  If etcd becomes corrupted, I restore it using:
 
-**ETCDCTL_API=3 etcdctl snapshot restore etcd-snapshot.db
-**
+**ETCDCTL_API=3 etcdctl snapshot restore etcd-snapshot.db**
+
 After the restore, I update etcd to use the restored data directory, restart the etcd service, and then verify that the API Server, nodes, and workloads are healthy.
----
+
 
 ## Section 4: Services, Ingress & Networking
 11. What is a headless service?
