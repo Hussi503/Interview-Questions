@@ -56,10 +56,67 @@ In real-world use cases, static pods are mainly used for critical control plane 
 A Kubernetes Operator is a custom controller that extends Kubernetes to automate the complete lifecycle of complex applications. It uses Custom Resource Definitions (CRDs) to 
 introduce new resource types into the cluster, and the Operator continuously watches those resources to perform tasks such as installation, configuration, scaling, upgrades, backups, 
 failover, and recovery automatically.
+
+In my projects, I have not developed a custom Operator, but I have worked with Operator-managed applications. For example, we deployed monitoring components using Operators, 
+and the Operator automatically handled version upgrades, configuration reconciliation, and Pod recovery. From a DevOps perspective, my responsibility was deploying the Operator 
+through Helm or manifests, managing RBAC and CRDs, and monitoring its health.
+
 ### 90. What are admission controllers? How have you used them?
-### 102. How does Kubernetes help with reliability?
+In Kubernetes, Admission Controllers act as the last checkpoint before a resource is stored in etcd. When someone runs kubectl apply, the request reaches the API Server, 
+and before Kubernetes creates or updates the resource, admission controllers validate it or even modify it automatically. This is where we enforce organization-wide security
+and compliance policies, so developers don't have to remember every standard manually.
+
+In my projects, we used admission controllers mainly to enforce security and governance. For example, we ensured every pod had CPU and memory requests and limits, 
+blocked privileged containers, prevented pods from running as the root user, and allowed images to be pulled only from our approved private Azure Container Registry. 
+We also enforced mandatory labels like environment, application, and owner, because our monitoring, cost reporting, and deployment automation depended on those labels. 
+If any of these policies were violated, the deployment was rejected immediately before it reached the cluster.
+
+### 102. How does Kubernetes help with reliability
+Kubernetes improves reliability by continuously ensuring that applications stay in their desired state, 
+even when failures happen.
+
+For example, if a pod crashes or a node goes down, Kubernetes automatically detects the failure and 
+recreates the pod on a healthy node without manual intervention. Using Deployments and ReplicaSets, it 
+maintains the required number of running replicas, so the application remains available.
+
+It also uses readiness and liveness probes to ensure only healthy pods receive traffic and automatically 
+restarts unhealthy containers. Services provide built-in load balancing across healthy pods, preventing 
+requests from going to failed instances.
+
+For deployments, Kubernetes supports rolling updates and automatic rollbacks, allowing new versions to be 
+released with minimal downtime. If the new version becomes unhealthy, it can be rolled back quickly.
+
+For scaling, Horizontal Pod Autoscaler (HPA) adds or removes pods based on CPU, memory, or custom metrics, 
+while the Cluster Autoscaler adds or removes worker nodes when needed. This helps the application remain 
+stable during traffic spikes.
+
+In our production environment, we use multiple replicas across different worker nodes, health probes, HPA, 
+rolling updates, and Pod Disruption Budgets. This combination ensures high availability, self-healing, and
+minimal downtime during failures, deployments, or maintenance.
 ### 106. How does Kubernetes manage a large number of Docker containers?
+Kubernetes manages a large number of Docker containers by grouping them into Pods and continuously 
+monitoring their desired state. Instead of managing individual containers manually, we tell Kubernetes how 
+many replicas we need, and it takes care of scheduling, scaling, networking, and recovery automatically.
+
+The Scheduler decides which worker node should run each pod based on available CPU, memory, and 
+scheduling rules. The kubelet on each node ensures the containers are running as expected, and if a 
+container or pod crashes, Kubernetes automatically recreates it. Services provide load balancing across 
+multiple pod replicas, while Deployments handle rolling updates and maintain the required number of pods.
+
+In production, we don't manage containers directly. We define the desired state in YAML files, and 
+Kubernetes continuously ensures that state is maintained, even when nodes fail or traffic increases. This 
+allows us to manage hundreds or even thousands of containers efficiently with minimal manual intervention.
 ### 115. What is the difference between a Pod and a container?
+A container is the smallest unit that runs an application. It contains the application code, runtime, libraries,
+and dependencies needed to run the application.
+
+A Pod is the smallest deployable unit in Kubernetes. A pod acts as a wrapper around one or more containers.
+All containers inside the same pod share the same IP address, network namespace, storage volumes, and 
+lifecycle, allowing them to communicate with each other using localhost.
+
+In production, most pods contain only one container, such as a Java application or an NGINX container. We 
+use multiple containers in the same pod only when they are tightly coupled—for example, an application 
+container with a sidecar container for log collection, monitoring, or service mesh functionality.
 
 ---
 
