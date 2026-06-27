@@ -22,6 +22,24 @@ from the API server and ensures the container is running using the container run
 In real production scenarios, whenever a service IP is accessed, kube-proxy ensures the request is load balanced across healthy pods.
 
 ### 3. What happens internally when you run kubectl apply?
+First, the kubectl client reads the YAML manifest and sends it as a REST request to the kube-apiserver. The API server authenticates the request using credentials,
+then authorizes it using RBAC policies.
+
+Once validated, the API server performs a schema validation and admission control process. Admission controllers may mutate or validate the request—for example injecting defaults, 
+enforcing security policies, or blocking non-compliant deployments.
+
+After that, the API server stores the desired state in etcd, which is the cluster’s source of truth. At this point, the resource is created or updated, but nothing is running yet.
+
+Then the controller-manager detects the new desired state (for example, a Deployment with 3 replicas). It creates or updates ReplicaSets, and ensures the desired number of pods exist. 
+If pods are missing, it triggers creation.
+
+Next, the scheduler picks appropriate worker nodes for unscheduled pods based on available resources, taints/tolerations, affinity rules, and policies. It assigns each pod to a specific node.
+
+After scheduling, the kubelet on each selected node pulls the pod spec from the API server and instructs the container runtime (containerd) to start the containers. 
+It also starts health checks (liveness/readiness probes) and reports status back to the control plane.
+
+Finally, kube-proxy configures networking rules so the service can route traffic to the newly created pods, making them reachable inside the cluster.
+
 87. What is a static pod?
 88. What are Kubernetes operators? Have you used them?
 89. What are admission controllers? How have you used them?
