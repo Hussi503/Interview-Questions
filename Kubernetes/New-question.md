@@ -188,9 +188,10 @@ To avoid this in production, we follow a few best practices:
       Spread StatefulSet replicas across AZs, ensuring each replica gets its own volume in its local AZ.
    ii. If the application requires storage accessible from multiple AZs, use a shared storage solution like Azure Files, 
        AWS EFS, or another ReadWriteMany (RWX) storage instead of zonal block storage.
-94. If a DaemonSet pod is pending, how would you troubleshoot?
-95. Why would a DaemonSet create two pods per node?
-116. What is the difference between a Job and a CronJob?
+       
+### 94. If a DaemonSet pod is pending, how would you troubleshoot?
+### 95. Why would a DaemonSet create two pods per node?
+### 116. What is the difference between a Job and a CronJob?
 
 ---
 
