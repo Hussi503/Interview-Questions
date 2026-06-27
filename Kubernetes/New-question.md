@@ -3,26 +3,25 @@
 ## Section 1: Kubernetes Architecture & Core Components
 ### 1. Explain the architecture of Kubernetes with master and worker node components.
 ### 2. What are the roles of kubelet, kube-apiserver, kube-proxy, etcd, scheduler, and controller manager?
-kube-apiserver is the central control plane entry point. In real environments like AKS or EKS, every operation—whether it’s a deployment from Azure DevOps, kubectl command, 
-or autoscaler action—first goes through the API server. It validates requests, enforces authentication and authorization, and updates the desired state in etcd. So practically, 
-it acts like the “front door and brain coordinator” of the entire cluster.
+**kube-apiserver** is the central control plane entry point.  it first goes through the API server. It validates requests, enforces authentication and authorization, '
+and updates the desired state in etcd. So practically, it acts like the “front door and brain coordinator” of the entire cluster.
 
-etcd is the persistent key-value store that holds the entire cluster state. This includes deployments, pods, config maps, secrets, and node information. In production, etcd is 
+**etcd** is the persistent key-value store that holds the entire cluster state. This includes deployments, pods, config maps, secrets, and node information. In production, etcd is 
 highly critical because it is the single source of truth; if etcd is corrupted or lost, the cluster state is effectively lost, even if workloads are still running temporarily.
 
-kube-scheduler is responsible for deciding where a pod should run. When a new pod is created, it doesn’t have a node assigned. The scheduler evaluates available worker nodes based on CPU,
+**kube-scheduler** is responsible for deciding where a pod should run. When a new pod is created, it doesn’t have a node assigned. The scheduler evaluates available worker nodes based on CPU,
 memory, taints/tolerations, affinity rules, and assigns the best-fit node. In real production clusters, this is key for workload distribution and performance optimization.
 
-kubelet runs on every worker node and is responsible for the actual execution of workloads. Once the scheduler assigns a pod to a node, the kubelet pulls the pod specification 
-from the API server and ensures the container is running using the container runtime like containerd. It also continuously performs health checks and reports pod and node status back to the control plane.
-
-kube-proxy handles the networking layer inside the cluster. It maintains network rules using iptables or IPVS so that Kubernetes Services can route traffic correctly to backend pods.
-In real production scenarios, whenever a service IP is accessed, kube-proxy ensures the request is load balanced across healthy pods.
-
-controller-manager runs all the control loops that continuously reconcile the desired state with the actual state. For example, if a deployment expects 3 replicas and one pod crashes, 
+**controller-manager** runs all the control loops that continuously reconcile the desired state with the actual state. For example, if a deployment expects 3 replicas and one pod crashes, 
 the controller manager detects the mismatch and recreates the pod automatically. It includes controllers like Deployment, ReplicaSet, Node, and Job controllers.
 
-3. What happens internally when you run kubectl apply?
+**kubelet** runs on every worker node and is responsible for the actual execution of workloads. Once the scheduler assigns a pod to a node, the kubelet pulls the pod specification 
+from the API server and ensures the container is running using the container runtime like containerd. It also continuously performs health checks and reports pod and node status back to the control plane.
+
+**kube-proxy** handles the networking layer inside the cluster. It maintains network rules using iptables or IPVS so that Kubernetes Services can route traffic correctly to backend pods.
+In real production scenarios, whenever a service IP is accessed, kube-proxy ensures the request is load balanced across healthy pods.
+
+### 3. What happens internally when you run kubectl apply?
 87. What is a static pod?
 88. What are Kubernetes operators? Have you used them?
 89. What are admission controllers? How have you used them?
