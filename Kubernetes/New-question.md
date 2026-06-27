@@ -159,8 +159,35 @@ it keeps the same identity and data.
 log collectors (Fluent Bit), monitoring agents (Node Exporter), and networking plugins (Calico). When a new node 
 joins the cluster, Kubernetes automatically schedules a DaemonSet Pod on it.
 
-9. Can you attach a volume to a Deployment?
-10. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+### 9. Can you attach a volume to a Deployment?
+Yes, absolutely. A Deployment itself doesn't directly store data, but the Pods created by the Deployment can mount volumes.
+In production, we commonly attach volumes to Deployments for applications that need persistent or shared storage.
+
+For example, if I'm deploying a web application that needs to store uploaded files or read shared configuration files,
+I define a PersistentVolumeClaim (PVC) in the Pod template of the Deployment. Kubernetes then mounts the storage into every Pod. 
+The actual storage can come from Azure Disk, Azure Files, AWS EBS, EFS, NFS, or any CSI-supported storage.
+
+However, there's an important consideration. If the Deployment has multiple replicas, I need to choose the storage type carefully. 
+For Azure Disk or AWS EBS, a volume can generally be attached to only one node at a time (ReadWriteOnce), so it's suitable when only 
+one Pod needs to write. If multiple Pods across different nodes need to read and write the same data, I use a shared filesystem like 
+Azure Files or AWS EFS, which supports ReadWriteMany.
+
+### 10. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+One of the most common reasons is the Persistent Volume (PV) is tied to a specific Availability Zone (AZ). In production, 
+if a StatefulSet pod is using storage like Azure Managed Disk or AWS EBS, the disk is created in a particular AZ and 
+cannot be attached to a node in another AZ.
+
+For example, suppose my StatefulSet pod is running in AZ-1 with an Azure Disk attached. If the node fails and Kubernetes 
+tries to reschedule that pod to a node in AZ-2, the scheduler cannot attach the same disk because it's zonal storage. 
+As a result, the pod remains in the Pending state, and you'll typically see events like "volume node affinity conflict" 
+or "failed to attach volume".
+
+To avoid this in production, we follow a few best practices:
+
+   i. Use a StorageClass with WaitForFirstConsumer, so Kubernetes provisions the volume in the same AZ where the pod is scheduled.
+      Spread StatefulSet replicas across AZs, ensuring each replica gets its own volume in its local AZ.
+   ii. If the application requires storage accessible from multiple AZs, use a shared storage solution like Azure Files, 
+       AWS EFS, or another ReadWriteMany (RWX) storage instead of zonal block storage.
 94. If a DaemonSet pod is pending, how would you troubleshoot?
 95. Why would a DaemonSet create two pods per node?
 116. What is the difference between a Job and a CronJob?
