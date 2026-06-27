@@ -40,12 +40,26 @@ It also starts health checks (liveness/readiness probes) and reports status back
 
 Finally, kube-proxy configures networking rules so the service can route traffic to the newly created pods, making them reachable inside the cluster.
 
-87. What is a static pod?
-88. What are Kubernetes operators? Have you used them?
-89. What are admission controllers? How have you used them?
-102. How does Kubernetes help with reliability?
-106. How does Kubernetes manage a large number of Docker containers?
-115. What is the difference between a Pod and a container?
+### 87. What is a static pod?
+**A static pod is a pod that is directly managed by the kubelet on a specific node instead of being managed by the Kubernetes API server or controllers**
+In a production Kubernetes cluster, most pods are created through the API server and managed via Deployments, ReplicaSets, or StatefulSets.
+However, static pods are different—they are defined locally on each node in a directory like /etc/kubernetes/manifests.
+A static pod is a pod that is directly managed by the kubelet on a specific node instead of being managed by the Kubernetes API server or controllers.”
+
+In a production Kubernetes cluster, most pods are created through the API server and managed via Deployments, ReplicaSets, or StatefulSets. However, 
+static pods are different—they are defined locally on each node in a directory like /etc/kubernetes/manifests.
+
+In real-world use cases, static pods are mainly used for critical control plane components in self-managed clusters, such as API server, controller manager, and scheduler.
+
+**So in simple terms, static pods are node-level pods managed directly by kubelet, mainly used for system or control plane components, and they bypass the Kubernetes scheduler.**
+### 89. What are Kubernetes operators? Have you used them?
+A Kubernetes Operator is a custom controller that extends Kubernetes to automate the complete lifecycle of complex applications. It uses Custom Resource Definitions (CRDs) to 
+introduce new resource types into the cluster, and the Operator continuously watches those resources to perform tasks such as installation, configuration, scaling, upgrades, backups, 
+failover, and recovery automatically.
+### 90. What are admission controllers? How have you used them?
+### 102. How does Kubernetes help with reliability?
+### 106. How does Kubernetes manage a large number of Docker containers?
+### 115. What is the difference between a Pod and a container?
 
 ---
 
