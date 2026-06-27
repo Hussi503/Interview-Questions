@@ -1,0 +1,7 @@
+1. what is probes and how define?
+2. how azure devops connected aks?
+3. how yo scale the pods?
+4. how many containers in single pod? what is the use of side car ontainer? how it reflected?
+5. pod to pod communcation? is that secure?
+6. how one aks cluster is connected with another aks cluster in other account?
+
