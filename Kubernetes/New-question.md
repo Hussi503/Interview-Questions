@@ -122,38 +122,43 @@ container with a sidecar container for log collection, monitoring, or service me
 
 ## Section 2: Workload Controllers
 ### 4. What is the difference between a Deployment and a StatefulSet?
-    The main difference is that Deployment is used for stateless applications, while StatefulSet is used for
-    stateful applications that need stable identities and persistent storage.
+The main difference is that Deployment is used for stateless applications, while StatefulSet is used for
+stateful applications that need stable identities and persistent storage.
 
-    A Deployment creates identical pods that are interchangeable. If a pod fails, Kubernetes creates a new one
-    with a different name, and any local data is lost unless external storage is used. Deployments are ideal for
-    applications like web servers, APIs, and microservices.
+A Deployment creates identical pods that are interchangeable. If a pod fails, Kubernetes creates a new one
+with a different name, and any local data is lost unless external storage is used. Deployments are ideal for
+applications like web servers, APIs, and microservices.
 
-    A StatefulSet gives each pod a stable identity, including a fixed pod name (like mysql-0, mysql-1) and 
-    its own persistent volume. Even if a pod is recreated, it keeps the same name and reconnects to the same
-    storage. StatefulSets also start and stop pods in a specific order, which is important for databases and 
-    clustered applications.
+ A StatefulSet gives each pod a stable identity, including a fixed pod name (like mysql-0, mysql-1) and 
+its own persistent volume. Even if a pod is recreated, it keeps the same name and reconnects to the same
+storage. StatefulSets also start and stop pods in a specific order, which is important for databases and 
+clustered applications.
 ### 6. What is a DaemonSet? Give examples.
-    A DaemonSet ensures that one copy of a pod runs on every worker node, making it ideal for node-level services 
-    like log collection, monitoring, networking, and security agents.
+A DaemonSet ensures that one copy of a pod runs on every worker node, making it ideal for node-level services 
+like log collection, monitoring, networking, and security agents.
 ### 7. What is the difference between a ReplicaSet and a Deployment?
 ### 8. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
 
-**Pod** is the smallest deployable unit in Kubernetes. It contains one or more containers that share the 
-same network and storage. In production, we rarely create Pods directly because if a Pod fails, 
+ **Pod** is the smallest deployable unit in Kubernetes. It contains one or more containers that share the 
+  same network and storage. In production, we rarely create Pods directly because if a Pod fails, 
 **Kubernetes** won't recreate it automatically.
+
 **ReplicaSet** ensures that a specified number of identical Pods are always running. If one Pod crashes, it 
 creates a new one. However, ReplicaSets are usually not created directly. They are automatically 
 managed by a Deployment.
+
 **Deployment** is what we use for most stateless applications like APIs, web applications, and microservices. 
 It manages ReplicaSets and provides rolling updates, rollbacks, scaling, and self-healing. In production,
 almost all application workloads are deployed using Deployments.
+
 **StatefulSet** is used for stateful applications such as MySQL, PostgreSQL, MongoDB, Kafka, or Elasticsearch.
 Each Pod gets a stable hostname, stable network identity, and its own persistent storage. Even if a Pod is recreated, 
 it keeps the same identity and data.
+
 **DaemonSet** ensures that one Pod runs on every worker node. It's mainly used for node-level services like 
 log collectors (Fluent Bit), monitoring agents (Node Exporter), and networking plugins (Calico). When a new node 
 joins the cluster, Kubernetes automatically schedules a DaemonSet Pod on it.
+
 9. Can you attach a volume to a Deployment?
 10. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
 94. If a DaemonSet pod is pending, how would you troubleshoot?
