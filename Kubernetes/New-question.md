@@ -190,8 +190,52 @@ To avoid this in production, we follow a few best practices:
        AWS EFS, or another ReadWriteMany (RWX) storage instead of zonal block storage.
        
 ### 94. If a DaemonSet pod is pending, how would you troubleshoot?
+If a DaemonSet pod is stuck in the Pending state, I start by checking why the scheduler couldn't place it on 
+the node rather than guessing.
+
+My first step is to run kubectl describe pod <pod-name> and look at the Events section. In production, this
+usually tells me the exact reason, such as insufficient CPU or memory, node selector mismatch, taints without
+matching tolerations, or volume-related issues.
+
+Next, I verify whether the target node is Ready using kubectl get nodes. If the node is NotReady or under 
+resource pressure, the DaemonSet pod won't be scheduled there. I also check if the DaemonSet has a 
+nodeSelector, nodeAffinity, or tolerations configured correctly. I've seen cases where a node label changed 
+after a cluster upgrade, and the DaemonSet stopped scheduling because no nodes matched the selector.
+
+If the DaemonSet uses a Persistent Volume, I verify whether the storage can actually be attached to that
+node. I also check resource availability using kubectl describe node to see if CPU, memory, or pod limits
+have been exhausted.
+
+In one production incident, our log collection DaemonSet stopped scheduling on newly added nodes 
+because those nodes had a new taint, and the DaemonSet didn't have the corresponding toleration. 
+After updating the DaemonSet with the required toleration, the pods were scheduled immediately.
+
 ### 95. Why would a DaemonSet create two pods per node?
+Under normal circumstances, a DaemonSet should create only one pod per eligible node. If I see two 
+DaemonSet pods on the same node, I immediately investigate because it's usually due to a configuration or
+rollout issue rather than expected behavior.
+
+The first thing I check is whether there are multiple DaemonSets deploying the same application. I've seen
+cases where an old DaemonSet wasn't deleted after a migration, and both DaemonSets were targeting the 
+same nodes, resulting in two pods per node.
+
+Another possibility is a rolling update. During a DaemonSet upgrade, Kubernetes may temporarily run both 
+the old and new pod on the same node depending on the update strategy (especially with maxSurge, which
+is supported for DaemonSets in newer Kubernetes versions). Once the new pod becomes healthy, the old 
+one is terminated, so this is expected and temporary.
 ### 116. What is the difference between a Job and a CronJob?
+A **Job** is used to run a task only once until it completes successfully. Kubernetes ensures the task finishes, 
+and if the pod fails, it automatically retries based on the Job configuration. We typically use Jobs for one
+-time activities like database migrations, data imports, application initialization, or backup restoration.
+
+A **CronJob**, on the other hand, is used to run the same Job on a schedule, similar to a Linux cron. Instead of
+manually triggering it, Kubernetes automatically creates a new Job at the specified time. We use CronJobs for 
+recurring tasks like nightly database backups, log cleanup, report generation, certificate renewal scripts, or cache cleanup.
+
+In one of my production environments, we used a Job during every application release to execute database schema migrations before 
+deploying the new application version. Separately, we had a CronJob that ran every night to clean old application logs and upload 
+database backups to cloud storage. This kept our deployment process automated while ensuring regular maintenance tasks happened 
+without manual intervention.
 
 ---
 
