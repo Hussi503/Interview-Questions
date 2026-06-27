@@ -289,7 +289,7 @@ I run database migrations as a separate Kubernetes Job or CI/CD pipeline stage b
 with backups, backward-compatible changes, and deployment gates so the application is updated only after the 
 database migration succeeds.
 
-80. What happens if etcd is corrupted? How do you recover?
+### 80. What happens if etcd is corrupted? How do you recover?
 etcd is the brain of the Kubernetes cluster. It stores the entire cluster state, including Pods, Deployments,
 Services, ConfigMaps, Secrets, RBAC, and node information. If etcd becomes corrupted or unavailable, the
 Kubernetes API Server cannot read or write the cluster state. As a result, you won't be able to create, update,
