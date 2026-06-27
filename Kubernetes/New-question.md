@@ -240,14 +240,91 @@ without manual intervention.
 ---
 
 ## Section 3: Storage
-10. How do PV and PVC behave across zones?
-117. What is the difference between a PV and PVC?
-118. What is the difference between a StorageClass and a PV?
-12. What is a Pod Disruption Budget (PDB)?
-52. How do you handle database migrations safely in Kubernetes?
-80. What happens if etcd is corrupted? How do you recover?
-82. How do you backup and restore etcd?
+### 10. How do PV and PVC behave across zones?
+The behavior of Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) across Availability Zones
+depends on the type of storage backend being used.
 
+In production, if the PVC is backed by Azure Managed Disk or AWS EBS, the volume is zonal. That means
+the PV is created in a specific Availability Zone and can only be attached to worker nodes in that same zone. 
+If Kubernetes tries to schedule the pod in another AZ, the volume cannot be attached, and the pod stays in 
+the Pending state with errors like "volume node affinity conflict" or "failed to attach volume."
+
+To avoid this, we use a StorageClass with volumeBindingMode: WaitForFirstConsumer. This ensures
+Kubernetes first decides which node the pod will run on, and only then provisions the disk in that node's
+Availability Zone.
+
+If the application needs to be accessible from multiple AZs, we don't use zonal block storage. Instead, we 
+use shared storage like Azure Files or AWS EFS, which supports ReadWriteMany (RWX). In that case, pods 
+running in different AZs can mount the same storage simultaneously. 
+
+### 117. What is the difference between a PV and PVC?
+Persistent Volume (**PV**) is the actual storage available in the Kubernetes cluster.
+Persistent Volume Claim (**PVC**) is a request for that storage made by an application.
+
+In production, developers never directly use a PV. They create a PVC by specifying the required size, access 
+mode, and StorageClass. Kubernetes then dynamically provisions a PV using the configured storage
+backend, such as Azure Managed Disk, Azure Files, AWS EBS, or AWS EFS, and binds it to the PVC. The
+application pod simply mounts the PVC and doesn't need to know where the storage actually resides.
+
+### 118. What is the difference between a StorageClass and a PV?
+A StorageClass is a template or blueprint that tells Kubernetes how to create storage. It defines things like 
+the storage provisioner (Azure Disk, Azure Files, AWS EBS, AWS EFS), disk type (SSD/HDD), reclaim policy,
+volume binding mode, and other storage parameters. It does not provide storage by itself.
+
+A Persistent Volume (PV) is the actual storage resource that gets created. It could be an Azure Managed Disk,
+Azure Files share, AWS EBS volume, or NFS share. This is what ultimately stores the application's data.
+
+12. What is a Pod Disruption Budget (PDB)?
+A Pod Disruption Budget (PDB) is used to protect application availability during voluntary disruptions in
+Kubernetes. It tells Kubernetes the minimum number of pods that must remain available or the maximum
+number of pods that can be unavailable during operations like node draining, cluster upgrades, or cluster
+autoscaler scale-down.
+
+For example, if my application has 5 replicas, I can configure a PDB with minAvailable: 4 or 
+maxUnavailable: 1. This means Kubernetes will never voluntarily evict more than one pod at a time. As a
+result, even during maintenance or upgrades, the application continues serving traffic without significant
+downtime.
+### 52. How do you handle database migrations safely in Kubernetes?
+I run database migrations as a separate Kubernetes Job or CI/CD pipeline stage before deploying the application,
+with backups, backward-compatible changes, and deployment gates so the application is updated only after the 
+database migration succeeds.
+
+80. What happens if etcd is corrupted? How do you recover?
+etcd is the brain of the Kubernetes cluster. It stores the entire cluster state, including Pods, Deployments,
+Services, ConfigMaps, Secrets, RBAC, and node information. If etcd becomes corrupted or unavailable, the
+Kubernetes API Server cannot read or write the cluster state. As a result, you won't be able to create, update,
+ or delete Kubernetes resources. Existing application pods may continue running for some time, but cluster
+management operations stop.
+
+In production, the recovery approach depends on whether it's a managed Kubernetes service or a self-managed cluster.
+
+For AKS, EKS, or GKE, etcd is fully managed by the cloud provider, so I don't have direct access to it. If there's an
+etcd issue, I rely on the cloud provider's control plane recovery mechanisms and open a support case if required.
+
+For a self-managed Kubernetes cluster, we regularly take etcd snapshots. If etcd gets corrupted, I stop the API Server, 
+restore the latest healthy snapshot using etcdctl snapshot restore, replace the corrupted data directory with the restored
+one, and restart the etcd and control plane components. After recovery, I verify the cluster health by checking nodes,
+workloads, and application functionality.
+
+82. How do you backup and restore etcd?
+In a self-managed Kubernetes cluster, I back up etcd by taking regular snapshots using etcdctl. Since etcd
+contains the entire cluster state, these backups are critical for disaster recovery. After taking the snapshot, I
+ store it in a secure location such as remote storage or object storage and periodically verify that it can be
+restored.
+
+To take a backup, I use a command like:
+
+**ETCDCTL_API=3 etcdctl snapshot save etcd-snapshot.db \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=ca.crt \
+  --cert=server.crt \
+  --key=server.key**
+
+ If etcd becomes corrupted, I restore it using:
+
+**ETCDCTL_API=3 etcdctl snapshot restore etcd-snapshot.db
+**
+After the restore, I update etcd to use the restored data directory, restart the etcd service, and then verify that the API Server, nodes, and workloads are healthy.
 ---
 
 ## Section 4: Services, Ingress & Networking
