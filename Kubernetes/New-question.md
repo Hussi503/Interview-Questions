@@ -568,13 +568,72 @@ spec:
 | `alb.ingress.kubernetes.io/listen-ports` | Configures the ALB to listen on port 443. |
 | `alb.ingress.kubernetes.io/ssl-redirect` | Redirects HTTP traffic to HTTPS. |
 | `spec.ingressClassName` | Specifies the IngressClass (`alb`) to handle this Ingress. |
+
+When I apply this manifest:
+
+**kubectl apply -f ingress.yaml**
+
+The AWS Load Balancer Controller detects the Ingress, configures the ALB HTTPS listener, attaches the ACM certificate, and optionally creates an HTTP listener that redirects traffic to HTTPS.
  
-28. What type of load balancer is created when using Ingress in EKS?
-29. Where will you mention the load balancer type in ingress YAML?
-30. How does kube-proxy work?
-31. How does service discovery work with CoreDNS?
-32. Explain the Kubernetes networking model.
-33. How do you restrict pod-to-pod communication using Network Policies?
+### 28. What type of load balancer is created when using Ingress in EKS?
+When using Ingress in EKS, the type of load balancer depends on the Ingress Controller you're using.
+
+1. AWS Load Balancer Controller (Most Common in Production)
+
+If you're using the AWS Load Balancer Controller, Kubernetes automatically creates an Application Load Balancer (ALB).
+
+Why ALB?
+
+  Ingress operates at Layer 7 (HTTP/HTTPS).
+  ALB supports:
+  Host-based routing
+  Path-based routing
+  SSL/TLS termination
+  HTTP to HTTPS redirection
+  Integration with AWS Certificate Manager (ACM)
+  AWS WAF integration
+
+  Internet
+     │
+Route53
+     │
+Application Load Balancer (ALB)
+     │
+AWS Load Balancer Controller
+     │
+ClusterIP Services
+     │
+   Pods  
+
+2. NGINX Ingress Controller
+
+If you're using NGINX Ingress Controller, Kubernetes does not create an ALB automatically.
+
+Instead:
+
+    You expose the NGINX Ingress Controller using a Service of type LoadBalancer.
+    AWS provisions a Network Load Balancer (NLB) by default (or a Classic Load Balancer in older setups, depending on annotations and Kubernetes version).
+    The NLB forwards traffic to the NGINX Ingress Controller, which then performs Layer 7 routing.
+
+Architecture:
+Internet
+     │
+Network Load Balancer (NLB)
+     │
+NGINX Ingress Controller
+     │
+ClusterIP Services
+     │
+Pods
+   
+
+      
+ 
+30. Where will you mention the load balancer type in ingress YAML?
+31. How does kube-proxy work?
+32. How does service discovery work with CoreDNS?
+33. Explain the Kubernetes networking model.
+34. How do you restrict pod-to-pod communication using Network Policies?
 72. Service reachable internally but not externally.
 73. NodePort not accessible.
 74. Ingress returns 502.
