@@ -328,8 +328,66 @@ After the restore, I update etcd to use the restored data directory, restart the
 
 
 ## Section 4: Services, Ingress & Networking
-11. What is a headless service?
-22. What are the different Service types?
+### 11. What is a headless service?
+A Headless Service is a Kubernetes Service created by setting clusterIP: None. Unlike a normal Service, it 
+does not allocate a virtual ClusterIP and does not perform load balancing. Instead, when a client performs
+a DNS lookup, Kubernetes returns the IP addresses of all matching Pods directly.
+
+We primarily use Headless Services with StatefulSets, where each Pod requires a stable network identity. For 
+example, in databases like MongoDB, Cassandra, Kafka, Elasticsearch, or Redis Cluster, each node needs to 
+communicate with a specific peer rather than through a load balancer.
+    
+### 22. What are the different Service types?
+**1. ClusterIP (Default)**
+ClusterIP exposes the application only within the Kubernetes cluster. Kubernetes assigns a virtual IP,
+and kube-proxy load balances traffic across healthy Pods behind the Service. This is the most commonly used
+Service type for internal microservice communication. For example, if a Payment service needs to call an
+Order service, it uses a ClusterIP Service.
+
+**spec:
+  type: ClusterIP**
+
+**2. NodePort**
+NodePort exposes the application on a static port (30000–32767) on every worker node. Traffic sent to
+<NodeIP>:NodePort is forwarded to the Service and then to a backend Pod. It's mainly useful for
+development, testing, or environments without a cloud load balancer. In production, it's rarely exposed
+directly because it has security and scalability limitations.
+
+**spec:
+  type: NodePort**
+
+**Example:
+
+http://192.168.1.20:30080**
+
+**3. LoadBalance**r
+LoadBalancer is commonly used in cloud environments such as Azure AKS, AWS EKS, or Google GKE. When 
+you create this Service, Kubernetes asks the cloud provider to provision an external load balancer with a
+public IP, which forwards traffic to the worker nodes and then to the Pods. This is the standard way to 
+expose public-facing applications.
+
+**spec:
+  type: LoadBalancer**
+
+Flow:
+
+Internet
+    ↓
+Azure Load Balancer / AWS ELB
+    ↓
+Worker Nodes
+    ↓
+Pods
+
+**4. ExternalName**
+ExternalName doesn't create a proxy or allocate a ClusterIP. Instead, it maps the Service name to an external
+DNS name using a CNAME record. This is useful when applications inside Kubernetes need to access an external 
+service without changing application configuration.
+
+**spec:
+  type: ExternalName
+  externalName: db.company.com**
+  
 23. What is the difference between Ingress and LoadBalancer?
 24. How does Ingress work?
 25. How will you manage SSL certificates for ALB in EKS?
