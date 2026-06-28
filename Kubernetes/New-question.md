@@ -388,15 +388,193 @@ service without changing application configuration.
   type: ExternalName
   externalName: db.company.com**
   
-23. What is the difference between Ingress and LoadBalancer?
-24. How does Ingress work?
-25. How will you manage SSL certificates for ALB in EKS?
-26. What type of load balancer is created when using Ingress in EKS?
-27. Where will you mention the load balancer type in ingress YAML?
-28. How does kube-proxy work?
-29. How does service discovery work with CoreDNS?
-30. Explain the Kubernetes networking model.
-31. How do you restrict pod-to-pod communication using Network Policies?
+### 23. What is the difference between Ingress and LoadBalancer?
+ The main difference is that a LoadBalancer Service exposes a single Kubernetes Service externally, whereas
+ Ingress provides Layer 7 (HTTP/HTTPS) routing and can expose multiple Services through a single 
+ external Load Balancer.
+
+In production, we almost never create a separate LoadBalancer for every microservice because it increases 
+cost and becomes difficult to manage. Instead, we deploy an Ingress Controller (such as NGINX Ingress 
+Controller or cloud-native controllers), expose only the Ingress Controller using a LoadBalancer Service,
+and let the Ingress resource route traffic to the appropriate backend Services based on the hostname or URL 
+path.
+
+| LoadBalancer                   | Ingress                                     |
+| ------------------------------ | ------------------------------------------- |
+| Exposes one Service externally | Routes traffic to multiple Services         |
+| Layer 4 (TCP/UDP)              | Layer 7 (HTTP/HTTPS)                        |
+| Gets its own external IP       | Shares one external IP across many Services |
+| No path or host-based routing  | Supports host and path-based routing        |
+| No built-in SSL termination    | Supports SSL termination and TLS            |
+| Higher cost if many Services   | More cost-effective for many web services   |
+
+### 25. How does Ingress work?
+Ingress itself doesn't handle traffic. It is simply a set of routing rules. The actual traffic handling is done by 
+an Ingress Controller such as NGINX Ingress Controller, Azure Application Gateway Ingress Controller
+(AGIC), or Traefik.
+                     Internet
+                        │
+                 Public IP Address
+                        │
+            Azure Load Balancer (Service Type=LoadBalancer)
+                        │
+             NGINX Ingress Controller Pods
+                        │
+        Reads Ingress rules from Kubernetes API
+                        │
+        ┌───────────────┼────────────────┐
+        │               │                │
+    frontend        order-service    payment-service
+    (ClusterIP)      (ClusterIP)       (ClusterIP)
+        │               │                │
+      Pods            Pods             Pods
+
+**Step-by-Step Flow**
+**Step 1**: User sends a request
+https://shop.company.com/orders
+
+The request first reaches the public IP of the Kubernetes cluster.
+
+**Step 2**: Azure Load Balancer receives the request
+
+The LoadBalancer Service exposes the NGINX Ingress Controller.
+
+                         Internet
+                            │
+                     Azure Load Balancer
+                            │
+                   NGINX Ingress Controller
+
+Notice that the Load Balancer doesn't know about your applications. It only forwards traffic to the Ingress Controller Pods.
+
+**Step 3**: Ingress Controller receives the request
+
+The Ingress Controller continuously watches the Kubernetes API Server.
+
+Whenever you create or update an Ingress resource like:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+spec:
+  rules:
+  - host: shop.company.com
+    http:
+      paths:
+      - path: /orders
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 80
+
+The controller immediately updates its routing configuration.
+
+**Step 4**: Route Matching
+
+           NGINX checks:
+
+                    Hostname
+                    URL Path
+                    TLS Configuration
+
+           Example:
+
+                 shop.company.com/
+                        ↓
+                 Frontend Service
+
+               shop.company.com/orders
+                        ↓
+                    Order Service
+
+                shop.company.com/payment
+                         ↓
+                    Payment Service
+**Step 5**: Forward to ClusterIP Service
+
+The request is forwarded to the corresponding ClusterIP Service.
+
+Ingress Controller
+        │
+        ▼
+Order Service (ClusterIP)
+**Step 6**: kube-proxy Load Balances
+
+The ClusterIP Service selects one of the healthy Pods.
+
+               Order Service
+                     │
+                ┌────┴─────┐
+                │          │
+               Pod-1    Pod-2
+
+kube-proxy distributes traffic to an available Pod.
+
+
+**step 3: eks
+
+| Step                                                    | AKS (Azure)                                                                    | EKS (AWS)                                                                                  |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **1. User Request**                                     | User hits `https://shop.company.com`                                           | Same                                                                                       |
+| **2. DNS**                                              | Azure DNS/Public DNS → Azure Load Balancer                                     | Route 53/Public DNS → AWS ALB                                                              |
+| **3. Who watches Ingress?**                             | NGINX Ingress Controller (or AGIC if using Application Gateway)                | AWS Load Balancer Controller (or NGINX Ingress Controller)                                 |
+| **4. What happens after `kubectl apply ingress.yaml`?** | NGINX updates its routing configuration (`nginx.conf`)                         | AWS Load Balancer Controller calls AWS APIs to create/update ALB, listeners, target groups |
+| **5. External Load Balancer**                           | Azure Load Balancer already exists because the NGINX Service is `LoadBalancer` | ALB can be created automatically from the Ingress (AWS-native approach)                    |
+| **6. Routing**                                          | NGINX routes traffic to ClusterIP Services                                     | ALB listener rules (or NGINX if using NGINX Ingress) route traffic to Services             |
+| **7. Service**                                          | ClusterIP                                                                      | ClusterIP                                                                                  |
+| **8. Pod Selection**                                    | kube-proxy selects a healthy Pod                                               | kube-proxy selects a healthy Pod                                                           |
+
+
+      
+
+### 26. How will you manage SSL certificates for ALB in EKS?
+In EKS, I manage SSL certificates using AWS Certificate Manager (ACM) and the AWS Load Balancer 
+Controller. This is the AWS-recommended approach because ACM handles certificate lifecycle, including renewals, 
+and the controller automatically attaches the certificate to the Application Load Balancer (ALB).
+
+The process is:
+
+  i .Request or import the certificate into ACM.
+               If the domain is managed in Route 53, DNS validation is straightforward.
+               For external DNS providers, add the required CNAME records for validation.
+  ii. Install the AWS Load Balancer Controller in the EKS cluster with the appropriate IAM permissions
+     (using IAM Roles for Service Accounts is the recommended practice).
+  iii. Reference the ACM certificate in the Ingress using annotations.
+                  ## AWS ALB Ingress Example
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:region:account:certificate/xxxxxxxx
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+spec:
+  ingressClassName: alb
+```
+
+### Explanation
+
+| Field | Purpose |
+|-------|---------|
+| `apiVersion` | Kubernetes API version for the Ingress resource. |
+| `kind` | Specifies that this resource is an Ingress. |
+| `metadata.name` | Name of the Ingress object. |
+| `kubernetes.io/ingress.class` | Tells Kubernetes to use the AWS ALB Ingress Controller. |
+| `alb.ingress.kubernetes.io/certificate-arn` | ACM certificate ARN used for HTTPS. |
+| `alb.ingress.kubernetes.io/listen-ports` | Configures the ALB to listen on port 443. |
+| `alb.ingress.kubernetes.io/ssl-redirect` | Redirects HTTP traffic to HTTPS. |
+| `spec.ingressClassName` | Specifies the IngressClass (`alb`) to handle this Ingress. |
+ 
+28. What type of load balancer is created when using Ingress in EKS?
+29. Where will you mention the load balancer type in ingress YAML?
+30. How does kube-proxy work?
+31. How does service discovery work with CoreDNS?
+32. Explain the Kubernetes networking model.
+33. How do you restrict pod-to-pod communication using Network Policies?
 72. Service reachable internally but not externally.
 73. NodePort not accessible.
 74. Ingress returns 502.
