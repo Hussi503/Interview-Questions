@@ -795,6 +795,24 @@ Here's what happens internally:
 - kube-proxy uses its iptables/IPVS rules to load balance the request to one of the healthy payment Pods.
 - If Pods scale up, restart, or fail, CoreDNS and kube-proxy automatically update their records, so the application continues working without any configuration changes.
 ### 30. Explain the Kubernetes networking model.
+
+The Kubernetes networking model is based on a simple principle: every Pod gets its own unique IP address, and every Pod can communicate directly with every other Pod across the cluster without NAT. This is achieved using a Container Network Interface (CNI) plugin such as Calico, Cilium, or Amazon VPC CNI in EKS. The CNI is responsible for assigning Pod IPs, configuring network interfaces, and ensuring connectivity between Pods running on different worker nodes.
+
+---
+
+## Key Components
+
+- **CNI Plugin** – Assigns Pod IPs and enables Pod-to-Pod communication across nodes.
+- **CoreDNS** – Provides DNS-based service discovery by resolving Service names to ClusterIPs.
+- **kube-proxy** – Implements Kubernetes Services by routing traffic from the Service IP to healthy backend Pods using iptables or IPVS.
+- **Network Policies** – Control which Pods are allowed to communicate with each other, providing network-level security.
+
+---
+
+## Production Best Practices
+
+In production, we use a reliable CNI plugin based on the environment—for example, Amazon VPC CNI in EKS or Calico when advanced network policies are required. We never rely on Pod IPs because Pods are recreated during deployments or failures. Instead, all application communication happens through Services, and we enforce Network Policies to restrict unnecessary Pod-to-Pod communication following the principle of least privilege.
+
 ### 31. How do you restrict pod-to-pod communication using Network Policies?
 ### 72. Service reachable internally but not externally.
 ### 73. NodePort not accessible.
