@@ -931,7 +931,7 @@ kubectl exec -it <test-pod> -- curl http://<service-name>
 ## Interview Closing Statement
 
 > "In production, I first confirm whether it's truly a CNI issue by checking Pod IP allocation and connectivity. Then I verify the CNI DaemonSet, review its logs, test Pod-to-Pod and Service communication, and finally inspect node-level networking and IP allocation. This structured approach helps isolate whether the problem is the CNI itself, the node, or a Network Policy instead of making unnecessary changes."
-### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
+> 
 ### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
 
 If CoreDNS crashes, the biggest impact is on service discovery. Existing applications that already communicate using cached DNS entries may continue to work for some time, but any new DNS lookup will fail. As a result, microservices won't be able to resolve Service names like `payment-service`, causing inter-service communication failures. This can lead to application errors, API timeouts, failed database connections, and even readiness or liveness probe failures if they depend on DNS.
