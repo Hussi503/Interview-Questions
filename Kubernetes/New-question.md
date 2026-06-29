@@ -824,7 +824,33 @@ In production, we use Network Policies to implement micro-segmentation, meaning 
 In production, we first apply a default deny Network Policy for each namespace and then create explicit allow rules for required communication. This prevents accidental exposure of internal services. We also ensure our CNI plugin supports Network Policies—for example, Calico, Cilium, or Amazon VPC CNI with Network Policy support. We use labels consistently because policies are label-based, and we validate them thoroughly to avoid breaking application communication.
 
 ### 72. Service reachable internally but not externally.
-### 73. NodePort not accessible.
+
+If a Service is reachable internally within the cluster but not externally, I troubleshoot it layer by layer instead of assuming it's an application issue.
+
+First, I verify that the Service type is correct. If external access is required, it should be **LoadBalancer**, **NodePort**, or exposed through an **Ingress**. If it's a **ClusterIP** Service, it's only accessible from within the cluster.
+
+Next, I check whether the Service has healthy Endpoints by running `kubectl get endpoints` or `kubectl get endpointslices`. If there are no endpoints, it usually means the Service selector doesn't match the Pod labels or the Pods aren't in a Ready state.
+
+Then, I verify the Ingress configuration, Ingress Controller, or Load Balancer. I ensure the external Load Balancer has been provisioned correctly, DNS is pointing to the correct endpoint, and the target groups report healthy backend targets.
+
+I also check firewall rules or Security Groups to confirm that the required ports, such as **80** or **443**, are open. If using Network Policies, I verify that ingress traffic isn't being blocked.
+
+Finally, I inspect the application logs, Ingress Controller logs, and Service events to identify any routing or backend connectivity issues.
+
+---
+
+## Production Troubleshooting Steps
+
+- Verify the Service type (ClusterIP, NodePort, LoadBalancer, or Ingress).
+- Check that the Service has healthy Endpoints/EndpointSlices.
+- Verify the Service selector matches the Pod labels.
+- Ensure the Pods are in the **Ready** state.
+- Check the Ingress resource and Ingress Controller.
+- Verify the external Load Balancer and its target group health.
+- Confirm DNS is resolving to the correct Load Balancer.
+- Check firewall rules, Security Groups, or NACLs.
+- Verify Network Policies are not blocking external traffic.
+- Review application logs, Ingress Controller logs, and Kubernetes events.### 73. NodePort not accessible.
 ### 74. Ingress returns 502 error — what are possible reasons.
 ### 75. How do you debug CNI plugin issues?
 ### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
