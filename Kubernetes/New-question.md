@@ -848,12 +848,237 @@ Finally, I review the Ingress Controller logs and application logs for errors li
 - Verify Load Balancer health checks and target groups.
 - Check Security Groups, NACLs, and firewall rules.
 - Verify DNS resolution and SSL certificate if HTTPS is used.
+
 ### 74. Ingress returns 502 error — what are possible reasons.
+
+A 502 Bad Gateway from an Ingress means the Ingress Controller was able to receive the request, but it couldn't get a valid response from the backend Service. In production, I don't assume it's an application issue—I troubleshoot each layer systematically because a 502 can occur due to multiple reasons.
+
+The first thing I check is whether the backend Pods are healthy and Ready. If Pods are in CrashLoopBackOff, failing readiness probes, or not in the Ready state, the Ingress has no healthy backend to forward traffic to. Next, I verify that the Service has healthy Endpoints using `kubectl get endpoints`. If the Endpoints list is empty, it's usually a label mismatch between the Service selector and the Pods.
+
+If the Endpoints are present, I check whether the Ingress backend configuration is correct. A wrong Service name or incorrect target port is one of the most common production mistakes. For example, if the Service exposes port 80 but forwards to 8080, and the Ingress points to the wrong port, the request reaches the Service but fails to connect to the application.
+
+I then verify that the application is actually listening on the expected port by testing it from another Pod using `curl`. If the Service works internally but not through the Ingress, I review the Ingress Controller logs because they usually indicate whether the issue is connection refused, upstream timeout, or no healthy upstreams.
+
+In cloud environments like EKS, I also check the ALB Target Group health. If health checks are failing because of an incorrect health check path, port, or application response, the ALB marks all targets as unhealthy and returns 502. Finally, I verify Network Policies, Security Groups, and SSL/TLS configuration, especially if backend HTTPS is configured incorrectly.
+
+---
+
+## Common Production Causes
+
+- Backend Pods are not Ready or are crashing.
+- Service has no Endpoints due to selector mismatch.
+- Incorrect Service name, port, or targetPort in the Ingress.
+- Application is not listening on the configured port.
+- Failed ALB/NGINX health checks.
+- Backend connection timeout or application not responding.
+- SSL/TLS mismatch between the Ingress and backend Service.
+- Network Policies or firewall rules blocking traffic.
+
+---
+
+## Commands I Use During Troubleshooting
+
+```bash
+kubectl get pods
+kubectl get svc
+kubectl get endpoints
+kubectl describe ingress <ingress-name>
+kubectl logs <ingress-controller-pod>
+kubectl exec -it <test-pod> -- curl http://<service-name>:<port>
+```
+
 ### 75. How do you debug CNI plugin issues?
+
+When I suspect a CNI plugin issue, my first step is to confirm whether it's actually a networking problem and not an application issue. In production, the common symptoms are Pods unable to communicate with each other, DNS failures, Pods stuck in ContainerCreating, or new Pods not getting an IP address. I follow a layer-by-layer approach instead of immediately restarting the CNI.
+
+First, I check whether the Pod has received a valid IP address using `kubectl get pods -o wide`. If the IP is missing or the Pod is stuck in ContainerCreating, I describe the Pod to look for events like **Failed to create pod sandbox**, **CNI plugin not initialized**, or **failed to assign IP**.
+
+Next, I verify that the CNI DaemonSet is healthy on every worker node. In EKS, for example, I check the **aws-node** Pods; in Calico, I check the **calico-node** Pods. If any CNI Pod is crashing or missing on a node, networking for Pods on that node can fail. I then review the CNI logs to identify IP allocation failures, permission issues, or communication problems with the Kubernetes API.
+
+If the CNI Pods are healthy, I test connectivity by launching a temporary Pod and verifying Pod-to-Pod communication, Service communication, and DNS resolution. If Pod-to-Pod communication fails but the application is healthy, it usually indicates a CNI routing issue. I also check whether Network Policies are blocking traffic because they can sometimes appear to be CNI issues.
+
+Finally, I inspect the worker node itself. I verify that the node has sufficient IP addresses available, the CNI configuration files exist under `/etc/cni/net.d`, and there are no routing or iptables issues. In cloud environments like EKS, I also ensure the node hasn't exhausted its available ENI IP addresses, which is a common cause of Pods remaining in ContainerCreating.
+
+---
+
+## Production Troubleshooting Commands
+
+```bash
+kubectl get pods -A -o wide
+kubectl describe pod <pod-name>
+kubectl get ds -A
+kubectl logs <cni-pod> -n kube-system
+kubectl get nodes
+kubectl exec -it <test-pod> -- ping <pod-ip>
+kubectl exec -it <test-pod> -- nslookup kubernetes.default
+kubectl exec -it <test-pod> -- curl http://<service-name>
+```
+
+---
+
+## Common Production Issues
+
+- CNI DaemonSet is not running on all worker nodes.
+- Pods are not receiving IP addresses.
+- IP address pool or ENI IPs are exhausted.
+- Incorrect CNI configuration after an upgrade.
+- Network Policies blocking traffic.
+- Node routing or iptables corruption.
+- IAM permission issues (especially in EKS with Amazon VPC CNI).
+
+---
+
+## Interview Closing Statement
+
+> "In production, I first confirm whether it's truly a CNI issue by checking Pod IP allocation and connectivity. Then I verify the CNI DaemonSet, review its logs, test Pod-to-Pod and Service communication, and finally inspect node-level networking and IP allocation. This structured approach helps isolate whether the problem is the CNI itself, the node, or a Network Policy instead of making unnecessary changes."
 ### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
+### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
+
+If CoreDNS crashes, the biggest impact is on service discovery. Existing applications that already communicate using cached DNS entries may continue to work for some time, but any new DNS lookup will fail. As a result, microservices won't be able to resolve Service names like `payment-service`, causing inter-service communication failures. This can lead to application errors, API timeouts, failed database connections, and even readiness or liveness probe failures if they depend on DNS.
+
+In production, I first confirm whether it's actually a DNS issue. I launch a temporary Pod and run `nslookup kubernetes.default` or `nslookup payment-service`. If the lookup fails, I check whether the CoreDNS Pods are running in the `kube-system` namespace. If they're crashing, I inspect their logs to identify issues such as configuration errors, API Server connectivity problems, memory exhaustion, or plugin failures.
+
+Next, I verify that the CoreDNS Service and its Endpoints exist because even healthy CoreDNS Pods won't receive traffic if the Service is misconfigured. I also check whether the Pod's `/etc/resolv.conf` is pointing to the correct Cluster DNS IP. If DNS works using the ClusterIP but not by Service name, I investigate CoreDNS configuration and networking.
+
+If CoreDNS is healthy but DNS still fails, I move to the networking layer. I verify kube-proxy, the CNI plugin, and any Network Policies that might be blocking traffic between application Pods and CoreDNS. In EKS, I've also seen DNS failures caused by CNI issues where Pods couldn't reach the CoreDNS Service despite the Pods themselves being healthy.
+
+---
+
+## Production Troubleshooting Commands
+
+```bash
+kubectl get pods -n kube-system
+kubectl logs -n kube-system -l k8s-app=kube-dns
+kubectl get svc -n kube-system
+kubectl get endpoints -n kube-system
+kubectl exec -it <test-pod> -- nslookup kubernetes.default
+kubectl exec -it <test-pod> -- nslookup payment-service
+kubectl exec -it <test-pod> -- cat /etc/resolv.conf
+```
+
+---
+
+## Common Production Causes
+
+- CoreDNS Pods are in CrashLoopBackOff.
+- Incorrect CoreDNS ConfigMap.
+- Insufficient CPU or memory causing frequent restarts.
+- Kubernetes API Server connectivity issues.
+- CNI or kube-proxy networking issues.
+- Network Policies blocking access to CoreDNS.
+- Incorrect DNS configuration in Pods (`resolv.conf`).
 ### 77. A NetworkPolicy is blocking traffic — how do you confirm?
-### 78. How do you capture network traffic inside a pod?
+
+If I suspect a NetworkPolicy is blocking traffic, I first verify that the application itself is healthy. In production, I never assume the NetworkPolicy is the problem until I've confirmed that the Pods are running, the Service has healthy Endpoints, and the application is reachable when the policy is not in the path.
+
+Next, I launch a temporary test Pod in the same namespace and try to connect to the target Pod or Service using `curl`, `nc`, or `telnet`. If the connection times out while the Pods and Services are healthy, it strongly indicates a network-level restriction. I then check whether any NetworkPolicies are applied to the namespace and whether the destination Pod is selected by one of those policies. Once a Pod is selected by a NetworkPolicy, all traffic is denied unless it's explicitly allowed.
+
+After that, I inspect the policy carefully. I verify the `podSelector`, `namespaceSelector`, `ingress`, `egress`, and `policyTypes`. In production, the most common issues are incorrect labels, missing ingress or egress rules, or forgetting that once a Pod is selected by a NetworkPolicy, the default behavior becomes deny unless allowed.
+
+If everything looks correct, I temporarily test by removing the policy in a non-production environment or by creating a temporary allow policy. If traffic immediately starts working, I've confirmed that the NetworkPolicy was the root cause. In production, I avoid deleting policies directly; instead, I validate the rule logic and update it through the deployment pipeline.
+
+---
+
+## Production Troubleshooting Commands
+
+```bash
+kubectl get networkpolicy -A
+
+kubectl describe networkpolicy <policy-name>
+
+kubectl get pods --show-labels
+
+kubectl get svc
+
+kubectl get endpoints
+
+kubectl exec -it <test-pod> -- curl http://<service-name>
+
+kubectl exec -it <test-pod> -- nc -zv <pod-ip> 8080
+```
+
+---
+
+## What I Verify
+
+- Is the destination Pod selected by a NetworkPolicy?
+- Do the Pod labels match the `podSelector`?
+- Are the source Pod labels or namespace labels allowed?
+- Is the required Ingress rule present?
+- Is the required Egress rule present? (Often overlooked.)
+- Is the CNI plugin (Calico, Cilium, etc.) enforcing NetworkPolicies?
+
+---
+
+## Production Example
+
+Suppose the backend should connect to the database.
+
+```text
+Backend → Database ❌ (Timeout)
+
+Database Pod is Running
+Service has healthy Endpoints
+curl from another Pod fails
+kubectl describe networkpolicy shows only app=api is allowed to access the database.
+The backend Pod has the label app=backend.
+```
+
+In this case, the labels don't match the policy, so Kubernetes correctly blocks the traffic. Updating the NetworkPolicy or the Pod labels resolves the issue.
+
+---
+
+## Interview Closing Statement
+
+> "In production, I confirm a NetworkPolicy issue by first ruling out the application, Service, and Endpoints. Then I test connectivity from a Pod, inspect which NetworkPolicies select the destination Pod, verify the label selectors and ingress/egress rules, and finally validate the fix through a controlled policy update. This approach ensures I don't misdiagnose networking issues as application failures."### 78. How do you capture network traffic inside a pod?
 ### 108. If you ping one pod's IP from another and it's unreachable, where would you check?
+
+If one Pod cannot reach another Pod's IP, I troubleshoot from the network layer inward. In production, Pod-to-Pod communication should work across nodes, so if it's failing, the issue is usually related to the CNI plugin, Network Policies, node networking, or routing.
+
+First, I verify that both Pods are actually running and have valid IP addresses using `kubectl get pods -o wide`. Then I check whether the Pods are on the same node or different nodes. If communication works on the same node but fails across nodes, that immediately points me toward a CNI or routing issue.
+
+Next, I check whether any Network Policies are applied to either Pod. A common production issue is that a Pod is selected by a policy that unintentionally blocks ingress or egress traffic. I inspect all policies in the namespace and validate the selectors and allowed rules.
+
+If Network Policies are not the issue, I move to the CNI plugin. I verify that the CNI DaemonSet is healthy on all nodes, review CNI logs, and confirm that routing tables and Pod network configurations are correct. In EKS, I specifically check the aws-node Pods and verify that ENI IP allocation hasn't been exhausted.
+
+I also verify node health and connectivity. If the Pods are on different worker nodes, I ensure the nodes can communicate with each other and that there are no security group, NACL, firewall, or route table issues blocking Pod traffic. Finally, I test communication using tools like `curl` or `nc` because many containers do not respond to ICMP ping even when the application is healthy.
+
+---
+
+## Production Troubleshooting Order
+
+- Verify Pod status and IPs.
+- Check whether Pods are on the same node or different nodes.
+- Verify Network Policies.
+- Check Service and Endpoint configuration if accessing via Service.
+- Review CNI plugin health and logs.
+- Verify node-to-node connectivity and routes.
+- Check cloud networking (Security Groups, NACLs, Route Tables).
+- Test with `curl` or `nc` instead of relying only on ping.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl get pods -o wide
+
+kubectl get networkpolicy -A
+
+kubectl logs -n kube-system <cni-pod>
+
+kubectl describe pod <pod-name>
+
+kubectl exec -it <source-pod> -- curl http://<destination-pod-ip>:<port>
+
+kubectl exec -it <source-pod> -- nc -zv <destination-pod-ip> <port>
+```
+
+---
+
+## Interview Closing Statement
+
+> "If one Pod cannot reach another Pod's IP, I first verify the Pods and their IP assignments, then check Network Policies, followed by the CNI plugin and node networking. If the Pods are on different nodes, I focus heavily on CNI routing and cloud network configuration. I also avoid relying solely on ping because many containers don't respond to ICMP; application-level tests like curl give a more accurate picture of connectivity."
 ### 114. How does DNS resolution work inside a pod?
 ### 124. Suppose a pod running application, how will you expose it to internet using ALB?
 ---
