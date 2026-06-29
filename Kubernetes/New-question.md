@@ -575,56 +575,81 @@ When I apply this manifest:
 
 The AWS Load Balancer Controller detects the Ingress, configures the ALB HTTPS listener, attaches the ACM certificate, and optionally creates an HTTP listener that redirects traffic to HTTPS.
  
-### 28. What type of load balancer is created when using Ingress in EKS?
-When using Ingress in EKS, the type of load balancer depends on the Ingress Controller you're using.
+### 28. What type of Load Balancer is created when using Ingress in EKS?
 
-1. AWS Load Balancer Controller (Most Common in Production)
+The type of Load Balancer created in Amazon EKS depends on the **Ingress Controller** being used.
 
-If you're using the AWS Load Balancer Controller, Kubernetes automatically creates an Application Load Balancer (ALB).
+---
 
-Why ALB?
+## 1. AWS Load Balancer Controller (Most Common in Production)
 
-  Ingress operates at Layer 7 (HTTP/HTTPS).
-  ALB supports:
-  Host-based routing
-  Path-based routing
-  SSL/TLS termination
-  HTTP to HTTPS redirection
-  Integration with AWS Certificate Manager (ACM)
-  AWS WAF integration
+If you're using the **AWS Load Balancer Controller**, Kubernetes automatically provisions an **Application Load Balancer (ALB)** whenever you create an Ingress resource.
 
-  Internet
-     │
-Route53
-     │
-Application Load Balancer (ALB)
-     │
-AWS Load Balancer Controller
-     │
-ClusterIP Services
-     │
-   Pods  
+### Why ALB?
 
-2. NGINX Ingress Controller
+Ingress operates at **Layer 7 (HTTP/HTTPS)**, and ALB is designed for Layer 7 traffic. It provides:
 
-If you're using NGINX Ingress Controller, Kubernetes does not create an ALB automatically.
+- Host-based routing
+- Path-based routing
+- SSL/TLS termination
+- HTTP to HTTPS redirection
+- Integration with AWS Certificate Manager (ACM)
+- AWS WAF integration
+
+### Architecture
+
+```text
+                Internet
+                    │
+                 Route53
+                    │
+      Application Load Balancer (ALB)
+                    │
+     AWS Load Balancer Controller
+                    │
+          ClusterIP Services
+                    │
+                  Pods
+```
+
+---
+
+## 2. NGINX Ingress Controller
+
+If you're using the **NGINX Ingress Controller**, Kubernetes **does not create an ALB automatically**.
 
 Instead:
 
-  You expose the NGINX Ingress Controller using a Service of type LoadBalancer.
-  AWS provisions a Network Load Balancer (NLB) by default (or a Classic Load Balancer in older setups, depending on annotations and Kubernetes version).
-  The NLB forwards traffic to the NGINX Ingress Controller, which then performs Layer 7 routing.
+- The NGINX Ingress Controller is exposed using a **Service of type LoadBalancer**.
+- AWS provisions a **Network Load Balancer (NLB)** by default (or a **Classic Load Balancer (CLB)** in older Kubernetes versions or based on specific annotations).
+- The NLB forwards traffic to the NGINX Ingress Controller.
+- The NGINX Ingress Controller performs the Layer 7 routing based on the Ingress rules.
 
-Architecture:
-Internet
-     │
-Network Load Balancer (NLB)
-     │
-NGINX Ingress Controller
-     │
-ClusterIP Services
-     │
-Pods
+### Architecture
+
+```text
+                Internet
+                    │
+     Network Load Balancer (NLB)
+                    │
+      NGINX Ingress Controller
+                    │
+          ClusterIP Services
+                    │
+                  Pods
+```
+
+---
+
+## Interview Answer (1 Minute)
+
+> In EKS, the type of Load Balancer created depends on the Ingress Controller. In production, we commonly use the **AWS Load Balancer Controller**, which automatically
+>  provisions an **Application Load Balancer (ALB)** whenever an Ingress resource is created. ALB is a Layer 7 load balancer and supports host-based routing, path-based
+> routing, SSL termination using ACM, HTTP-to-HTTPS redirection, and AWS WAF integration. Traffic flows from Route53 to the ALB, then through the AWS Load Balancer
+> Controller to Kubernetes ClusterIP Services and finally to the Pods.
+>
+> If we're using the **NGINX Ingress Controller**, Kubernetes doesn't create an ALB. Instead, the NGINX controller is exposed through a **LoadBalancer Service**,
+> which provisions a **Network Load Balancer (NLB)** by default. The NLB forwards traffic to the NGINX Ingress Controller, and NGINX handles all the Layer 7 routing internally.
    
 
       
