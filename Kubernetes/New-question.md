@@ -744,7 +744,27 @@ This **does not explicitly specify the load balancer type**. Instead, it tells K
 ## Interview Answer (1 Minute)
 
 > We don't explicitly mention **ALB** or **NLB** anywhere in the Ingress specification. The type of load balancer is determined by the **Ingress Controller** associated with the IngressClass. In AWS EKS, if we're using the **AWS Load Balancer Controller**, we specify `ingressClassName: alb` (or the older `kubernetes.io/ingress.class: alb` annotation). The controller watches those Ingress resources and automatically provisions an **Application Load Balancer (ALB)**. If we need to customize the ALB—for example, making it internet-facing or internal, selecting IP or instance target type, configuring SSL certificates, listener ports, subnets, or AWS WAF—we do that using **ALB-specific annotations** in the Ingress YAML, not by specifying the load balancer type directly.
-31. How does kube-proxy work?
+
+### How does kube-proxy work?
+
+kube-proxy is a networking component that runs as a DaemonSet, meaning one pod runs on every worker node. Its primary responsibility is to implement the Kubernetes Service abstraction by routing traffic from a Service IP (ClusterIP) to one of the healthy backend Pods.
+
+Internally, kube-proxy continuously watches the Kubernetes API Server for changes to Services and Endpoints/EndpointSlices. Whenever a new Service or Pod is created, deleted, or updated, kube-proxy automatically updates the node's networking rules. In production, it typically operates in iptables mode or IPVS mode, where it programs Linux kernel networking rules instead of acting as a userspace proxy, making packet forwarding highly efficient.
+
+---
+
+## Real-Time Flow
+
+Let's say an application Pod wants to access a Service called **payment-service**.
+
+- The application sends traffic to the ClusterIP of **payment-service**.
+- The request reaches the worker node.
+- kube-proxy has already created iptables/IPVS rules for that Service.
+- These rules select one of the healthy backend Pods behind the Service using load balancing.
+- The packet is forwarded directly to the selected Pod.
+- If a Pod fails or a new Pod is added due to autoscaling, kube-proxy updates the rules automatically without any manual intervention.
+
+So, applications always communicate with the Service IP, while kube-proxy transparently routes traffic to healthy Pods.
 32. How does service discovery work with CoreDNS?
 33. Explain the Kubernetes networking model.
 34. How do you restrict pod-to-pod communication using Network Policies?
