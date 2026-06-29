@@ -2341,20 +2341,571 @@ and noticed the memory limit was configured too low. We increased the memory lim
 > "In production, I primarily use `kubectl top` to monitor live CPU and memory usage, `kubectl describe pod` to verify resource requests and limits, and `kubectl describe node` to check node capacity and allocatable resources. Using these commands together helps me quickly identify whether the issue is resource exhaustion, incorrect sizing, or node capacity."
 ### 64. How do you debug if a pod is scheduled on the wrong node?
 
-### 65. What happens if `imagePullSecrets` is configured incorrectly?
+If a Pod is scheduled on the wrong node, I first verify why the scheduler selected that node. In production, this is usually caused by incorrect or missing node affinity, node selector, taints/tolerations, or node labels.
 
+First, I identify which node the Pod is running on.
+
+```bash
+kubectl get pod <pod-name> -o wide
+```
+
+Then I inspect the Pod configuration.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+I check whether the Pod has:
+
+- nodeSelector
+- Node Affinity
+- Tolerations
+
+Next, I verify the labels on the node.
+
+```bash
+kubectl get nodes --show-labels
+```
+
+A common production issue is that the Deployment expects a label like:
+
+```yaml
+nodeSelector:
+  environment: production
+```
+
+but the node is actually labeled:
+
+```yaml
+env=production
+```
+
+Since the labels don't match, Kubernetes ignores that node selection rule or schedules the Pod on another eligible node.
+
+I also check whether the node has any taints and whether the Pod has matching tolerations.
+
+```bash
+kubectl describe node <node-name>
+```
+
+If everything looks correct, I review the Deployment YAML and compare it with the previous working version to identify any recent configuration changes.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl get pod <pod-name> -o wide
+
+kubectl describe pod <pod-name>
+
+kubectl get nodes --show-labels
+
+kubectl describe node <node-name>
+
+kubectl describe deployment <deployment-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, we had dedicated GPU nodes for ML workloads. A new ML Pod was scheduled on a normal worker node instead of the GPU node. When I checked the Deployment, I found that the node affinity expected:
+
+```yaml
+gpu=true
+```
+
+but the node label had been changed to:
+
+```yaml
+accelerator=nvidia
+```
+
+Because of this label mismatch, the scheduler couldn't identify the correct node. After updating the affinity rule and redeploying, the Pod was scheduled on the GPU node.
+
+---
+
+## Interview Closing Statement
+
+> "In production, if a Pod is running on the wrong node, I first verify the node where it's running, then check the Pod's nodeSelector, node affinity, and tolerations. After that, I validate the node labels and taints. Most issues are caused by label mismatches or incorrect scheduling rules rather than Kubernetes itself."
+
+---
+
+## Interview Tip
+
+> If the interviewer says **"the Pod is already running on the wrong node"**, remember that Kubernetes does **not** automatically move running Pods when labels or affinity change. You typically fix the scheduling rule and recreate or roll out the Pod so the scheduler can place it on the correct node.
+### 64. How do you debug if a pod is scheduled on the wrong node?
+
+If a Pod is scheduled on the wrong node, I first verify why the scheduler selected that node. In production, this is usually caused by incorrect or missing node affinity, node selector, taints/tolerations, or node labels.
+
+First, I identify which node the Pod is running on.
+
+```bash
+kubectl get pod <pod-name> -o wide
+```
+
+Then I inspect the Pod configuration.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+I check whether the Pod has:
+
+- nodeSelector
+- Node Affinity
+- Tolerations
+
+Next, I verify the labels on the node.
+
+```bash
+kubectl get nodes --show-labels
+```
+
+A common production issue is that the Deployment expects a label like:
+
+```yaml
+nodeSelector:
+  environment: production
+```
+
+but the node is actually labeled:
+
+```yaml
+env=production
+```
+
+Since the labels don't match, Kubernetes ignores that node selection rule or schedules the Pod on another eligible node.
+
+I also check whether the node has any taints and whether the Pod has matching tolerations.
+
+```bash
+kubectl describe node <node-name>
+```
+
+If everything looks correct, I review the Deployment YAML and compare it with the previous working version to identify any recent configuration changes.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl get pod <pod-name> -o wide
+
+kubectl describe pod <pod-name>
+
+kubectl get nodes --show-labels
+
+kubectl describe node <node-name>
+
+kubectl describe deployment <deployment-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, we had dedicated GPU nodes for ML workloads. A new ML Pod was scheduled on a normal worker node instead of the GPU node. When I checked the Deployment, I found that the node affinity expected:
+
+```yaml
+gpu=true
+```
+
+but the node label had been changed to:
+
+```yaml
+accelerator=nvidia
+```
+
+Because of this label mismatch, the scheduler couldn't identify the correct node. After updating the affinity rule and redeploying, the Pod was scheduled on the GPU node.
+
+---
+
+## Interview Closing Statement
+
+> "In production, if a Pod is running on the wrong node, I first verify the node where it's running, then check the Pod's nodeSelector, node affinity, and tolerations. After that, I validate the node labels and taints. Most issues are caused by label mismatches or incorrect scheduling rules rather than Kubernetes itself."
+
+---
+
+## Interview Tip
+
+> If the interviewer says **"the Pod is already running on the wrong node"**, remember that Kubernetes does **not** automatically move running Pods when labels or affinity change. You typically fix the scheduling rule and recreate or roll out the Pod so the scheduler can place it on the correct node.
 ### 66. A pod is stuck in the Terminating state — how do you safely force delete it?
 
+If a Pod is stuck in the **Terminating** state, it usually means Kubernetes is trying to gracefully delete the Pod, but something is preventing it from completing. In production, I don't force delete it immediately because that can lead to data corruption or incomplete cleanup, especially for stateful applications.
+
+My first step is to identify why the Pod is stuck.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+I check for:
+
+- Finalizers preventing deletion.
+- Attached Persistent Volumes.
+- Application taking too long to shut down.
+- Node becoming NotReady.
+- Container runtime or kubelet issues.
+
+If the Pod is part of a StatefulSet or is writing data, I first ensure there are no active transactions or writes before deleting it.
+
+If everything looks safe and the Pod is no longer serving traffic, I force delete it using:
+
+```bash
+kubectl delete pod <pod-name> --grace-period=0 --force
+```
+
+If the Pod still remains in the API, I check whether the node is healthy. Sometimes the node itself is **NotReady**, and the kubelet cannot complete the deletion. In that case, I troubleshoot the node or remove it from the cluster if required.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl get pod <pod-name> -o yaml
+
+kubectl get node
+
+kubectl delete pod <pod-name> --grace-period=0 --force
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, during a node maintenance activity, one application Pod remained in the **Terminating** state for over **20 minutes**. When I checked, the worker node had become **NotReady**, so the kubelet couldn't complete the Pod cleanup.
+
+Since the application was already running on another replica and there was no impact on users, I safely force deleted the Pod from the API server and then fixed the unhealthy node.
+
+---
+
+## Interview Closing Statement
+
+> "In production, I never force delete a Pod as the first option. I first identify why it's stuck by checking the Pod, node, and any finalizers or storage dependencies. If it's safe to remove and the application is already available through other replicas, I use `kubectl delete pod --grace-period=0 --force`. This ensures I don't risk data loss or interrupt active workloads."
+
+---
+
+## Interview Tip
+
+> If the interviewer asks **"When should you NOT force delete a Pod?"**, answer:
+>
+> **"I avoid force deleting Pods that belong to StatefulSets or are actively writing to a database unless I've confirmed that all data has been flushed or replicated. Force deletion should always be the last resort."**
 ### 67. A node is in the NotReady state — what are the possible reasons and their impact?
 
+**NotReady** node means the control plane has detected that the worker node is unhealthy or is no longer able to run workloads properly. In production, this is a high-priority issue because Kubernetes stops scheduling new Pods on that node, and if the problem persists, the Pods running on that node are eventually evicted and recreated on healthy nodes.
+
+The first thing I do is identify why the node became NotReady.
+
+```bash
+kubectl get nodes
+
+kubectl describe node <node-name>
+```
+
+The **Conditions** section usually tells the reason.
+
+---
+
+## Common Causes (Production Scenarios)
+
+- **Kubelet is down** – The kubelet service has stopped or crashed, so the node stops reporting its health to the control plane.  
+- **Node lost network connectivity** – The worker node cannot communicate with the API Server.  
+- **High CPU or Memory usage** – The node is under heavy resource pressure, making kubelet unresponsive.  
+- **DiskPressure** – The node has run out of disk or ephemeral storage.  
+- **MemoryPressure** – The node is critically low on memory.  
+- **Container runtime failure** – Docker or containerd has stopped working.  
+- **VM or cloud infrastructure issue** – The underlying VM is rebooting, terminated, or has a hardware issue.  
+
+---
+
+## Impact
+
+- No new Pods are scheduled on the node.  
+- Existing Pods continue running initially.  
+- If the node doesn't recover within the eviction timeout (typically around **5 minutes**), Kubernetes marks the Pods as unhealthy and reschedules them onto healthy nodes (if managed by a Deployment or ReplicaSet).  
+- If it's a StatefulSet, recovery may take longer depending on storage attachment and application behavior.  
+
+---
+
+## Commands I Use
+
+```bash
+kubectl get nodes
+
+kubectl describe node <node-name>
+
+kubectl get pods -o wide
+
+kubectl top node
+```
+
+If I have access to the node, I also check:
+
+```bash
+systemctl status kubelet
+
+systemctl status containerd
+
+journalctl -u kubelet
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, during a production deployment, one worker node suddenly became **NotReady**. When I checked the node, I found the kubelet service had stopped after the VM ran out of disk space. Since the node couldn't communicate with the API Server, Kubernetes marked it as NotReady and stopped scheduling new Pods.
+
+We cleaned up disk space, restarted the kubelet service, and the node returned to the **Ready** state. Because our application had multiple replicas, the service remained available throughout the incident.
 ### 68. What are DiskPressure, MemoryPressure, and PIDPressure node conditions? What happens when they occur?
+
+These are node conditions in Kubernetes that indicate resource exhaustion at the node level. They are continuously monitored by the kubelet, and when any of these conditions are triggered, Kubernetes takes corrective actions like rejecting new Pods or evicting existing Pods to protect node stability.
+
+---
+
+## 🔹 MemoryPressure
+
+This occurs when the node is running low on available RAM.
+
+In production, this usually happens due to:
+
+- High memory-consuming Pods  
+- Memory leaks in applications  
+- JVM/Node.js processes exceeding limits  
+
+**Impact:**
+
+- Node is marked under pressure  
+- New Pods are not scheduled on the node  
+- Kubelet starts evicting lower priority Pods to free memory  
+
+---
+
+## 🔹 DiskPressure
+
+This happens when the node runs low on:
+
+- Root filesystem space  
+- Container logs  
+- Ephemeral storage (`/var/lib/containerd`, `/var/log`)  
+
+**Impact:**
+
+- Node is marked unschedulable for new Pods  
+- Pods using high ephemeral storage are evicted first  
+- Image pulls and container writes may start failing  
+
+In production, this is very common when logs are not rotated properly.
+
+---
+
+## 🔹 PIDPressure
+
+This occurs when the node runs out of available process IDs (PIDs).
+
+It usually happens when:
+
+- Too many Pods or containers are running  
+- A process fork-bomb or uncontrolled thread creation occurs  
+
+**Impact:**
+
+- Node cannot create new processes  
+- New Pods are not scheduled  
+- Existing workloads may become unstable  
+
+---
+
+## ⚙️ What Kubernetes does when these conditions occur
+
+When any of these pressures are detected:
+
+- Node is marked as **NotReady** or **under pressure**  
+- Scheduler stops placing new Pods on that node  
+- Kubelet starts evicting Pods based on priority and QoS:
+  - BestEffort Pods first  
+  - Burstable next  
+  - Guaranteed Pods last  
+
+If pressure continues, the node becomes unstable and workloads are moved elsewhere.
+
+---
+
+## 📌 Real-Time Production Scenario
+
+For example, in one production cluster:
+
+- A logging agent started consuming high disk space due to missing log rotation  
+- Node entered **DiskPressure**  
+- Kubernetes started evicting application Pods  
+- Scheduler stopped placing new Pods on that node  
+
+We fixed it by:
+
+- Cleaning up disk space  
+- Enabling log rotation  
+- Increasing ephemeral storage on the node group  
+
+---
+
+## 🧪 Commands I Use
+
+```bash
+kubectl describe node <node-name>
+
+kubectl get nodes
+
+kubectl top node
+
+kubectl get pods -A -o wide
+```
+
+If I have node access:
+
+```bash
+df -h
+
+ps aux --sort=-%mem
+
+ps -eLf | wc -l
+```
 
 ### 69. How do you cordon and drain a node safely? What happens to DaemonSet pods during a drain?
 
+In production, when I need to perform maintenance on a node (like patching, upgrading, or replacing a VM), I first cordon the node and then drain it safely to ensure no new workloads are scheduled and existing workloads are gracefully moved.
+
+---
+
+## 🔹 Step 1: Cordon the node
+
+Cordon marks the node as **unschedulable**, meaning Kubernetes will not place any new Pods on it.
+
+```bash
+kubectl cordon <node-name>
+```
+
+👉 Existing Pods are not affected, only new scheduling is blocked.
+
+---
+
+## 🔹 Step 2: Drain the node
+
+Drain safely evicts all running Pods so they can be rescheduled on other healthy nodes.
+
+```bash
+kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data
+```
+
+### What happens during drain:
+
+- Evicts Pods gracefully (respects termination grace period)  
+- Reschedules Pods (if managed by Deployment/ReplicaSet)  
+- Waits for Pod termination before proceeding  
+- Respects Pod Disruption Budgets (PDBs), if defined  
+
+---
+
+## 🔹 What happens to DaemonSet Pods?
+
+This is a key interview point.
+
+👉 DaemonSet Pods are **NOT evicted by default during drain**.
+
+Because:
+
+- DaemonSets are meant to run one Pod per node  
+- Examples: CNI plugin, logging agent, monitoring agent  
+
+### So during drain:
+
+- `kubectl drain` automatically skips DaemonSet Pods  
+- That’s why we use `--ignore-daemonsets`  
+
+If needed, we manage DaemonSet Pods separately, but in most production cases we do not remove them during node maintenance.
+
+---
+
+## Interview Closing Statement
+
+> "In production, I first cordon the node to stop new workloads and then drain it to safely evict existing Pods. Kubernetes respects Pod Disruption Budgets and gracefully reschedules Pods on other nodes. DaemonSet Pods are not evicted during drain by default because they are meant to run on every node, so we use `--ignore-daemonsets` to allow the drain operation to proceed."
 ### 70. A node's CPU utilization is at 100% — how do you identify the root cause?
 
 ### 71. Pods are being evicted — why does this happen, and how does the kubelet eviction policy work?
 
+When Pods are being evicted in production, it means the node is under resource pressure and kubelet is actively reclaiming resources to protect node stability. Eviction is not a failure—it is a controlled safety mechanism used by Kubernetes.
+
+The first thing I do is identify the eviction reason from the Pod or node events.
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl describe node <node-name>
+```
+
+---
+
+## 🔹 Why Pods get evicted (Production reasons)
+
+Pods are usually evicted due to node-level resource pressure, such as:
+
+- **MemoryPressure (most common)** – Node is running out of RAM  
+- **DiskPressure** – Ephemeral storage or root filesystem is full  
+- **PIDPressure** – Too many processes running on the node  
+- **Node NotReady / instability**  
+- **Kubelet eviction threshold breach**  
+
+---
+
+## 🔹 How kubelet eviction policy works (important concept)
+
+Kubelet continuously monitors node resources and compares them against eviction thresholds.
+
+There are two types:
+
+---
+
+### 1. Hard Eviction Thresholds
+
+When crossed, kubelet immediately starts eviction.
+
+Examples:
+
+- Memory critically low  
+- Disk space almost exhausted  
+
+👉 Immediate Pod eviction starts
+
+---
+
+### 2. Soft Eviction Thresholds
+
+Kubelet tries to recover first (grace period).
+
+If pressure continues → eviction starts after the grace period.
+
+---
+
+## 🔹 Eviction priority (VERY IMPORTANT in interviews)
+
+When eviction starts, Kubernetes follows this order:
+
+### 1. BestEffort Pods (first to be evicted)
+- No requests/limits defined  
+
+### 2. Burstable Pods
+- Have some requests but can burst  
+
+### 3. Guaranteed Pods (last to be evicted)
+- Strict requests = limits (highest protection)  
+
+---
+
+## 🔹 Key Production Insight
+
+👉 Production-critical workloads are usually protected using **Guaranteed QoS**, so they are least likely to be evicted during resource pressure.
 ### 73. A NodePort Service is not accessible — what could be the possible reasons?
 
 ### 78. How do you capture network traffic inside a pod?
