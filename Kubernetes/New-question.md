@@ -1307,13 +1307,288 @@ If **Node-4** receives the highest score, the scheduler binds the Pod to **Node-
 
 The kubelet running on that node then pulls the container image and starts the Pod.
 ### 17. What are taints and tolerations?
+
+Taints and Tolerations are used to control where Pods can be scheduled. In production, we use them to dedicate specific worker nodes for certain workloads such as databases, monitoring, GPU workloads, or critical applications. A taint is applied to a node to repel Pods, and a toleration is added to a Pod to allow it to be scheduled on that tainted node. It's important to note that a toleration doesn't force a Pod onto a node—it only allows the scheduler to consider that node. If we want to force scheduling, we combine tolerations with node affinity or node selectors.
+
+---
+
+## Real-Time Production Scenario
+
+For example, in one of our production clusters, we had dedicated nodes for Prometheus, Grafana, and Elasticsearch because they consumed significant CPU and memory. We applied a taint to those monitoring nodes:
+
+```bash
+kubectl taint nodes worker-node-3 dedicated=monitoring:NoSchedule
+```
+
+This prevents normal application Pods from being scheduled on that node.
+
+Then, only the monitoring Pods were configured with the following toleration:
+
+```yaml
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "monitoring"
+  effect: "NoSchedule"
+```
+
+As a result, only monitoring workloads could run on those nodes, while application workloads were scheduled on the remaining worker nodes. This helped us isolate workloads and avoid resource contention.
+
+---
+
+## Taint Effects
+
+There are three taint effects that we commonly use:
+
+- **NoSchedule** – New Pods without a matching toleration are not scheduled on the node. Existing Pods continue running.
+- **PreferNoSchedule** – Kubernetes tries to avoid scheduling Pods on the node, but may still schedule them if necessary.
+- **NoExecute** – Existing Pods without the required toleration are evicted, and new Pods are also prevented from being scheduled.
 ### 18. What are node affinity and anti-affinity?
+
+Node Affinity and Node Anti-Affinity are used to control where a Pod should or should not run based on node labels.
+
+- **Node Affinity** tells Kubernetes "Run this Pod on nodes that match these labels."
+- **Node Anti-Affinity** tells Kubernetes "Don't run this Pod on nodes with these labels."
+
+Unlike taints and tolerations, which block or allow Pods, node affinity is used to choose the right node for a Pod.
+
+---
+
+## Real-Time Production Scenario
+
+For example, in production, we had dedicated high-memory nodes for Elasticsearch.
+
+We labeled those nodes:
+
+```bash
+kubectl label node worker-3 workload=elasticsearch
+```
+
+Then, in the Elasticsearch Deployment, we configured Node Affinity so those Pods would run only on nodes with the label `workload=elasticsearch`.
+
+This ensures Elasticsearch doesn't get scheduled on normal application nodes.
+
+Similarly, if we don't want test applications to run on production nodes, we use Node Anti-Affinity to prevent scheduling on nodes labeled `environment=production`.
+
+---
+
+## Difference Between Affinity and Taints
+
+- **Taints & Tolerations** → Node decides who is allowed to enter.
+- **Node Affinity** → Pod decides where it wants to run.
 ### 19. How do you assign pods using taints/tolerations and affinity?
-### 20. What happens when a node goes NotReady?
+
+In production, I assign Pods to specific nodes by combining taints/tolerations and node affinity.
+
+- Taints and tolerations ensure that only authorized Pods can run on a node.
+- Node affinity ensures that the Pod is scheduled on the intended node.
+
+Using both together gives us strict workload isolation.
+
+---
+
+## Real-Time Production Scenario
+
+For example, suppose I have dedicated nodes for Elasticsearch.
+
+### Step 1: I label the node.
+
+```bash
+kubectl label node worker-3 workload=elasticsearch
+```
+
+### Step 2: I taint the node.
+
+```bash
+kubectl taint node worker-3 dedicated=elasticsearch:NoSchedule
+```
+
+Now, no normal application Pods can run on this node.
+
+### Step 3: In the Elasticsearch Deployment, I add:
+
+- Node Affinity to select nodes with `workload=elasticsearch`.
+- Toleration to allow the Pod onto the tainted node.
+
+```yaml
+spec:
+  tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "elasticsearch"
+    effect: "NoSchedule"
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: workload
+            operator: In
+            values:
+            - elasticsearch
+```
+
+---
+
+## Why Use Both?
+
+- If I use only Node Affinity, another application with the same affinity could also run on that node.
+
+- If I use only Taints/Tolerations, the Pod is allowed to run on the node, but Kubernetes may still schedule it on another suitable node.### 20. What happens when a node goes NotReady?
 ### 21. Node is Ready but pods are not scheduling.
-### 90. What is pod priority and preemption?
+
+If a node is in Ready state but Pods are not getting scheduled, it means the node is healthy, but the scheduler has found some constraint that prevents scheduling. In production, I don't assume it's a node issue. I first check why the scheduler rejected the node by describing the Pod.
+
+The first command I run is:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+The Events section usually tells the exact reason, such as **Insufficient CPU**, **Insufficient Memory**, **node affinity mismatch**, **untolerated taint**, or **volume binding failure**.
+
+Then I verify the node's available resources using:
+
+```bash
+kubectl describe node <node-name>
+
+kubectl top node
+```
+
+If the node has enough resources, I check whether the Pod has Node Affinity, Node Selector, or Tolerations that don't match the node. For example, I've seen production issues where a Deployment expected nodes labeled `environment=prod`, but the node label was missing, so the scheduler skipped that node.
+
+---
+
+## Common Production Reasons
+
+- Insufficient CPU or Memory.
+- Node has a taint but Pod has no toleration.
+- Node Affinity or Node Selector mismatch.
+- PVC is not bound.
+- Resource Quotas or LimitRanges in the namespace.
+- Maximum Pods per node has been reached.
+- Scheduler events indicating scheduling constraints.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl describe node <node-name>
+
+kubectl top node
+
+kubectl get pvc
+
+kubectl get nodes --show-labels
+
+kubectl describe node <node-name> | grep Taints
+```
+
+---
+
+## Interview Closing Statement
+
+> "In production, whenever a Ready node isn't scheduling Pods, my first step is `kubectl describe pod` because the scheduler events usually tell the exact reason. Then I verify resources, node labels, affinity rules, taints and tolerations, and PVC status. This systematic approach helps identify the root cause quickly instead of guessing."### 90. What is pod priority and preemption?
 ### 91. What are pod topology spread constraints?
-### 111. Troubleshoot unscheduled pods.
+
+Pod Topology Spread Constraints are used to evenly distribute Pods across failure domains, such as worker nodes or availability zones (AZs). The main goal is to improve high availability and avoid placing all replicas in the same location.
+
+Without topology spread constraints, Kubernetes might schedule multiple replicas on the same node or in the same availability zone if resources are available. If that node or AZ fails, multiple application replicas are lost at once. Topology spread constraints prevent this by telling the scheduler to spread Pods as evenly as possible.
+
+---
+
+## Real-Time Production Scenario
+
+For example, we have a payment application with **6 replicas** running in an EKS cluster spread across **3 Availability Zones**.
+
+Without topology spread constraints:
+
+```text
+AZ-1 → 5 Pods ❌
+AZ-2 → 1 Pod ❌
+AZ-3 → 0 Pods ❌
+```
+
+If AZ-1 goes down, **5 out of 6 Pods** are lost.
+
+With topology spread constraints:
+
+```text
+AZ-1 → 2 Pods ✅
+AZ-2 → 2 Pods ✅
+AZ-3 → 2 Pods ✅
+```
+
+Now, even if one AZ fails, the application continues serving traffic from the other two AZs.
+
+---
+
+## Where Do We Use It?
+
+In production, we use topology spread constraints for:
+
+- Critical microservices
+- API servers
+- Payment applications
+- Authentication services
+- Any application with multiple replicas that requires high availability
+### 111. How do you troubleshoot if pods are not getting scheduled?
+
+When Pods are not getting scheduled and remain in the **Pending** state, I follow a structured troubleshooting approach instead of guessing. My first step is always to identify why the Kubernetes Scheduler rejected the Pod.
+
+The first command I run is:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+The **Events** section usually tells the exact reason, such as **Insufficient CPU**, **Insufficient Memory**, **untolerated taint**, **node affinity mismatch**, or **unbound PVC**.
+
+Once I know the reason, I verify the cluster step by step:
+
+- Check node resources to ensure there's enough CPU and memory.
+- Verify node status and confirm the node is not cordoned (`SchedulingDisabled`).
+- Check taints and tolerations to see if the Pod is blocked from the node.
+- Verify node affinity or node selector to ensure the node labels match the Pod requirements.
+- Check PVC status if the Pod uses persistent storage.
+- Verify ResourceQuota and LimitRange in the namespace.
+- Check the maximum Pods limit on the node, especially in EKS where ENI/IP limits can prevent additional Pods from being scheduled.
+
+---
+
+## Real-Time Production Scenario
+
+For example, in one of our production deployments, a new version of the application remained in the **Pending** state. When I checked the Pod events, I found:
+
+```text
+0/6 nodes are available:
+4 Insufficient memory.
+2 node(s) had untolerated taint.
+```
+
+The application team had increased the memory request from **512Mi** to **4Gi**, so none of the existing nodes had enough free memory. We scaled the node pool using the Cluster Autoscaler, and once the new nodes joined the cluster, the Pods were scheduled automatically.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl get nodes
+
+kubectl describe node <node-name>
+
+kubectl top nodes
+
+kubectl get pvc
+
+kubectl get nodes --show-labels
+```
 
 ---
 
