@@ -2940,8 +2940,7 @@ When eviction starts, Kubernetes follows this order:
 ---
 
 ## Section 11: Monitoring & Observability
-### 101. How do you monitor Kubernetes applications and debug memory leaks?
-
+<span style="color:red;">101. How do you monitor Kubernetes applications and debug memory leaks?</span>
 ### 120. How do you debug high kubelet CPU usage?
 
 ### 139. How do you implement centralized logging and monitoring for Kubernetes?
