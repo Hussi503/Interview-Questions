@@ -1668,53 +1668,84 @@ kubectl get nodes --show-labels
 ---
 
 ## Section 9: Troubleshooting
-53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
-54. How do you troubleshoot ImagePullBackOff?
-55. What causes a pod to be evicted?
-56. How do you troubleshoot OOMKilled pods?
-57. What is the difference between kubectl logs and kubectl describe?
-58. A pod is running but the application is not accessible — walk through troubleshooting
-steps
-59. Pods are running but the service is unreachable — what are possible causes?
-60. A pod is stuck in Pending state — how do you debug?
-61. If describe pod says "node is out of capacity," what will you do?
-62. A node has 8GB RAM free, you request 2GB for a pod but it says "Pending — insufficient
-    memory." Why
-63. What command would you use to check resource usage?
-64. How do you debug if a pod is scheduled on the wrong node?
-65. What happens if imagePullSecret is wrong?
-66. A pod is stuck in Terminating state — how do you force delete safely?
-67. A node is NotReady — what are the possible reasons and impact?
-68. What are DiskPressure, MemoryPressure, and PIDPressure conditions? What happens
-when they occur?
-69. How do you cordon and drain a node safely? What happens to DaemonSets during drain?
-70. Node CPU is at 100% — how do you find the culprit?
-71. Pods are being evicted — why, and how does the kubelet eviction policy work?
-73. NodePort is not accessible — why?
-78. How do you capture network traffic inside a pod?
-79. What happens if the API server goes down?
+### 53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
+
+### 54. How do you troubleshoot ImagePullBackOff?
+
+### 55. What causes a pod to be evicted?
+
+### 56. How do you troubleshoot OOMKilled pods?
+
+### 57. What is the difference between `kubectl logs` and `kubectl describe`?
+
+### 58. A pod is running but the application is not accessible — walk through the troubleshooting steps.
+
+### 59. Pods are running but the Service is unreachable — what are the possible causes?
+
+### 60. A pod is stuck in the Pending state — how do you debug it?
+
+### 61. If `kubectl describe pod` says "node is out of capacity," what will you do?
+
+### 62. A node has 8 GB RAM free, and you request 2 GB for a pod, but it remains in the Pending state with "Insufficient memory." Why?
+
+### 63. What commands would you use to check resource usage?
+
+### 64. How do you debug if a pod is scheduled on the wrong node?
+
+### 65. What happens if `imagePullSecrets` is configured incorrectly?
+
+### 66. A pod is stuck in the Terminating state — how do you safely force delete it?
+
+### 67. A node is in the NotReady state — what are the possible reasons and their impact?
+
+### 68. What are DiskPressure, MemoryPressure, and PIDPressure node conditions? What happens when they occur?
+
+### 69. How do you cordon and drain a node safely? What happens to DaemonSet pods during a drain?
+
+### 70. A node's CPU utilization is at 100% — how do you identify the root cause?
+
+### 71. Pods are being evicted — why does this happen, and how does the kubelet eviction policy work?
+
+### 73. A NodePort Service is not accessible — what could be the possible reasons?
+
+### 78. How do you capture network traffic inside a pod?
+
+### 79. What happens if the Kubernetes API Server goes down?
 
 
 
 ---
 
 ## Section 10: EKS
-84. Upgrade EKS with zero downtime.
-85. Pre-checks before EKS upgrade.
-86. Control plane crash during upgrade.
-109. EKS vs Self-Managed Kubernetes.
-110. Node groups in EKS.
-121. EKS components.
-122. CIDR range used for EKS.
-123. Multiple instance types in node groups.
-138. Have you provisioned EKS clusters?
-142. Multi-region Kubernetes setup.
+### 84. How do you upgrade an EKS cluster with zero downtime?
+
+### 85. What pre-checks do you perform before an EKS upgrade?
+
+### 86. If the EKS control plane becomes unavailable during an upgrade, how do pods continue to communicate?
+
+### 109. How is Amazon EKS different from a self-managed Kubernetes cluster?
+
+### 110. How do you manage node groups in Amazon EKS?
+
+### 121. What are the different components available in Amazon EKS, and what is their purpose?
+
+### 122. Which CIDR range did you use for your Amazon EKS cluster?
+
+### 123. How many node groups do you have, and can a single node group contain multiple instance types?
+
+### 138. Have you provisioned Amazon EKS clusters for large-scale workloads?
+
+### 142. How do you design a multi-region Kubernetes architecture?
 
 ---
 
 ## Section 11: Monitoring & Observability
-101. How do you monitor applications and debug memory leaks?
-120. Debug kubelet high CPU.
-139. Centralized logging and monitoring.
-140. Reduce blast radius.
-141. Multi-tenant Kubernetes cluster.
+### 101. How do you monitor Kubernetes applications and debug memory leaks?
+
+### 120. How do you debug high kubelet CPU usage?
+
+### 139. How do you implement centralized logging and monitoring for Kubernetes?
+
+### 140. How do you reduce the blast radius in a large Kubernetes cluster?
+
+### 141. How do you design a multi-tenant Kubernetes cluster with isolation?
