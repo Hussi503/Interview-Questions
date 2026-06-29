@@ -767,7 +767,33 @@ Let's say an application Pod wants to access a Service called **payment-service*
 
 So, applications always communicate with the Service IP, while kube-proxy transparently routes traffic to healthy Pods.
 
-### 29. How does service discovery work in Kubernetes with CoreDNS?
+### 29.How does CoreDNS provide service discovery in Kubernetes?
+
+In Kubernetes, CoreDNS provides service discovery by automatically resolving Service names to their corresponding ClusterIP. Instead of applications communicating using Pod IPs, which are dynamic and change when Pods restart, they communicate using the stable Service name. CoreDNS continuously watches the Kubernetes API Server for Services and Endpoints and maintains DNS records dynamically. When a Pod makes a DNS request for a Service, CoreDNS returns the Service's ClusterIP, and then kube-proxy routes the traffic to one of the healthy backend Pods.
+
+---
+
+## Real-Time Flow
+
+Suppose we have two microservices:
+
+- frontend
+- payment-service
+
+The frontend application calls:
+
+```text
+http://payment-service
+```
+
+Here's what happens internally:
+
+- The frontend Pod sends a DNS query for payment-service.
+- The DNS request goes to CoreDNS.
+- CoreDNS looks up the Service in the Kubernetes API and returns its ClusterIP.
+- The frontend sends traffic to that ClusterIP.
+- kube-proxy uses its iptables/IPVS rules to load balance the request to one of the healthy payment Pods.
+- If Pods scale up, restart, or fail, CoreDNS and kube-proxy automatically update their records, so the application continues working without any configuration changes.
 ### 30. Explain the Kubernetes networking model.
 ### 31. How do you restrict pod-to-pod communication using Network Policies?
 ### 72. Service reachable internally but not externally.
