@@ -814,6 +814,15 @@ The Kubernetes networking model is based on a simple principle: every Pod gets i
 In production, we use a reliable CNI plugin based on the environment—for example, Amazon VPC CNI in EKS or Calico when advanced network policies are required. We never rely on Pod IPs because Pods are recreated during deployments or failures. Instead, all application communication happens through Services, and we enforce Network Policies to restrict unnecessary Pod-to-Pod communication following the principle of least privilege.
 
 ### 31. How do you restrict pod-to-pod communication using Network Policies?
+
+In production, we use Network Policies to implement micro-segmentation, meaning Pods are only allowed to communicate with the Pods they actually need. By default, Kubernetes allows all Pod-to-Pod communication. Once a Network Policy selects a Pod, that Pod becomes isolated, and only the traffic explicitly allowed by the policy is permitted. This helps enforce the principle of least privilege and limits the impact of a compromised Pod.
+
+---
+
+## Production Best Practices
+
+In production, we first apply a default deny Network Policy for each namespace and then create explicit allow rules for required communication. This prevents accidental exposure of internal services. We also ensure our CNI plugin supports Network Policies—for example, Calico, Cilium, or Amazon VPC CNI with Network Policy support. We use labels consistently because policies are label-based, and we validate them thoroughly to avoid breaking application communication.
+
 ### 72. Service reachable internally but not externally.
 ### 73. NodePort not accessible.
 ### 74. Ingress returns 502 error — what are possible reasons.
