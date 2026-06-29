@@ -1080,8 +1080,190 @@ kubectl exec -it <source-pod> -- nc -zv <destination-pod-ip> <port>
 
 > "If one Pod cannot reach another Pod's IP, I first verify the Pods and their IP assignments, then check Network Policies, followed by the CNI plugin and node networking. If the Pods are on different nodes, I focus heavily on CNI routing and cloud network configuration. I also avoid relying solely on ping because many containers don't respond to ICMP; application-level tests like curl give a more accurate picture of connectivity."
 ### 114. How does DNS resolution work inside a pod?
-### 124. Suppose a pod running application, how will you expose it to internet using ALB?
+
+Inside a Pod, DNS resolution is handled by CoreDNS. Every Pod gets a `/etc/resolv.conf` file automatically created by Kubernetes, which points to the Cluster DNS Service IP (CoreDNS). When an application tries to access a Service using its name, the DNS query is sent to CoreDNS, which resolves the Service name to its ClusterIP. The application then sends traffic to that ClusterIP, and kube-proxy forwards the request to one of the healthy backend Pods.
+
 ---
+
+## Real-Time Flow
+
+Suppose the frontend application wants to call the payment service using:
+
+```text
+http://payment-service
+```
+
+Here's what happens:
+
+- The application makes a DNS request for `payment-service`.
+- The Pod checks its `/etc/resolv.conf`.
+- The DNS request is sent to the CoreDNS Service IP.
+- CoreDNS looks up the Service in the Kubernetes API and returns the ClusterIP.
+- The application connects to the ClusterIP.
+- kube-proxy routes the request to one of the healthy payment Pods.
+
+The application never needs to know the actual Pod IPs, which is important because Pods are recreated frequently during deployments and autoscaling.
+
+---
+
+## Example `/etc/resolv.conf`
+
+Inside every Pod, you'll typically see something like:
+
+```text
+nameserver 10.100.0.10
+search default.svc.cluster.local svc.cluster.local cluster.local
+options ndots:5
+```
+
+- **nameserver** → CoreDNS ClusterIP
+- **search** → Allows using short Service names like `payment-service`
+- **ndots:5** → Controls how DNS names are resolved within the cluster
+
+---
+
+## DNS Search Domains
+
+If the frontend and payment service are in the same namespace, we simply call:
+
+```text
+http://payment-service
+```
+
+If they're in different namespaces, we use:
+
+```text
+http://payment-service.backend
+```
+
+or the fully qualified domain name (FQDN):
+
+```text
+payment-service.backend.svc.cluster.local
+```
+
+---
+
+## Production Troubleshooting
+
+If DNS isn't working, I verify it in this order:
+
+- Check DNS resolution from inside the Pod.
+
+  ```bash
+  kubectl exec -it <pod> -- nslookup payment-service
+  ```
+
+- Verify the Pod's DNS configuration.
+
+  ```bash
+  kubectl exec -it <pod> -- cat /etc/resolv.conf
+  ```
+
+- Check CoreDNS Pods.
+
+  ```bash
+  kubectl get pods -n kube-system
+  ```
+
+- Review CoreDNS logs.
+
+  ```bash
+  kubectl logs -n kube-system -l k8s-app=kube-dns
+  ```
+
+- Verify the CoreDNS Service and Endpoints.
+
+  ```bash
+  kubectl get svc,endpoints -n kube-system
+  ```
+
+- If CoreDNS is healthy but resolution still fails, investigate kube-proxy, the CNI plugin, and Network Policies.
+
+---
+
+## Interview Closing Statement
+
+> "Inside a Pod, DNS resolution starts with `/etc/resolv.conf`, which points to the CoreDNS Service. CoreDNS resolves the Service name to its ClusterIP by querying the Kubernetes API, and kube-proxy then forwards the traffic to a healthy backend Pod. In production, if DNS fails, I first test `nslookup` from the Pod, then verify CoreDNS health, its Service and Endpoints, and finally check networking components like kube-proxy and the CNI plugin."
+### 124. Suppose a Pod is running an application. How will you expose it to the internet using ALB in EKS?
+
+In EKS, I expose a Pod to the internet using an Ingress resource together with the AWS Load Balancer Controller, which automatically provisions an Application Load Balancer (ALB). We never expose Pods directly because Pod IPs are ephemeral. Instead, we expose the application through a Service, and then the Ingress routes external traffic from the ALB to that Service.
+
+---
+
+## Real-Time Production Flow
+
+Suppose I have a Pod running an application on port **8080**.
+
+- Deploy the application Pod using a Deployment.
+- Create a ClusterIP Service that exposes the Pod internally.
+- Install the AWS Load Balancer Controller in the EKS cluster (if it's not already installed).
+- Create an Ingress with `ingressClassName: alb` and the required ALB annotations.
+- The AWS Load Balancer Controller watches the Ingress resource and automatically provisions an ALB in AWS.
+- The controller creates Target Groups, registers the backend Pods (or nodes depending on the target type), configures listeners, and health checks.
+- The ALB gets a public DNS name, which I map to my domain using Route 53. For HTTPS, I attach an ACM certificate through an Ingress annotation.
+
+The traffic flow is:
+
+```text
+User
+   │
+   ▼
+Internet
+   │
+   ▼
+Application Load Balancer (ALB)
+   │
+   ▼
+Ingress
+   │
+   ▼
+ClusterIP Service
+   │
+   ▼
+Application Pods
+```
+
+---
+
+## Production Ingress Example
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:region:account:certificate/xxxxx
+spec:
+  ingressClassName: alb
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service
+            port:
+              number: 80
+```
+
+---
+
+## Production Best Practices
+
+- Use ClusterIP as the backend Service because the ALB communicates through the Ingress Controller.
+- Use IP target mode (`alb.ingress.kubernetes.io/target-type: ip`) so the ALB registers Pod IPs directly.
+- Configure readiness probes so only healthy Pods are added to the ALB target group.
+- Terminate SSL at the ALB using an ACM certificate.
+- Use Route 53 for DNS mapping.
+- Enable ALB access logs and monitor target group health and Ingress Controller logs for troubleshooting.---
 
 ## Section 5: Scheduling
 ### 16. How does the scheduler decide where to place pods?
