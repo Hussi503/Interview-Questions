@@ -1030,7 +1030,8 @@ In this case, the labels don't match the policy, so Kubernetes correctly blocks 
 
 ## Interview Closing Statement
 
-> "In production, I confirm a NetworkPolicy issue by first ruling out the application, Service, and Endpoints. Then I test connectivity from a Pod, inspect which NetworkPolicies select the destination Pod, verify the label selectors and ingress/egress rules, and finally validate the fix through a controlled policy update. This approach ensures I don't misdiagnose networking issues as application failures."### 78. How do you capture network traffic inside a pod?
+> "In production, I confirm a NetworkPolicy issue by first ruling out the application, Service, and Endpoints. Then I test connectivity from a Pod, inspect which NetworkPolicies select the destination Pod, verify the label selectors and ingress/egress rules, and finally validate the fix through a controlled policy update. This approach ensures I don't misdiagnose networking issues as application failures."
+
 ### 108. If you ping one pod's IP from another and it's unreachable, where would you check?
 
 If one Pod cannot reach another Pod's IP, I troubleshoot from the network layer inward. In production, Pod-to-Pod communication should work across nodes, so if it's failing, the issue is usually related to the CNI plugin, Network Policies, node networking, or routing.
@@ -1594,69 +1595,106 @@ kubectl get nodes --show-labels
 
 ## Section 6: Security
 ### 32. ConfigMap vs Secret.
-33. How are Secrets stored and encrypted in etcd?
-34. Kubernetes Secrets are base64 encoded. How do you secure them?
-35. What is RBAC?
-36. How do you provide least privileged access?
-37. Role vs ClusterRole.
-38. What is a ServiceAccount?
-39. What is IRSA?
-100. How do you implement network security?
-104. How do you secure Kubernetes clusters?
-136. Where do you store secrets securely?
-137. What is a Network Policy?
+### 33. How are Secrets stored and encrypted in etcd?
+
+### 34. Kubernetes Secrets are Base64 encoded — how do you prevent exposure in Git?
+
+### 35. What is RBAC? What are its components (Role, ClusterRole, RoleBinding, ClusterRoleBinding)?
+
+### 36. How do you provide least-privileged access to pods using RBAC?
+
+### 37. What is the difference between a Role and a ClusterRole?
+
+### 38. What is a ServiceAccount, and how is it different from a user?
+
+### 100. How do you implement network security in Kubernetes?
+
+### 104. How do you secure Kubernetes clusters?
+
+### 136. If you want to store secrets in Kubernetes, where can you store them securely?
+
+### 137. Is there scope for NetworkPolicies? What is a NetworkPolicy?
 
 ---
 
 ## Section 7: Resource Management & Autoscaling
-40. Resource requests vs limits.
-41. What happens if no limits are defined?
-42. What is overcommit?
-43. HPA vs VPA vs Cluster Autoscaler.
-44. Why might HPA not scale?
-45. How does HPA get metrics?
-46. What is Karpenter?
-132. How to tune Cluster Autoscaler?
-133. Noisy neighbor problem.
-134. One pod consuming excessive resources.
-135. Resource isolation using namespaces.
+### 40. What is the difference between resource requests and limits?
+
+### 41. What happens if no resource limits are defined?
+
+### 42. What is an overcommit scenario, and what is its impact?
+
+### 43. HPA vs VPA vs Cluster Autoscaler.
+
+### 44. Why might HPA not scale even when CPU usage is high?
+
+### 45. How does HPA get metrics?
+
+### 46. What is Karpenter, and how does it differ from Cluster Autoscaler?
+
+### 132. How to tune Cluster Autoscaler?
+
+### 133. Pod uses less CPU but node overloaded - why and how to detect noisy neighbor?
+
+### 134. Suppose one pod consumes more CPU/memory causing another to crash - how to prevent?
+
+### 135. Are you aware of namespaces? Can they help achieve resource isolation?
 
 ---
 
 ## Section 8: Deployments & Release Strategies
-47. RollingUpdate, Recreate, Blue-Green, Canary.
-48. How do you ensure zero downtime?
-49. What deployment strategies do you use?
-50. Rolling update stuck.
-51. What is a canary release?
-97. Canary release unstable.
-98. Configuration drift.
-99. Why avoid latest tag?
-125. Write an NGINX Deployment YAML.
-127. Write a Service YAML.
+### 47. What are the different deployment strategies (RollingUpdate, Recreate, Blue-Green, Canary), and how do you implement them?
+
+### 48. How do you ensure zero downtime?
+
+### 49. What deployment strategies are you following in your organization?
+
+### 50. How do you handle a rolling update that gets stuck?
+
+### 51. What is a canary release? How do you implement it?
+
+### 97. A canary release is unstable — what actions will you take?
+
+### 98. How do you handle configuration drift between environments?
+
+### 99. Why should you avoid using the latest tag in production?
+
+### 125. Can you write a Kubernetes Deployment YAML file for NGINX?
+
+### 126. Why are you using a hyphen ("-") before the container name in YAML, and what does it represent?
+
+### 127. If you want to write a Service YAML for a Deployment, what will you write?
 
 ---
 
 ## Section 9: Troubleshooting
-53. CrashLoopBackOff.
-54. ImagePullBackOff.
-55. Pod eviction.
-56. OOMKilled.
-57. logs vs describe.
-58. Pod running but app inaccessible.
-59. Service unreachable.
-60. Pod Pending.
-61. Node out of capacity.
-62. Pending due to insufficient memory.
-63. Check resource usage.
-64. Pod scheduled on wrong node.
-65. Wrong imagePullSecret.
-66. Pod stuck in Terminating.
-67. Node NotReady.
-68. DiskPressure, MemoryPressure, PIDPressure.
-69. Cordon and Drain.
-70. Node CPU at 100%.
-71. Eviction policy.
+53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
+54. How do you troubleshoot ImagePullBackOff?
+55. What causes a pod to be evicted?
+56. How do you troubleshoot OOMKilled pods?
+57. What is the difference between kubectl logs and kubectl describe?
+58. A pod is running but the application is not accessible — walk through troubleshooting
+steps
+59. Pods are running but the service is unreachable — what are possible causes?
+60. A pod is stuck in Pending state — how do you debug?
+61. If describe pod says "node is out of capacity," what will you do?
+62. A node has 8GB RAM free, you request 2GB for a pod but it says "Pending — insufficient
+    memory." Why
+63. What command would you use to check resource usage?
+64. How do you debug if a pod is scheduled on the wrong node?
+65. What happens if imagePullSecret is wrong?
+66. A pod is stuck in Terminating state — how do you force delete safely?
+67. A node is NotReady — what are the possible reasons and impact?
+68. What are DiskPressure, MemoryPressure, and PIDPressure conditions? What happens
+when they occur?
+69. How do you cordon and drain a node safely? What happens to DaemonSets during drain?
+70. Node CPU is at 100% — how do you find the culprit?
+71. Pods are being evicted — why, and how does the kubelet eviction policy work?
+73. NodePort is not accessible — why?
+78. How do you capture network traffic inside a pod?
+79. What happens if the API server goes down?
+
+
 
 ---
 
