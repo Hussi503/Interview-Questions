@@ -784,6 +784,45 @@ So, applications always communicate with the Service IP, while kube-proxy transp
 
 ## Section 5: Scheduling
 ### 16. How does the scheduler decide where to place pods?
+
+The Kubernetes Scheduler is responsible for assigning Pods to worker nodes. It doesn't randomly pick a node—it follows a two-phase process: **Filtering** and **Scoring**.
+
+During **Filtering**, it eliminates nodes that cannot run the Pod based on:
+
+- Resource availability (CPU, memory)
+- Node health
+- Taints and tolerations
+- Node selectors
+- Affinity/anti-affinity rules
+- Storage requirements
+- Other scheduling constraints
+
+After identifying the eligible nodes, it **scores** them based on factors like:
+
+- Balanced resource utilization
+- Topology spread
+- Affinity preferences
+- Scheduling policies
+
+The node with the highest score is selected, and the scheduler binds the Pod to that node through the Kubernetes API Server.
+
+---
+
+## Real-Time Production Scenario
+
+For example, if I deploy a Pod requesting **2 vCPUs and 4 GB RAM**, and my cluster has **five worker nodes**, the scheduler first filters out nodes that don't have sufficient free resources or don't match the Pod's constraints.
+
+Let's say only **Node-2** and **Node-4** qualify.
+
+It then scores both nodes, considering factors such as:
+
+- Which node has better resource balance
+- Whether the Pod should be placed close to related services
+- Whether Pods should be spread across availability zones
+
+If **Node-4** receives the highest score, the scheduler binds the Pod to **Node-4**.
+
+The kubelet running on that node then pulls the container image and starts the Pod.
 ### 17. What are taints and tolerations?
 ### 18. What are node affinity and anti-affinity?
 ### 19. How do you assign pods using taints/tolerations and affinity?
