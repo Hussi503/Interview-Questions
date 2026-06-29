@@ -654,7 +654,96 @@ Instead:
 
       
  
-30. Where will you mention the load balancer type in ingress YAML?
+### 30. Where will you mention the Load Balancer type in Ingress YAML?
+
+The **Load Balancer type is not mentioned directly** in the Ingress YAML.
+
+In production, the type of Load Balancer is determined by the **Ingress Controller** and the **IngressClass** being used.
+
+For example:
+
+- If you're using the **AWS Load Balancer Controller**, creating an Ingress resource automatically provisions an **Application Load Balancer (ALB)**.
+- The controller watches Ingress resources that have the appropriate **IngressClass** (`alb`) and creates the ALB automatically.
+- We **do not specify ALB or NLB as a field** in the Ingress specification.
+
+If we need to customize the ALB, such as:
+
+- Internet-facing or Internal
+- IP or Instance target type
+- SSL/TLS configuration
+- Listener ports
+- ACM Certificate
+- Subnets
+- AWS WAF
+
+we configure those using **annotations** in the Ingress YAML.
+
+---
+
+## Production Example
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sample-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+
+    # ALB Scheme
+    alb.ingress.kubernetes.io/scheme: internet-facing
+
+    # Target Type
+    alb.ingress.kubernetes.io/target-type: ip
+
+    # Listener Ports
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+
+    # SSL Certificate (ACM)
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:region:account:certificate/xxxxxxxx
+
+spec:
+  ingressClassName: alb
+
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80
+```
+
+---
+
+## Key Point
+
+The following line tells the **AWS Load Balancer Controller** to manage this Ingress:
+
+```yaml
+spec:
+  ingressClassName: alb
+```
+
+or in older Kubernetes versions:
+
+```yaml
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+```
+
+This **does not explicitly specify the load balancer type**. Instead, it tells Kubernetes which **Ingress Controller** should process the Ingress resource. Since the AWS Load Balancer Controller is responsible for the `alb` IngressClass, it automatically provisions an **Application Load Balancer (ALB)**.
+
+---
+
+## Interview Answer (1 Minute)
+
+> We don't explicitly mention **ALB** or **NLB** anywhere in the Ingress specification. The type of load balancer is determined by the **Ingress Controller** associated with the IngressClass. In AWS EKS, if we're using the **AWS Load Balancer Controller**, we specify `ingressClassName: alb` (or the older `kubernetes.io/ingress.class: alb` annotation). The controller watches those Ingress resources and automatically provisions an **Application Load Balancer (ALB)**. If we need to customize the ALB—for example, making it internet-facing or internal, selecting IP or instance target type, configuring SSL certificates, listener ports, subnets, or AWS WAF—we do that using **ALB-specific annotations** in the Ingress YAML, not by specifying the load balancer type directly.
 31. How does kube-proxy work?
 32. How does service discovery work with CoreDNS?
 33. Explain the Kubernetes networking model.
