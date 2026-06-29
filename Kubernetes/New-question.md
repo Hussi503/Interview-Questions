@@ -825,32 +825,29 @@ In production, we first apply a default deny Network Policy for each namespace a
 
 ### 72. Service reachable internally but not externally.
 
-If a Service is reachable internally within the cluster but not externally, I troubleshoot it layer by layer instead of assuming it's an application issue.
+If a Service is reachable internally but not externally, it tells me the application and Service are most likely healthy, and the issue is somewhere in the ingress path. In production, I troubleshoot layer by layer instead of guessing. I start from the application and move outward until I identify where the traffic is getting blocked.
 
-First, I verify that the Service type is correct. If external access is required, it should be **LoadBalancer**, **NodePort**, or exposed through an **Ingress**. If it's a **ClusterIP** Service, it's only accessible from within the cluster.
+First, I verify that the application is healthy by accessing the Service from another Pod using **curl**. If that works, I know the Pods, Service, and kube-proxy are functioning correctly. Next, I check whether the Service type is correct. If external access is required, it should typically be exposed through an **Ingress** or a **LoadBalancer** Service, not just a **ClusterIP**.
 
-Next, I check whether the Service has healthy Endpoints by running `kubectl get endpoints` or `kubectl get endpointslices`. If there are no endpoints, it usually means the Service selector doesn't match the Pod labels or the Pods aren't in a Ready state.
+If we're using Ingress, I verify that the Ingress resource is created correctly, the Ingress Controller is running, and the Load Balancer has been provisioned successfully. I then check whether the Service name and port in the Ingress backend match the actual Service. A wrong backend port is a very common production issue.
 
-Then, I verify the Ingress configuration, Ingress Controller, or Load Balancer. I ensure the external Load Balancer has been provisioned correctly, DNS is pointing to the correct endpoint, and the target groups report healthy backend targets.
+Next, I verify the cloud Load Balancer. In EKS, I ensure the ALB or NLB is in the Active state, its target group shows healthy targets, and the security groups allow inbound traffic on ports **80** and **443**. I also check that the worker node security groups and NACLs are not blocking traffic. If DNS is used, I confirm that the domain correctly resolves to the Load Balancer's DNS name.
 
-I also check firewall rules or Security Groups to confirm that the required ports, such as **80** or **443**, are open. If using Network Policies, I verify that ingress traffic isn't being blocked.
-
-Finally, I inspect the application logs, Ingress Controller logs, and Service events to identify any routing or backend connectivity issues.
+Finally, I review the Ingress Controller logs and application logs for errors like **404**, **502**, or **503**, which usually indicate routing issues, unhealthy Pods, or backend connectivity problems.
 
 ---
 
-## Production Troubleshooting Steps
+## Production Troubleshooting Order
 
-- Verify the Service type (ClusterIP, NodePort, LoadBalancer, or Ingress).
-- Check that the Service has healthy Endpoints/EndpointSlices.
-- Verify the Service selector matches the Pod labels.
-- Ensure the Pods are in the **Ready** state.
-- Check the Ingress resource and Ingress Controller.
-- Verify the external Load Balancer and its target group health.
-- Confirm DNS is resolving to the correct Load Balancer.
-- Check firewall rules, Security Groups, or NACLs.
-- Verify Network Policies are not blocking external traffic.
-- Review application logs, Ingress Controller logs, and Kubernetes events.### 73. NodePort not accessible.
+- Verify Pod health.
+- Verify Service and Endpoints (`kubectl get endpoints`).
+- Test the Service internally using **curl**.
+- Check Service type (ClusterIP/NodePort/LoadBalancer).
+- Verify Ingress configuration and backend mapping.
+- Check Ingress Controller logs.
+- Verify Load Balancer health checks and target groups.
+- Check Security Groups, NACLs, and firewall rules.
+- Verify DNS resolution and SSL certificate if HTTPS is used.
 ### 74. Ingress returns 502 error — what are possible reasons.
 ### 75. How do you debug CNI plugin issues?
 ### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
