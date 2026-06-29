@@ -611,9 +611,9 @@ If you're using NGINX Ingress Controller, Kubernetes does not create an ALB auto
 
 Instead:
 
-    You expose the NGINX Ingress Controller using a Service of type LoadBalancer.
-    AWS provisions a Network Load Balancer (NLB) by default (or a Classic Load Balancer in older setups, depending on annotations and Kubernetes version).
-    The NLB forwards traffic to the NGINX Ingress Controller, which then performs Layer 7 routing.
+  You expose the NGINX Ingress Controller using a Service of type LoadBalancer.
+  AWS provisions a Network Load Balancer (NLB) by default (or a Classic Load Balancer in older setups, depending on annotations and Kubernetes version).
+  The NLB forwards traffic to the NGINX Ingress Controller, which then performs Layer 7 routing.
 
 Architecture:
 Internet
