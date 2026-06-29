@@ -1670,26 +1670,675 @@ kubectl get nodes --show-labels
 ## Section 9: Troubleshooting
 ### 53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
 
-### 54. How do you troubleshoot ImagePullBackOff?
+When a Pod is in **CrashLoopBackOff**, it means the container starts, crashes, and Kubernetes keeps restarting it with an increasing backoff time. In production, I don't restart the Pod immediately. My goal is to identify why the application is crashing.
 
+The first thing I do is check the Pod events and the application logs.
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl logs <pod-name>
+```
+
+If the container is restarting very quickly, I check the logs from the previous crashed container:
+
+```bash
+kubectl logs <pod-name> --previous
+```
+
+The logs usually reveal the root cause. Common issues I've encountered include incorrect environment variables, database connection failures, missing Secrets or ConfigMaps, invalid application configuration, image issues, or the application failing to bind to the expected port.
+
+If the logs don't reveal the issue, I inspect the Pod configuration. I verify that the image is correct, environment variables are present, Secrets and ConfigMaps are mounted properly, resource limits are appropriate, and the application port matches the container configuration. I also check the liveness and readiness probes, because an incorrect liveness probe can continuously kill a healthy application, resulting in a CrashLoopBackOff.
+
+If the application was working previously, I compare the current deployment with the last successful version to identify any recent changes. In production, this is often caused by a bad deployment, and if required, I perform a rollback while investigating the root cause.
+
+---
+
+## Common Production Causes
+
+- Application code crashes.
+- Missing or incorrect ConfigMap/Secret.
+- Database or external service unavailable.
+- Wrong environment variables.
+- Incorrect startup command or entrypoint.
+- Liveness probe misconfiguration.
+- Out of Memory (OOMKilled).
+- Wrong container image or application port.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl logs <pod-name>
+
+kubectl logs <pod-name> --previous
+
+kubectl get events --sort-by=.metadata.creationTimestamp
+
+kubectl describe deployment <deployment-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, during one deployment, all application Pods entered **CrashLoopBackOff** immediately after release. The logs showed:
+
+```text
+Error: DATABASE_CONNECTION_STRING not found
+```
+
+The new deployment referenced a Secret that hadn't been created in the production namespace. After creating the missing Secret and restarting the Deployment, the Pods started successfully.
+
+### 54. How do you troubleshoot a Pod stuck in ImagePullBackOff?
+
+When a Pod is in **ImagePullBackOff**, it means Kubernetes is unable to pull the container image from the registry. In production, I first identify why the image pull failed instead of recreating the Pod.
+
+The first thing I do is check the Pod events because Kubernetes clearly reports the image pull failure.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+The **Events** section usually tells the exact reason, such as **image not found**, **authentication failed**, **access denied**, or **network timeout**.
+
+Next, I verify that the image name and tag in the Deployment are correct. A typo in the image name or an incorrect tag is one of the most common production issues. If the image is stored in a private registry like Azure Container Registry (ACR) or Amazon ECR, I verify that the cluster has permission to pull the image. This includes checking `imagePullSecrets` or the node's IAM/managed identity permissions.
+
+I also confirm that the image actually exists in the registry and that the worker nodes have network connectivity to the registry. If the image was recently pushed, I verify that the CI/CD pipeline completed successfully and pushed the correct version.
+
+---
+
+## Common Production Causes
+
+- Incorrect image name or tag.
+- Image does not exist in the registry.
+- Authentication failure to a private registry.
+- Missing or incorrect `imagePullSecrets`.
+- IAM or Managed Identity permission issues (EKS/AKS).
+- Registry is unavailable or network connectivity issues.
+- Image was never pushed by the CI/CD pipeline.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl get pod <pod-name> -o yaml
+
+kubectl describe secret <image-pull-secret>
+
+kubectl describe deployment <deployment-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, during one production deployment, all Pods went into **ImagePullBackOff**. When I checked the Pod events, I saw:
+
+```text
+Failed to pull image "myapp:v2.5"
+Error response from registry: manifest unknown
+```
+
+The CI/CD pipeline had pushed the image as **v2.4**, but the Deployment YAML referenced **v2.5**. After updating the Deployment with the correct image tag and redeploying, the Pods started successfully.
+
+In another case, the image existed, but the `imagePullSecret` had expired. After updating the registry credentials, Kubernetes was able to pull the image successfully.
 ### 55. What causes a pod to be evicted?
 
+A Pod is evicted when the kubelet removes it from a node because the node is under resource pressure or due to a scheduling policy. In production, the most common reason is resource exhaustion, especially memory pressure, where Kubernetes evicts lower-priority Pods to keep the node healthy.
+
+The first thing I do is check the Pod status and events to identify the eviction reason.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+The **Events** section usually shows messages like **"The node was low on memory"** or **"Pod was evicted due to ephemeral-storage pressure."**
+
+The most common causes I've seen in production are:
+
+- **Memory Pressure** – Node runs out of RAM, so kubelet evicts Pods.
+- **Disk Pressure** – Node runs out of disk or ephemeral storage.
+- **PID Pressure** – Too many processes are running on the node.
+- **Node Drain** – During maintenance or cluster upgrades, Pods are evicted gracefully.
+- **NoExecute Taint** – If a node gets a `NoExecute` taint, Pods without a matching toleration are evicted.
+- **Node becomes NotReady/Unreachable** – Kubernetes eventually evicts Pods and reschedules them on healthy nodes.
+
+---
+
+## Real-Time Production Scenario
+
+For example, one of our worker nodes started consuming excessive memory because of multiple Java applications. The node entered **MemoryPressure**, and Kubernetes evicted some low-priority Pods to protect the node. We identified the issue using:
+
+```bash
+kubectl describe node <node-name>
+
+kubectl top node
+```
+
+We found memory utilization was above **95%**. We added another worker node through the Cluster Autoscaler, redistributed the workload, and the evictions stopped.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl describe node <node-name>
+
+kubectl top node
+
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+---
+
+## Common Production Causes
+
+- Memory pressure (most common).
+- Disk/ephemeral storage pressure.
+- PID pressure.
+- Node drain during maintenance.
+- NoExecute taints.
+- Node failure or prolonged NotReady state.
 ### 56. How do you troubleshoot OOMKilled pods?
 
+An **OOMKilled** Pod means the container exceeded its configured memory limit, so the Linux OOM (Out of Memory) Killer terminated the process. In production, this is usually caused by either an application memory leak, insufficient memory limits, or incorrect resource sizing. My goal is to determine whether the issue is with the application or the Kubernetes resource configuration.
+
+The first thing I do is confirm that the Pod was actually OOMKilled.
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl get pod <pod-name> -o wide
+```
+
+In the Pod description, I check the **Last State**, which will show:
+
+```text
+Reason: OOMKilled
+Exit Code: 137
+```
+
+Next, I review the application logs to understand what the application was doing before it was terminated.
+
+```bash
+kubectl logs <pod-name> --previous
+```
+
+Then, I verify the Pod's resource requests and limits. If the memory limit is too low compared to the application's actual usage, Kubernetes will kill the container when it crosses that limit.
+
+I also check the node's memory utilization to ensure the issue isn't node-level memory pressure.
+
+```bash
+kubectl top pod
+
+kubectl top node
+```
+
+If the application consistently exceeds its memory limit, I work with the development team to determine whether it's an application memory leak or simply a workload increase. If it's expected memory usage, I increase the Pod's memory limits and requests. If it's a memory leak, the application needs to be fixed rather than just allocating more memory.
+
+---
+
+## Common Production Causes
+
+- Memory limit is too low.
+- Application memory leak.
+- Sudden traffic spike causing higher memory usage.
+- Large batch jobs or file processing.
+- JVM/Node.js/.NET memory not configured correctly.
+- Incorrect resource requests and limits.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl logs <pod-name> --previous
+
+kubectl top pod
+
+kubectl top node
+
+kubectl describe deployment <deployment-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, one of our Java microservices started restarting continuously during peak traffic. The Pod status showed:
+
+```text
+Reason: OOMKilled
+Exit Code: 137
+```
+
+The Deployment had a **512Mi** memory limit, but during peak load the application was consuming around **900Mi**. We confirmed this using monitoring dashboards and `kubectl top pod`. As an immediate fix, we increased the memory limit to **1Gi** and adjusted the JVM heap settings. Later, the development team optimized the application to reduce memory consumption. After that, the OOMKilled events stopped.
 ### 57. What is the difference between `kubectl logs` and `kubectl describe`?
 
+I use `kubectl logs` and `kubectl describe` together because they provide different information.
+
+- `kubectl logs` shows the application logs generated by the container. I use it to troubleshoot application-level issues such as exceptions, database connection failures, API errors, or startup failures.
+- `kubectl describe` shows the Kubernetes object's details and events. It provides information about scheduling, image pulling, probes, resource allocation, Pod conditions, volume mounts, and the Events section, which often explains why Kubernetes is unable to run the Pod.
+
+---
+
+## Real-Time Production Scenario
+
+For example, suppose a Pod is in **CrashLoopBackOff**.
+
+My first command is:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+This tells me whether the Pod failed due to:
+
+- ImagePullBackOff
+- Failed Scheduling
+- OOMKilled
+- Failed Mount
+- Probe failures
+- Event messages from Kubernetes
+
+If the Pod has started and the container is crashing, I then use:
+
+```bash
+kubectl logs <pod-name>
+
+kubectl logs <pod-name> --previous
+```
+
+to check the application logs and identify the exact error, such as:
+
+- Database connection failed
+- NullPointerException
+- Configuration file missing
+
+---
+
+## Simple Difference
+
+| `kubectl describe` | `kubectl logs` |
+|--------------------|----------------|
+| Kubernetes information | Application information |
+| Pod Events | Container logs |
+| Scheduling issues | Application errors |
+| Image pull failures | Stack traces |
+| Probe failures | Runtime exceptions |
+| Volume mount issues | Startup logs |
+
+---
+
+## Interview Closing Statement
+
+> "kubectl describe tells me why Kubernetes is having trouble with the Pod, while kubectl logs tells me why the application inside the Pod is failing. In production, I always start with `kubectl describe` to understand the Pod's state and events, then use `kubectl logs` to identify the application-level root cause."
 ### 58. A pod is running but the application is not accessible — walk through the troubleshooting steps.
 
+If the Pod is in **Running** state but the application is not accessible, I don't assume the application is healthy because **Running** only means the container is running, not that the application inside it is working. In production, I troubleshoot layer by layer—from the application to the network.
+
+First, I verify whether the application is actually listening on the expected port. I check the application logs for startup errors or exceptions.
+
+```bash
+kubectl logs <pod-name>
+
+kubectl exec -it <pod-name> -- netstat -tulnp
+```
+
+If the application is running correctly, I verify the Service. I check whether the Service selector matches the Pod labels and whether the Service has healthy Endpoints.
+
+```bash
+kubectl get svc
+
+kubectl get endpoints
+```
+
+If the Endpoints are empty, it's usually a label mismatch between the Service and the Pods.
+
+Next, I test the application from inside the cluster.
+
+```bash
+kubectl exec -it <test-pod> -- curl http://<service-name>:<port>
+```
+
+- If this fails, the issue is between the Pod and the Service.
+- If this works, the problem is likely in the Ingress or Load Balancer.
+
+Then I verify the Ingress configuration, the Ingress Controller logs, and ensure the backend Service and ports are correctly configured. If I'm running on EKS or AKS, I also check the Load Balancer health checks, security groups/firewall rules, and DNS configuration.
+
+Finally, I verify that Network Policies aren't blocking traffic and confirm that the application's readiness probe is passing. If the readiness probe fails, the Pod may be **Running**, but Kubernetes won't send traffic to it.
+
+---
+
+## Production Troubleshooting Flow
+
+```text
+Pod Running
+      │
+      ▼
+Check Application Logs
+      │
+      ▼
+Verify Application Listening Port
+      │
+      ▼
+Check Service & Endpoints
+      │
+      ▼
+Test Service Internally (curl)
+      │
+      ▼
+Check Ingress / Load Balancer
+      │
+      ▼
+Verify Network Policies & Firewall
+```
+
+---
+
+## Commands I Use
+
+```bash
+kubectl logs <pod-name>
+
+kubectl exec -it <pod-name> -- netstat -tulnp
+
+kubectl get svc
+
+kubectl get endpoints
+
+kubectl exec -it <test-pod> -- curl http://<service-name>:<port>
+
+kubectl describe ingress <ingress-name>
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, one of our APIs was in the **Running** state, but users were getting **503 Service Unavailable**. The application logs were clean, but `kubectl get endpoints` returned no endpoints. We found that the Service selector was `app=backend`, while the Deployment label had been changed to `app=backend-v2` during the last release. Because the labels didn't match, the Service had no backend Pods. After correcting the selector, the Endpoints were populated, and the application became accessible immediately.
 ### 59. Pods are running but the Service is unreachable — what are the possible causes?
 
 ### 60. A pod is stuck in the Pending state — how do you debug it?
 
+If a Pod is stuck in the **Pending** state, it means the Pod has been created, but the Kubernetes Scheduler hasn't been able to assign it to a worker node. In production, I don't start by checking the nodes—I first check why the scheduler couldn't place the Pod.
+
+The first command I run is:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+The **Events** section usually gives the exact reason, such as **Insufficient CPU**, **Insufficient Memory**, **untolerated taints**, **node affinity mismatch**, or **unbound PVC**.
+
+Based on the scheduler event, I troubleshoot further. I verify that the worker nodes have enough CPU and memory, check if the node is cordoned (`SchedulingDisabled`), validate node labels and affinity rules, inspect taints and tolerations, and ensure any required PersistentVolumeClaim is in the **Bound** state.
+
+I also verify namespace-level restrictions like **ResourceQuota** or **LimitRange**, because they can prevent Pods from being scheduled even if the cluster has free resources.
+
+---
+
+## Production Troubleshooting Steps
+
+### Check Pod events.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+### Verify node health and available resources.
+
+```bash
+kubectl get nodes
+
+kubectl top nodes
+
+kubectl describe node <node-name>
+```
+
+### Check node labels and affinity.
+
+```bash
+kubectl get nodes --show-labels
+```
+
+### Check taints.
+
+```bash
+kubectl describe node <node-name> | grep Taints
+```
+
+### Verify PVC status.
+
+```bash
+kubectl get pvc
+```
+
+### Check namespace quotas.
+
+```bash
+kubectl describe resourcequota
+
+kubectl describe limitrange
+```
+
+---
+
+## Common Production Causes
+
+- Insufficient CPU or Memory.
+- Node Affinity/Node Selector mismatch.
+- Untolerated taints.
+- PVC is not bound.
+- Node is cordoned (`SchedulingDisabled`).
+- Maximum Pods per node reached.
+- ResourceQuota or LimitRange restrictions.
 ### 61. If `kubectl describe pod` says "node is out of capacity," what will you do?
 
+If `kubectl describe pod` shows that the node is out of capacity, it means the scheduler couldn't find a worker node with enough available resources to run the Pod. In production, I first identify which resource is exhausted—CPU, memory, ephemeral storage, or the maximum Pod limit.
+
+The first thing I do is check the scheduler events and then verify the node's resource utilization.
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl top nodes
+
+kubectl describe node <node-name>
+```
+
+If it's CPU or memory, I identify whether existing workloads are consuming most of the resources. If the cluster has Cluster Autoscaler enabled, I verify that it's scaling the node pool. If not, I manually add more worker nodes or increase the node size.
+
+If the issue is the maximum Pods per node (common in EKS because of ENI/IP limits), I either scale out by adding more nodes or choose a larger instance type that supports more Pods.
+
+I also check whether the Pod's resource requests are set too high. Sometimes developers accidentally request **4 CPUs** and **8Gi** memory for a lightweight application, making it impossible for the scheduler to place the Pod. In that case, I work with the application team to right-size the resource requests.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe pod <pod-name>
+
+kubectl top nodes
+
+kubectl describe node <node-name>
+
+kubectl get nodes
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, during a production deployment, a new version of a Java application remained in **Pending**. The scheduler event showed:
+
+```text
+0/6 nodes are available: Insufficient memory.
+```
+
+When I checked the Deployment, I found that the memory request had been increased from **1Gi** to **6Gi**. None of our worker nodes had that much free memory. Since the application genuinely needed more memory, we scaled the node pool using the Cluster Autoscaler, and once the new nodes joined the cluster, the Pods were scheduled successfully.
 ### 62. A node has 8 GB RAM free, and you request 2 GB for a pod, but it remains in the Pending state with "Insufficient memory." Why?
 
-### 63. What commands would you use to check resource usage?
+Just because a node appears to have **8 GB free** doesn't mean Kubernetes can use all **8 GB** for Pods. The scheduler makes its decision based on the node's **Allocatable** memory, not the total or visible free memory.
 
+The first thing I would check is the node's allocatable memory:
+
+```bash
+kubectl describe node <node-name>
+```
+
+In production, there are several reasons this can happen:
+
+- Kubernetes Reserved Memory – Some memory is reserved for the OS, kubelet, and system processes, so it's not available for Pods.
+- Existing Pod Requests – The scheduler considers resource requests, not actual usage. Even if Pods are currently using less memory, if they've already requested most of the allocatable memory, the scheduler won't place another Pod.
+- Resource Fragmentation – The cluster may have free memory spread across multiple nodes, but no single node has enough allocatable memory for the Pod.
+- ResourceQuota or LimitRange restrictions.
+- The node may be under MemoryPressure, causing the scheduler to avoid it.
+
+---
+
+## Real-Time Production Example
+
+For example, suppose a worker node has **16 GB RAM**.
+
+- **2 GB** reserved for the OS and Kubernetes components.
+- **Allocatable memory = 14 GB.**
+
+Now imagine existing Pods have already requested **13 GB**, even though they're currently using only **6 GB**.
+
+If I deploy a Pod requesting **2 GB**, Kubernetes rejects it because:
+
+```text
+13 GB (already requested)
++2 GB (new Pod request)
+-----------------------
+15 GB > 14 GB allocatable
+```
+
+Even though monitoring shows around **8 GB** is currently free, the scheduler only looks at **requested resources**, not live memory usage.
+
+---
+
+## Commands I Use
+
+```bash
+kubectl describe node <node-name>
+
+kubectl top node
+
+kubectl describe pod <pod-name>
+```
+
+---
+
+## Interview Closing Statement
+
+> "In production, the scheduler doesn't use free memory shown by monitoring tools. It schedules Pods based on the node's allocatable memory and existing resource requests. So even if a node appears to have 8 GB free, the Pod can still remain Pending if the allocatable memory has already been reserved by other Pods. My first step is always to check `kubectl describe node` and compare allocatable memory with the total requested resources."
+
+---
+
+## Interview Tip (This impresses interviewers)
+
+> **"Kubernetes schedules based on requests, not actual resource usage."**
+### 63. How do you check resource usage in Kubernetes?
+
+In production, when I need to check resource usage, I look at both actual resource consumption and configured resource requests/limits. I don't rely on a single command because each provides different information.
+
+First, I check the current CPU and memory usage of nodes and Pods using the Metrics Server.
+
+```bash
+kubectl top nodes
+
+kubectl top pods
+
+kubectl top pods -A
+```
+
+This tells me which nodes or Pods are consuming the most CPU and memory.
+
+Next, I inspect the Pod configuration to verify its resource requests and limits.
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+This shows the CPU and memory requests and limits configured for the container.
+
+If I want to check the overall capacity and allocatable resources of a node, I use:
+
+```bash
+kubectl describe node <node-name>
+```
+
+This shows:
+
+- Total Capacity
+- Allocatable resources
+- Currently allocated resources
+- Node conditions such as MemoryPressure or DiskPressure
+
+If I suspect namespace restrictions, I also verify:
+
+```bash
+kubectl describe resourcequota
+
+kubectl describe limitrange
+```
+
+---
+
+## Commands I Use
+
+```bash
+kubectl top nodes
+
+kubectl top pods
+
+kubectl top pods -A
+
+kubectl describe pod <pod-name>
+
+kubectl describe node <node-name>
+
+kubectl describe resourcequota
+
+kubectl describe limitrange
+```
+
+---
+
+## Real-Time Production Scenario
+
+For example, one of our Java applications started responding slowly during peak traffic. I first ran:
+
+```bash
+kubectl top pods -A
+```
+
+I found one Pod consuming **95%** of its memory limit. Then I checked:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+and noticed the memory limit was configured too low. We increased the memory limit and monitored the application. The performance issue was resolved without any further Pod restarts.
+
+---
+
+## Interview Closing Statement
+
+> "In production, I primarily use `kubectl top` to monitor live CPU and memory usage, `kubectl describe pod` to verify resource requests and limits, and `kubectl describe node` to check node capacity and allocatable resources. Using these commands together helps me quickly identify whether the issue is resource exhaustion, incorrect sizing, or node capacity."
 ### 64. How do you debug if a pod is scheduled on the wrong node?
 
 ### 65. What happens if `imagePullSecrets` is configured incorrectly?
