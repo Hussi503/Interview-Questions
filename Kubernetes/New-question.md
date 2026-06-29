@@ -133,7 +133,7 @@ applications like web servers, APIs, and microservices.
 its own persistent volume. Even if a pod is recreated, it keeps the same name and reconnects to the same
 storage. StatefulSets also start and stop pods in a specific order, which is important for databases and 
 clustered applications.
-### 6. What is a DaemonSet? Give examples.
+### 5. What is a DaemonSet? Give examples of when you would use it.
 A DaemonSet ensures that one copy of a pod runs on every worker node, making it ideal for node-level services 
 like log collection, monitoring, networking, and security agents.
 ### 7. What is the difference between a ReplicaSet and a Deployment?
@@ -159,7 +159,7 @@ it keeps the same identity and data.
 log collectors (Fluent Bit), monitoring agents (Node Exporter), and networking plugins (Calico). When a new node 
 joins the cluster, Kubernetes automatically schedules a DaemonSet Pod on it.
 
-### 9. Can you attach a volume to a Deployment?
+### 8. Can you attach a volume to a Deployment?  How is it different from a StatefulSet
 Yes, absolutely. A Deployment itself doesn't directly store data, but the Pods created by the Deployment can mount volumes.
 In production, we commonly attach volumes to Deployments for applications that need persistent or shared storage.
 
@@ -172,7 +172,7 @@ For Azure Disk or AWS EBS, a volume can generally be attached to only one node a
 one Pod needs to write. If multiple Pods across different nodes need to read and write the same data, I use a shared filesystem like 
 Azure Files or AWS EFS, which supports ReadWriteMany.
 
-### 10. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+### 9. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
 One of the most common reasons is the Persistent Volume (PV) is tied to a specific Availability Zone (AZ). In production, 
 if a StatefulSet pod is using storage like Azure Managed Disk or AWS EBS, the disk is created in a particular AZ and 
 cannot be attached to a node in another AZ.
@@ -306,7 +306,7 @@ restore the latest healthy snapshot using etcdctl snapshot restore, replace the 
 one, and restart the etcd and control plane components. After recovery, I verify the cluster health by checking nodes,
 workloads, and application functionality.
 
-82. How do you backup and restore etcd?
+### 82. How do you backup and restore etcd?
 In a self-managed Kubernetes cluster, I back up etcd by taking regular snapshots using etcdctl. Since etcd
 contains the entire cluster state, these backups are critical for disaster recovery. After taking the snapshot, I
  store it in a secure location such as remote storage or object storage and periodically verify that it can be
@@ -328,7 +328,7 @@ After the restore, I update etcd to use the restored data directory, restart the
 
 
 ## Section 4: Services, Ingress & Networking
-### 11. What is a headless service?
+### 11. What is a headless service?  how does it work?
 A Headless Service is a Kubernetes Service created by setting clusterIP: None. Unlike a normal Service, it 
 does not allocate a virtual ClusterIP and does not perform load balancing. Instead, when a client performs
 a DNS lookup, Kubernetes returns the IP addresses of all matching Pods directly.
@@ -408,7 +408,8 @@ path.
 | No built-in SSL termination    | Supports SSL termination and TLS            |
 | Higher cost if many Services   | More cost-effective for many web services   |
 
-### 25. How does Ingress work?
+### 24. How does Ingress work? How do you create an ingress controller in AWS EKS?
+
 Ingress itself doesn't handle traffic. It is simply a set of routing rules. The actual traffic handling is done by 
 an Ingress Controller such as NGINX Ingress Controller, Azure Application Gateway Ingress Controller
 (AGIC), or Traefik.
@@ -527,7 +528,7 @@ kube-proxy distributes traffic to an available Pod.
 
       
 
-### 26. How will you manage SSL certificates for ALB in EKS?
+### 25. How will you manage SSL certificates for ALB in EKS?
 In EKS, I manage SSL certificates using AWS Certificate Manager (ACM) and the AWS Load Balancer 
 Controller. This is the AWS-recommended approach because ACM handles certificate lifecycle, including renewals, 
 and the controller automatically attaches the certificate to the Application Load Balancer (ALB).
@@ -575,7 +576,7 @@ When I apply this manifest:
 
 The AWS Load Balancer Controller detects the Ingress, configures the ALB HTTPS listener, attaches the ACM certificate, and optionally creates an HTTP listener that redirects traffic to HTTPS.
  
-### 28. What type of Load Balancer is created when using Ingress in EKS?
+### 26. What type of Load Balancer is created when using Ingress in EKS?
 
 The type of Load Balancer created in Amazon EKS depends on the **Ingress Controller** being used.
 
@@ -654,7 +655,7 @@ Instead:
 
       
  
-### 30. Where will you mention the Load Balancer type in Ingress YAML?
+### 27. Where will you mention the Load Balancer type in Ingress YAML?
 
 The **Load Balancer type is not mentioned directly** in the Ingress YAML.
 
@@ -745,7 +746,7 @@ This **does not explicitly specify the load balancer type**. Instead, it tells K
 
 > We don't explicitly mention **ALB** or **NLB** anywhere in the Ingress specification. The type of load balancer is determined by the **Ingress Controller** associated with the IngressClass. In AWS EKS, if we're using the **AWS Load Balancer Controller**, we specify `ingressClassName: alb` (or the older `kubernetes.io/ingress.class: alb` annotation). The controller watches those Ingress resources and automatically provisions an **Application Load Balancer (ALB)**. If we need to customize the ALB—for example, making it internet-facing or internal, selecting IP or instance target type, configuring SSL certificates, listener ports, subnets, or AWS WAF—we do that using **ALB-specific annotations** in the Ingress YAML, not by specifying the load balancer type directly.
 
-### How does kube-proxy work?
+### 28 How does kube-proxy work?
 
 kube-proxy is a networking component that runs as a DaemonSet, meaning one pod runs on every worker node. Its primary responsibility is to implement the Kubernetes Service abstraction by routing traffic from a Service IP (ClusterIP) to one of the healthy backend Pods.
 
@@ -765,37 +766,37 @@ Let's say an application Pod wants to access a Service called **payment-service*
 - If a Pod fails or a new Pod is added due to autoscaling, kube-proxy updates the rules automatically without any manual intervention.
 
 So, applications always communicate with the Service IP, while kube-proxy transparently routes traffic to healthy Pods.
-32. How does service discovery work with CoreDNS?
-33. Explain the Kubernetes networking model.
-34. How do you restrict pod-to-pod communication using Network Policies?
-72. Service reachable internally but not externally.
-73. NodePort not accessible.
-74. Ingress returns 502.
-75. Debug CNI issues.
-76. CoreDNS crashes.
-77. NetworkPolicy blocking traffic.
-78. Capture network traffic inside a pod.
-108. Pod-to-pod ping not working.
-114. How does DNS resolution work inside a pod?
-124. How do you expose a pod using ALB?
 
+### 29. How does service discovery work in Kubernetes with CoreDNS?
+### 30. Explain the Kubernetes networking model.
+### 31. How do you restrict pod-to-pod communication using Network Policies?
+### 72. Service reachable internally but not externally.
+### 73. NodePort not accessible.
+### 74. Ingress returns 502 error — what are possible reasons.
+### 75. How do you debug CNI plugin issues?
+### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
+### 77. A NetworkPolicy is blocking traffic — how do you confirm?
+### 78. How do you capture network traffic inside a pod?
+### 108. If you ping one pod's IP from another and it's unreachable, where would you check?
+### 114. How does DNS resolution work inside a pod?
+### 124. Suppose a pod running application, how will you expose it to internet using ALB?
 ---
 
 ## Section 5: Scheduling
-16. How does the scheduler decide where to place pods?
-17. What are taints and tolerations?
-18. What are node affinity and anti-affinity?
-19. How do you assign pods using taints/tolerations and affinity?
-20. What happens when a node goes NotReady?
-21. Node is Ready but pods are not scheduling.
-90. What is pod priority and preemption?
-91. What are pod topology spread constraints?
-111. Troubleshoot unscheduled pods.
+### 16. How does the scheduler decide where to place pods?
+### 17. What are taints and tolerations?
+### 18. What are node affinity and anti-affinity?
+### 19. How do you assign pods using taints/tolerations and affinity?
+### 20. What happens when a node goes NotReady?
+### 21. Node is Ready but pods are not scheduling.
+### 90. What is pod priority and preemption?
+### 91. What are pod topology spread constraints?
+### 111. Troubleshoot unscheduled pods.
 
 ---
 
 ## Section 6: Security
-32. ConfigMap vs Secret.
+### 32. ConfigMap vs Secret.
 33. How are Secrets stored and encrypted in etcd?
 34. Kubernetes Secrets are base64 encoded. How do you secure them?
 35. What is RBAC?
