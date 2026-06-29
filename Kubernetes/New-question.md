@@ -2906,44 +2906,30 @@ When eviction starts, Kubernetes follows this order:
 ## 🔹 Key Production Insight
 
 👉 Production-critical workloads are usually protected using **Guaranteed QoS**, so they are least likely to be evicted during resource pressure.
-### 73. A NodePort Service is not accessible — what could be the possible reasons?
-
-### 78. How do you capture network traffic inside a pod?
-
-### 79. What happens if the Kubernetes API Server goes down?
+### 🔴 73. A NodePort Service is not accessible — what could be the possible reasons?
+### 🔴 78. How do you capture network traffic inside a pod?
+### 🔴 79. What happens if the Kubernetes API Server goes down?
 
 
 
 ---
 
 ## Section 10: EKS
-### 84. How do you upgrade an EKS cluster with zero downtime?
-
-### 85. What pre-checks do you perform before an EKS upgrade?
-
-### 86. If the EKS control plane becomes unavailable during an upgrade, how do pods continue to communicate?
-
-### 109. How is Amazon EKS different from a self-managed Kubernetes cluster?
-
-### 110. How do you manage node groups in Amazon EKS?
-
-### 121. What are the different components available in Amazon EKS, and what is their purpose?
-
-### 122. Which CIDR range did you use for your Amazon EKS cluster?
-
-### 123. How many node groups do you have, and can a single node group contain multiple instance types?
-
-### 138. Have you provisioned Amazon EKS clusters for large-scale workloads?
-
-### 142. How do you design a multi-region Kubernetes architecture?
+### 🔴 84. How do you upgrade an EKS cluster with zero downtime?
+### 🔴 85. What pre-checks do you perform before an EKS upgrade?
+### 🔴 86. If the EKS control plane becomes unavailable during an upgrade, how do pods continue to communicate?
+### 🔴 109. How is Amazon EKS different from a self-managed Kubernetes cluster?
+### 🔴 110. How do you manage node groups in Amazon EKS?
+### 🔴 121. What are the different components available in Amazon EKS, and what is their purpose?
+### 🔴 122. Which CIDR range did you use for your Amazon EKS cluster?
+### 🔴 123. How many node groups do you have, and can a single node group contain multiple instance types?
+### 🔴 138. Have you provisioned Amazon EKS clusters for large-scale workloads?
+### 🔴 142. How do you design a multi-region Kubernetes architecture?
 
 ---
 
 ## Section 11: Monitoring & Observability
 ### 🔴 101. How do you monitor Kubernetes applications and debug memory leaks?### 120. How do you debug high kubelet CPU usage?
-
-### 139. How do you implement centralized logging and monitoring for Kubernetes?
-
-### 140. How do you reduce the blast radius in a large Kubernetes cluster?
-
-### 141. How do you design a multi-tenant Kubernetes cluster with isolation?
+### 🔴 139. How do you implement centralized logging and monitoring for Kubernetes?
+### 🔴 140. How do you reduce the blast radius in a large Kubernetes cluster?
+### 🔴 141. How do you design a multi-tenant Kubernetes cluster with isolation?
