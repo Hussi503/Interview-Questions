@@ -274,7 +274,19 @@ If I see connection timeout (no response at all), I start with **SG/NACL, subnet
 
 ### 🔹 Q22. How do you increase the size of an EBS volume attached to EC2 without downtime?
 
+I use AWS Elastic Volumes to modify the EBS size live, then inside the instance I extend the partition using growpart and resize the filesystem using xfs_growfs or resize2fs depending on FS type — all without downtime
+
 ### 🔹 Q23. What commands do you use after resizing an EBS volume?
+First, I verify the new disk size:  **lsblk**
+This confirms whether AWS-level resize is reflected at the OS level.
+Then I check filesystem type: **df-T**
+Next, I extend the partition : **sudo growpart /dev/xvda 1**
+After that, I resize the filesystem based on type:
+         For XFS (Amazon Linux / RHEL): **sudo xfs_growfs /**
+For EXT4 (Ubuntu, etc.): **sudo resize2fs /dev/xvda1**
+Finally, I validate everything: **df -h**
+
+After resizing EBS, I verify disk using lsblk, extend the partition with growpart, resize filesystem using xfs_growfs or resize2fs based on FS type, and finally validate with df -h — ensuring the new space is actually usable.
 
 ### 🔹 Q24. Can you attach a single EBS volume to multiple EC2 instances?
 
