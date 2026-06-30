@@ -248,6 +248,15 @@ For memory and disk metrics, I still need to install and configure the CloudWatc
 # 🖥️ EC2 Administration & Troubleshooting
 
 ### 🔹 Q19. How do you resolve EC2 instance timeout errors? What are common reasons for SSH timeout?
+In real production, SSH timeout on an EC2 instance usually comes down to network path issues, instance reachability, or OS-level problems, so I approach it systematically from outside → inside.
+
+First, I check Security Groups and NACLs. In most cases, SSH timeout is simply because port 22 is not खुला (allowed) from my source IP. I verify inbound rules in SG and also ensure NACLs are not blocking ephemeral ports. In real scenarios, I’ve seen NACL deny rules override SGs causing intermittent timeouts.
+
+Next, I validate network reachability. I check if the instance has a public IP / Elastic IP and is in a subnet with a proper route table (0.0.0.0/0 → IGW). If it’s a private subnet, I confirm I’m connecting via bastion host or VPN. Many times, engineers try direct SSH to private EC2, which leads to timeout.
+
+Then I verify instance health and status checks in AWS. If 2/2 checks are failing, it indicates OS-level hang or underlying host issue. In such cases, I either reboot the instance or use EC2 Serial Console / detach root volume and inspect logs like /var/log/messages for kernel panic or disk issues.
+
+If network is fine, I move to OS-level debugging. I check whether the sshd service is running and listening on port 22. Sometimes high CPU/utilization or disk full situations cause SSH daemon to become unresponsive. In production, I’ve seen cases where too many connections / fail2ban / iptables rules block incoming SSH.
 
 ### 🔹 Q20. What checks do you perform when an EC2 instance is running but not reachable?
 
