@@ -97,33 +97,32 @@ The traffic gets blocked at the subnet boundary before reaching any EC2 instance
 ### 🔹 Q8. Can CIDR blocking be enforced at the subnet level?
 ### ✅ Answer
 
-      Yes, CIDR blocking can be enforced at the subnet level using Network ACLs (NACLs).
-      Since NACLs are attached to subnets and support both Allow and Deny rules, we can block a specific IP address or CIDR range before the traffic reaches any resource inside that subnet. 
-      This makes NACLs useful when we want to enforce a network-wide restriction for all EC2 instances, Load Balancers, or other resources within a subnet.
+Yes, CIDR blocking can be enforced at the subnet level using Network ACLs (NACLs).Since NACLs are attached to subnets and support both Allow and Deny rules, we can block a specific IP address or CIDR range before the traffic reaches any resource inside that subnet. 
+
+This makes NACLs useful when we want to enforce a network-wide restriction for all EC2 instances, Load Balancers, or other resources within a subnet.
 
 ### 🔹 Q9. Why is OS-level firewall blocking not preferred in AWS?
 ### ✅ Answer
+In AWS, OS-level firewalls such as iptables, firewalld, or Windows Firewall are generally not the preferred primary security mechanism because AWS already provides centralized network security controls through Security Groups and NACLs.
 
-     In AWS, OS-level firewalls such as iptables, firewalld, or Windows Firewall are generally not the preferred primary security mechanism because AWS already provides centralized network security controls through Security Groups and NACLs.
-
-      From a production operations perspective, managing firewall rules at the OS level becomes difficult when you have hundreds of EC2 instances. Every server must be configured, monitored, and kept consistent. 
-      If a new instance is launched through an Auto Scaling Group, the firewall rules must also be applied correctly, otherwise it can create connectivity issues.
-
-      Security Groups and NACLs are managed centrally at the AWS network layer. They provide better visibility, easier auditing, infrastructure-as-code support through Terraform, and consistent security enforcement across all instances. 
-      This makes them much easier to manage at scale.
+From a production operations perspective, managing firewall rules at the OS level becomes difficult when you have hundreds of EC2 instances. Every server must be configured, monitored, and kept consistent. 
+If a new instance is launched through an Auto Scaling Group, the firewall rules must also be applied correctly, otherwise it can create connectivity issues.
+Security Groups and NACLs are managed centrally at the AWS network layer. They provide better visibility, easier auditing, infrastructure-as-code support through Terraform, and consistent security enforcement across all instances. 
+This makes them much easier to manage at scale.
 ### 🔹 Q10. How does NAT Gateway work?
 ### ✅ Answer
+A NAT Gateway allows resources in a private subnet to access the internet while preventing the internet from initiating connections back to those resources.
 
-       A NAT Gateway allows resources in a private subnet to access the internet while preventing the internet from initiating connections back to those resources.
+In a production environment, application servers, EKS worker nodes, and backend services are usually deployed in private subnets for security reasons. 
 
-       In a production environment, application servers, EKS worker nodes, and backend services are usually deployed in private subnets for security reasons. 
-       These servers may still need internet access to download OS patches, pull Docker images from Docker Hub or ECR, install packages, or communicate with external APIs. Since private subnets do not have direct internet access, we use a NAT Gateway.
+These servers may still need internet access to download OS patches, pull Docker images from Docker Hub or ECR, install packages, or communicate with external APIs. Since private subnets do not have direct internet access, we use a NAT Gateway.
 
-       Internally, the NAT Gateway is deployed in a public subnet and is associated with an Elastic IP. When a private EC2 instance sends traffic to the internet, the route table of the private subnet forwards that traffic to the NAT Gateway.
-        The NAT Gateway replaces the private IP of the EC2 instance with its own public Elastic IP and sends the request to the internet. When the response comes back, the NAT Gateway tracks the connection, translates the traffic back to
-        the original private IP, and forwards it to the EC2 instance.
+Internally, the NAT Gateway is deployed in a public subnet and is associated with an Elastic IP. When a private EC2 instance sends traffic to the internet, the route table of the private subnet forwards that traffic to the NAT Gateway.
 
-        The important point is that communication is outbound only. Internet users cannot directly initiate connections to resources in private subnets through a NAT Gateway.
+The NAT Gateway replaces the private IP of the EC2 instance with its own public Elastic IP and sends the request to the internet. When the response comes back, the NAT Gateway tracks the connection, translates the traffic back to
+the original private IP, and forwards it to the EC2 instance.
+
+The important point is that communication is outbound only. Internet users cannot directly initiate connections to resources in private subnets through a NAT Gateway.
 
 ### 🔹 Q11. How do you secure EC2 instances in a Private Subnet and allow access from outside?
 ### ✅ Answer
