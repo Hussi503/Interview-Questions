@@ -230,22 +230,19 @@ The logs are stored in a centralized **S3 bucket** with:
 
 ### 🔹 Q17. What are CloudWatch Metrics and how do you set up alerts in CloudWatch?
 ### ✅ Answer
-    CloudWatch Metrics are time-series data points that help us monitor the health, performance, and utilization of AWS resources. AWS automatically publishes standard metrics 
-    for services like EC2, ALB, RDS, EKS, Lambda, NAT Gateway, and others.
+CloudWatch Metrics are time-series data points that help us monitor the health, performance, and utilization of AWS resources. AWS automatically publishes standard metrics for services like EC2, ALB, RDS, EKS, Lambda, NAT Gateway, and others.
 
-    For example, on EC2 I regularly monitor CPU Utilization, Network In/Out, Disk Operations, and Status Check metrics. For ALBs, I monitor Request Count, 
-    Target Response Time, HTTP 4XX/5XX errors, and Healthy Host Count. These metrics help us proactively identify performance bottlenecks before users are impacted.
+For example, on EC2 I regularly monitor CPU Utilization, Network In/Out, Disk Operations, and Status Check metrics. For ALBs, I monitor Request Count, Target Response Time, HTTP 4XX/5XX errors, and Healthy Host Count. These metrics help us proactively identify performance bottlenecks before users are impacted.
 
-    To set up alerts, I create a CloudWatch Alarm on a specific metric and define a threshold. When the threshold is breached for a configured period, the alarm changes state 
-    and triggers an SNS notification, which can send emails, Slack messages, PagerDuty alerts, or even invoke Lambda functions for automated remediation.
+To set up alerts, I create a CloudWatch Alarm on a specific metric and define a threshold. When the threshold is breached for a configured period, the alarm changes state and triggers an SNS notification, which can send emails, Slack messages, PagerDuty alerts, or even invoke Lambda functions for automated remediation.
 
 ### 🔹 Q18. How do you enable Detailed Monitoring for EC2 instances?
 ### ✅ Answer
-     By default, EC2 instances use Basic Monitoring, where metrics are sent to CloudWatch every 5 minutes. If we need faster visibility and quicker alerting, we enable Detailed Monitoring, which publishes metrics every 1 minute.
+By default, EC2 instances use Basic Monitoring, where metrics are sent to CloudWatch every 5 minutes. If we need faster visibility and quicker alerting, we enable Detailed Monitoring, which publishes metrics every 1 minute.
 
-     We can enable Detailed Monitoring during EC2 instance creation or later through the AWS Console, CLI, Terraform, or CloudFormation. In production environments, I usually enable it on critical application servers,
-     EKS worker nodes, and instances that participate in Auto Scaling, while avoiding unnecessary costs on non-critical systems.
-     For memory and disk metrics, I still need to install and configure the CloudWatch Agent on the EC2 instance.
+We can enable Detailed Monitoring during EC2 instance creation or later through the AWS Console, CLI, Terraform, or CloudFormation. In production environments, I usually enable it on critical application servers, EKS worker nodes, and instances that participate in Auto Scaling, while avoiding unnecessary costs on non-critical systems.
+
+For memory and disk metrics, I still need to install and configure the CloudWatch Agent on the EC2 instance.
 ---
 
 # 🖥️ EC2 Administration & Troubleshooting
