@@ -28,35 +28,40 @@ Overall, serverless is best suited for event-driven applications, automation tas
 and workloads with variable traffic patterns.
 
 ### 🔹 Q2. How do you ensure an application is highly available in AWS?
-  ### ✅ Answer
-        In production, high availability means eliminating single points of failure across every layer of the application. Typically, I deploy application servers in an Auto Scaling Group spread across at least two Availability Zones 
-        and place them behind an Application Load Balancer. If one instance or even an entire Availability Zone goes down, the load balancer automatically routes traffic to healthy instances in the other AZ.
+### ✅ Answer
+In production, high availability means eliminating single points of failure across every layer of the application. 
 
-         For the database layer, I use Multi-AZ deployments, such as RDS Multi-AZ, so AWS automatically performs failover if the primary database becomes unavailable. Static content is stored in S3, which is highly durable by design, 
-         and Route 53 is used for DNS-based routing and health checks. I also configure CloudWatch alarms and monitoring to proactively detect failures and trigger notifications.
+Typically, I deploy application servers in an Auto Scaling Group spread across at least two Availability Zones 
+and place them behind an Application Load Balancer. If one instance or even an entire Availability Zone goes down, 
+the load balancer automatically routes traffic to healthy instances in the other AZ.
+
+For the database layer, I use Multi-AZ deployments, such as RDS Multi-AZ, so AWS automatically performs failover if the primary database becomes unavailable. Static content is stored in S3, which is highly durable by design, and Route 53 
+is used for DNS-based routing and health checks. 
+
+I also configure CloudWatch alarms and monitoring to proactively detect failures and trigger notifications.
     
-         In one of my projects, Sitecore applications were deployed across multiple App Service instances with Azure-like HA concepts, but in AWS the equivalent approach would be ALB + Auto Scaling across multiple AZs with Multi-AZ databases. 
-         This ensures that infrastructure failures, instance failures, or traffic spikes do not impact application availability.
+In one of my projects, Sitecore applications were deployed across multiple App Service instances with Azure-like HA concepts, but in AWS the equivalent approach would be ALB + Auto Scaling across multiple AZs with Multi-AZ databases. 
 
-         So, my approach is always to design HA at compute, load balancer, database, storage, and monitoring layers rather than relying on a single component to provide availability.
+This ensures that infrastructure failures, instance failures, or traffic spikes do not impact application availability.
+
+So, my approach is always to design HA at compute, load balancer, database, storage, and monitoring layers rather than relying on a single component to provide availability.
  
 
 ### 🔹 Q3. What is the difference between a Public Subnet and a Private Subnet?
-   ### ✅ Answer
-        A Public Subnet has a route to an Internet Gateway (IGW) in its route table, which allows resources inside that subnet to communicate directly with the internet. Typically, we place internet-facing components such as
-        Application Load Balancers, Bastion Hosts, or public web servers in public subnets because they need to receive traffic from external users.
+### ✅ Answer
+A Public Subnet has a route to an Internet Gateway (IGW) in its route table, which allows resources inside that subnet to communicate directly with the internet. Typically, we place internet-facing components such as Application Load Balancers, Bastion Hosts, or public web servers in public subnets because they need to receive traffic from external users.
 
-         A Private Subnet, on the other hand, does not have a direct route to the Internet Gateway. Resources inside private subnets cannot be accessed directly from the internet. We usually place backend application servers,
-         databases, Redis clusters, internal services, and Kubernetes worker nodes in private subnets for security reasons. If these resources need outbound internet access for downloading patches, updates, or container images, 
-         we route the traffic through a NAT Gateway deployed in a public subnet.
+A Private Subnet, on the other hand, does not have a direct route to the Internet Gateway. Resources inside private subnets cannot be accessed directly from the internet. We usually place backend application servers,databases, Redis clusters, internal services, and Kubernetes worker nodes in private subnets for security reasons. 
+
+If these resources need outbound internet access for downloading patches, updates, or container images, we route the traffic through a NAT Gateway deployed in a public subnet.
 
 ### 🔹 Q4. What is a VPC?
 ### ✅ Answer
-      A VPC (Virtual Private Cloud) is a logically isolated network within AWS where we launch and manage our cloud resources such as EC2 instances, Load Balancers, RDS databases, EKS clusters, and other services. 
-      It gives us complete control over networking, including IP address ranges, subnets, route tables, security groups, and network access.
+A VPC (Virtual Private Cloud) is a logically isolated network within AWS where we launch and manage our cloud resources such as EC2 instances, Load Balancers, RDS databases, EKS clusters, and other services. 
 
-      In real production environments, the first thing we design before deploying applications is the VPC architecture. For example, we create a VPC with a CIDR range like 10.0.0.0/16, divide it into public and private subnets
-      across multiple Availability Zones, deploy Load Balancers in public subnets, application servers in private subnets, and databases in separate private subnets. This provides both security and high availability.
+It gives us complete control over networking, including IP address ranges, subnets, route tables, security groups, and network access.
+
+In real production environments, the first thing we design before deploying applications is the VPC architecture. For example, we create a VPC with a CIDR range like 10.0.0.0/16, divide it into public and private subnets across multiple Availability Zones, deploy Load Balancers in public subnets, application servers in private subnets, and databases in separate private subnets. This provides both security and high availability.
 
 ### 🔹 Q5. How many subnets can be created in a VPC?
 ### ✅ Answer
