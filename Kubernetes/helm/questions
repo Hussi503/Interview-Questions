@@ -1,8 +1,0 @@
-1. What is a Helm chart, and why do we use it?
-2. How do you convert Kubernetes manifests into a Helm project?
-3. What commands do you use to install, upgrade, and rollback Helm releases?
-4. What does helm list do?
-5. In your Helm charts, what critical checks do you perform before an upgrade?
-6. What is the basic folder structure of a Helm chart?
-7. What is Helm chart signing, and what tools are used?
-8. How do you share Helm charts internally?
