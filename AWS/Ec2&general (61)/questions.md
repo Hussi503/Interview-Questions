@@ -66,40 +66,33 @@ In real production environments, the first thing we design before deploying appl
 ### 🔹 Q5. How many subnets can be created in a VPC?
 ### ✅ Answer
 
-      AWS allows up to around 200 subnets per VPC by default, but practically the number depends on the VPC CIDR range and subnet design. In production, we create subnets based on architecture requirements rather than trying to reach the maximum limit.
+AWS allows up to around 200 subnets per VPC by default, but practically the number depends on the VPC CIDR range and subnet design. In production, we create subnets based on architecture requirements rather than trying to reach the maximum limit.
 
 ### 🔹 Q6. How do Security Groups and NACLs affect EC2 connectivity?
 ### ✅ Answer
+Security Groups and NACLs both control network traffic to and from an EC2 instance, but they operate at different levels and serve different purposes.
 
-      Security Groups and NACLs both control network traffic to and from an EC2 instance, but they operate at different levels and serve different purposes.
+ A Security Group acts as a virtual firewall at the instance level. It controls traffic entering and leaving the EC2 instance. Security Groups are stateful, which means if an inbound request is allowed,the response traffic is automatically allowed without needing an explicit outbound rule. In production, Security Groups are our primary mechanism for controlling access to EC2 instances.
 
-      A Security Group acts as a virtual firewall at the instance level. It controls traffic entering and leaving the EC2 instance. Security Groups are stateful, which means if an inbound request is allowed,
-      the response traffic is automatically allowed without needing an explicit outbound rule. In production, Security Groups are our primary mechanism for controlling access to EC2 instances.
+A NACL (Network Access Control List) operates at the subnet level and applies to all resources within that subnet. NACLs are stateless, meaning if you allow inbound traffic, you must also explicitly allow the corresponding outbound traffic. NACLs provide an additional layer of security and are often used for broader subnet-level restrictions.
 
-      A NACL (Network Access Control List) operates at the subnet level and applies to all resources within that subnet. NACLs are stateless, meaning if you allow inbound traffic, you must also explicitly
-      allow the corresponding outbound traffic. NACLs provide an additional layer of security and are often used for broader subnet-level restrictions.
-
-      For example, if I am unable to SSH to an EC2 instance, I first verify that the Security Group allows inbound port 22 from my source IP. If that looks correct and connectivity still fails, 
-      I check the subnet's NACL to ensure both inbound and outbound rules allow SSH traffic and ephemeral ports. Even if the Security Group allows traffic, a NACL deny rule can still block the connection.
+For example, if I am unable to SSH to an EC2 instance, I first verify that the Security Group allows inbound port 22 from my source IP. If that looks correct and connectivity still fails, I check the subnet's NACL to ensure both inbound and outbound rules allow SSH traffic and ephemeral ports. Even if the Security Group allows traffic, a NACL deny rule can still block the connection.
 
 ### 🔹 Q7. What is the difference between blocking a CIDR using Security Groups vs NACLs?
 ### ✅ Answer
-      The key difference is that Security Groups cannot explicitly deny or block a CIDR, whereas NACLs support both Allow and Deny rules.
+The key difference is that Security Groups cannot explicitly deny or block a CIDR, whereas NACLs support both Allow and Deny rules.
 
-      Security Groups are stateful firewalls that work on an allow-only model. If I want to restrict access from a specific CIDR, I can only do it indirectly by not allowing that CIDR in the Security Group rules. 
-      There is no option to create a "Deny 10.10.10.0/24" rule.
+Security Groups are stateful firewalls that work on an allow-only model. If I want to restrict access from a specific CIDR, I can only do it indirectly by not allowing that CIDR in the Security Group rules. There is no option to create a "Deny 10.10.10.0/24" rule.
 
-      NACLs, however, are stateless and support explicit deny rules. If I need to immediately block a malicious IP range, suspicious traffic, or a specific CIDR across an entire subnet, I can add a Deny rule in the NACL. 
-      The traffic will be dropped before it reaches the EC2 instances.
-     ### Real-Time Example
-       Suppose my web application is running on multiple EC2 instances in a subnet, and a suspicious CIDR block 203.0.113.0/24 is sending unwanted requests.
-       With Security Groups, I cannot create a deny rule for that CIDR. I would have to modify allow rules, which may become difficult to manage.
-       With NACLs, I can simply add a rule like:
+NACLs, however, are stateless and support explicit deny rules. If I need to immediately block a malicious IP range, suspicious traffic, or a specific CIDR across an entire subnet, I can add a Deny rule in the NACL. The traffic will be dropped before it reaches the EC2 instances.
+### Real-Time Example
+Suppose my web application is running on multiple EC2 instances in a subnet, and a suspicious CIDR block 203.0.113.0/24 is sending unwanted requests.With Security Groups, I cannot create a deny rule for that CIDR. I would have to modify allow rules, which may become difficult to manage.
+With NACLs, I can simply add a rule like:
          Rule 100: Deny 203.0.113.0/24
          Port: Any
          Protocol: Any
 
-       The traffic gets blocked at the subnet boundary before reaching any EC2 instance.
+The traffic gets blocked at the subnet boundary before reaching any EC2 instance.
 
 ### 🔹 Q8. Can CIDR blocking be enforced at the subnet level?
 ### ✅ Answer
