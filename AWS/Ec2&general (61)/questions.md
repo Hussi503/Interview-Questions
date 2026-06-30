@@ -5,20 +5,26 @@
 # 🌐 Networking & VPC
 
 ### 🔹 Q1. Explain the Serverless Services in AWS
- ### ✅ Answer
-      Serverless in AWS means we don't manage servers, operating systems, patching, scaling, or capacity planning. AWS handles the infrastructure, and we only focus on writing code or building applications.
+### ✅ Answer
+Serverless in AWS means we don't manage servers, operating systems, patching, scaling, or capacity planning. 
+AWS handles the infrastructure, and we only focus on writing code or building applications.
+ In real projects, the most commonly used serverless services are AWS Lambda, API Gateway, DynamoDB, SQS, SNS, 
+ EventBridge, and Step Functions.
 
-       In real projects, the most commonly used serverless services are AWS Lambda, API Gateway, DynamoDB, SQS, SNS, EventBridge, and Step Functions.
+ For example, in a production environment, when a user uploads a file to an S3 bucket, an S3 event can trigger 
+ a Lambda function. The Lambda processes the file, stores metadata in DynamoDB, and sends notifications
+ through SNS. No EC2 instances are required, and AWS automatically scales based on demand.
 
-       For example, in a production environment, when a user uploads a file to an S3 bucket, an S3 event can trigger a Lambda function. The Lambda processes the file, stores metadata in DynamoDB, and sends notifications through SNS. 
-       No EC2 instances are required, and AWS automatically scales based on demand.
+ Another common use case is exposing REST APIs using API Gateway integrated with Lambda. This is useful for
+ microservices where traffic is unpredictable because we only pay for actual requests instead of keeping 
+ servers running 24/7.
 
-       Another common use case is exposing REST APIs using API Gateway integrated with Lambda. This is useful for microservices where traffic is unpredictable because we only pay for actual requests instead of keeping servers running 24/7.
+  From a DevOps perspective, serverless reduces infrastructure management overhead, improves scalability, and 
+  lowers costs for event-driven workloads. However, we need to consider limitations such as Lambda execution timeout,
+  cold starts, monitoring, and debugging distributed workflows.
 
-       From a DevOps perspective, serverless reduces infrastructure management overhead, improves scalability, and lowers costs for event-driven workloads. However, we need to consider limitations such as Lambda execution timeout, cold starts, 
-       monitoring, and debugging distributed workflows.
-
-       Overall, serverless is best suited for event-driven applications, automation tasks, APIs, data processing pipelines, and workloads with variable traffic patterns.
+  Overall, serverless is best suited for event-driven applications, automation tasks, APIs, data processing pipelines,
+  and workloads with variable traffic patterns.
 
 ### 🔹 Q2. How do you ensure an application is highly available in AWS?
   ### ✅ Answer
