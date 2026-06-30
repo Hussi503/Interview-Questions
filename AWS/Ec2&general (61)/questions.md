@@ -128,27 +128,27 @@ The important point is that communication is outbound only. Internet users canno
 
 ### 🔹 Q11. How do you secure EC2 instances in a Private Subnet and allow access from outside?
 ### ✅ Answer
-     In production environments, we never expose application EC2 instances directly to the internet. Instead, we deploy the EC2 instances in private subnets and expose only the required entry point such as 
-     an Application Load Balancer (ALB) or Bastion Host in public subnets.
+In production environments, we never expose application EC2 instances directly to the internet. Instead, we deploy the EC2 instances in private subnets and expose only the required entry point such as an Application Load Balancer (ALB) or Bastion Host in public subnets.
 
-     For application access, users connect to the public ALB, and the ALB forwards traffic to EC2 instances in private subnets. The EC2 Security Group is configured to accept traffic only from the ALB Security Group, 
-     ensuring that no direct internet traffic can reach the servers.
+For application access, users connect to the public ALB, and the ALB forwards traffic to EC2 instances in private subnets. The EC2 Security Group is configured to accept traffic only from the ALB Security Group, ensuring that no direct internet traffic can reach the servers.
 
-     For administrative access, earlier we used Bastion Hosts, but nowadays the preferred approach is AWS Systems Manager Session Manager, which allows secure shell access without opening port 22 to the internet.
-     This eliminates the need for public IPs and significantly reduces the attack surface.
+For administrative access, earlier we used Bastion Hosts, but nowadays the preferred approach is AWS Systems Manager Session Manager, which allows secure shell access without opening port 22 to the internet.
+
+This eliminates the need for public IPs and significantly reduces the attack surface.
 
 ### 🔹 Q12. Have you worked with VPC Endpoints? In what use case?
 ### ✅ Answer
-     Yes, I have worked with VPC Endpoints in production environments. We use them when resources inside private subnets need to access AWS services without traversing the public internet or requiring a NAT Gateway.
+Yes, I have worked with VPC Endpoints in production environments. We use them when resources inside private subnets need to access AWS services without traversing the public internet or requiring a NAT Gateway.
 
-     A VPC Endpoint creates a private connection between the VPC and AWS services such as S3, DynamoDB, ECR, Secrets Manager, SSM, CloudWatch, and others. This improves security because traffic remains within the AWS network and never leaves to the internet.
+A VPC Endpoint creates a private connection between the VPC and AWS services such as S3, DynamoDB, ECR, Secrets Manager, SSM, CloudWatch, and others. This improves security because traffic remains within the AWS network and never leaves to the internet.
 
-     One common use case I implemented was for EKS worker nodes running in private subnets. The nodes needed to pull container images from ECR and communicate with AWS services. Instead of routing traffic through a NAT Gateway,
-     we configured VPC Endpoints for ECR, S3, and Systems Manager. This reduced NAT Gateway data processing costs and improved security by keeping traffic private.
+One common use case I implemented was for EKS worker nodes running in private subnets. The nodes needed to pull container images from ECR and communicate with AWS services. Instead of routing traffic through a NAT Gateway,
+    
+we configured VPC Endpoints for ECR, S3, and Systems Manager. This reduced NAT Gateway data processing costs and improved security by keeping traffic private.
 
-     Another common scenario is accessing S3 from private EC2 instances. By using an S3 Gateway Endpoint, the instances can access S3 directly without internet connectivity.
+Another common scenario is accessing S3 from private EC2 instances. By using an S3 Gateway Endpoint, the instances can access S3 directly without internet connectivity.
 
-     From a production perspective, VPC Endpoints are often used for security, compliance requirements, and cost optimization, especially when large amounts of traffic are going to AWS services.
+From a production perspective, VPC Endpoints are often used for security, compliance requirements, and cost optimization, especially when large amounts of traffic are going to AWS services.
 
 ---
 
@@ -156,10 +156,13 @@ The important point is that communication is outbound only. Internet users canno
 
 ### 🔹 Q13. What is a Security Group and why is it needed for EC2?
 ### ✅ Answer
-     A Security Group is a stateful virtual firewall that controls inbound and outbound traffic for AWS resources such as EC2 instances, Load Balancers, RDS databases, and EKS nodes. 
-     It is one of the primary security mechanisms in AWS and is attached directly to the resource rather than the subnet.
-     Security Groups are needed because, by default, we should follow the principle of least privilege, meaning only the required ports and sources should be allowed. 
-     Without proper Security Group rules, either the application becomes inaccessible or resources become unnecessarily exposed to the internet, creating security risks.
+A Security Group is a stateful virtual firewall that controls inbound and outbound traffic for AWS resources such as EC2 instances, Load Balancers, RDS databases, and EKS nodes. 
+    
+It is one of the primary security mechanisms in AWS and is attached directly to the resource rather than the subnet.
+
+Security Groups are needed because, by default, we should follow the principle of least privilege, meaning only the required ports and sources should be allowed. 
+
+Without proper Security Group rules, either the application becomes inaccessible or resources become unnecessarily exposed to the internet, creating security risks.
 ### 🔹 Q14. How will you block a particular CIDR block in AWS permanently?
 
 ### ✅ Answer
