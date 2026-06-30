@@ -106,7 +106,9 @@ This makes NACLs useful when we want to enforce a network-wide restriction for a
 In AWS, OS-level firewalls such as iptables, firewalld, or Windows Firewall are generally not the preferred primary security mechanism because AWS already provides centralized network security controls through Security Groups and NACLs.
 
 From a production operations perspective, managing firewall rules at the OS level becomes difficult when you have hundreds of EC2 instances. Every server must be configured, monitored, and kept consistent. 
+
 If a new instance is launched through an Auto Scaling Group, the firewall rules must also be applied correctly, otherwise it can create connectivity issues.
+
 Security Groups and NACLs are managed centrally at the AWS network layer. They provide better visibility, easier auditing, infrastructure-as-code support through Terraform, and consistent security enforcement across all instances. 
 This makes them much easier to manage at scale.
 ### 🔹 Q10. How does NAT Gateway work?
