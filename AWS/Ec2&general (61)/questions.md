@@ -258,9 +258,19 @@ Then I verify instance health and status checks in AWS. If 2/2 checks are failin
 
 If network is fine, I move to OS-level debugging. I check whether the sshd service is running and listening on port 22. Sometimes high CPU/utilization or disk full situations cause SSH daemon to become unresponsive. In production, I’ve seen cases where too many connections / fail2ban / iptables rules block incoming SSH.
 
-### 🔹 Q20. What checks do you perform when an EC2 instance is running but not reachable?
+### 🔹 Q20. What checks do you perform when an EC2 instance is running but not reachable? 
+refer q19
 
 ### 🔹 Q21. How do ALB/NLB timeouts differ from EC2-level timeouts?
+ALB/NLB timeouts are at the load balancer layer, meaning the request is reaching AWS but failing before getting a proper response from the target (EC2/app). For ALB, the most common is the idle timeout (default 60s)- if the backend application doesn’t respond within that time, ALB returns a 504 Gateway Timeout. So here, the problem is usually slow application, thread exhaustion, DB latency, or long-running API calls, not network reachability.
+
+In NLB, it's more L4-based, so timeouts usually mean target is not responding or connection is being dropped, often due to app crashes or port-level issues.
+
+On the other hand, EC2-level timeout is a connectivity problem — the request never properly reaches the instance. This is where you see SSH timeouts or app completely unreachable. Causes here are usually Security Groups, NACLs, routing issues, missing public IP, or OS-level problems like sshd down or high resource usage.
+
+If I see 504 errors from ALB, I immediately check **target group health**, **response times**, and **application logs**, because traffic is reaching but app is not responding in time.
+
+If I see connection timeout (no response at all), I start with **SG/NACL, subnet routing, instance status checks**, because request isn’t reaching EC2.
 
 ### 🔹 Q22. How do you increase the size of an EBS volume attached to EC2 without downtime?
 
