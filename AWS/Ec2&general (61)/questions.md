@@ -278,17 +278,23 @@ I use AWS Elastic Volumes to modify the EBS size live, then inside the instance 
 
 ### 🔹 Q23. What commands do you use after resizing an EBS volume?
 First, I verify the new disk size:  **lsblk**
+
 This confirms whether AWS-level resize is reflected at the OS level.
 Then I check filesystem type: **df-T**
+
 Next, I extend the partition : **sudo growpart /dev/xvda 1**
+
 After that, I resize the filesystem based on type:
          For XFS (Amazon Linux / RHEL): **sudo xfs_growfs /**
+         
 For EXT4 (Ubuntu, etc.): **sudo resize2fs /dev/xvda1**
+
 Finally, I validate everything: **df -h**
 
 After resizing EBS, I verify disk using lsblk, extend the partition with growpart, resize filesystem using xfs_growfs or resize2fs based on FS type, and finally validate with df -h — ensuring the new space is actually usable.
 
 ### 🔹 Q24. Can you attach a single EBS volume to multiple EC2 instances?
+By default, an EBS volume can be attached to only one EC2 instance at a time. However, using EBS Multi-Attach with io1/io2 volumes, we can attach a single volume to multiple instances within the same AZ. But in production, this is used only for cluster-aware applications because standard file systems like EXT4/XFS can cause data corruption. For general shared storage use cases, we prefer EFS instead.
 
 ### 🔹 Q25. How do you create a custom AMI from an EC2 instance?
 
