@@ -297,22 +297,113 @@ After resizing EBS, I verify disk using lsblk, extend the partition with growpar
 By default, an EBS volume can be attached to only one EC2 instance at a time. However, using EBS Multi-Attach with io1/io2 volumes, we can attach a single volume to multiple instances within the same AZ. But in production, this is used only for cluster-aware applications because standard file systems like EXT4/XFS can cause data corruption. For general shared storage use cases, we prefer EFS instead.
 
 ### 🔹 Q25. How do you create a custom AMI from an EC2 instance?
+In production, we use custom AMIs to standardize our EC2 deployments instead of configuring each server manually. Once an EC2 instance is fully configured—with the required OS patches, security hardening, application dependencies, monitoring agents like CloudWatch, and any organization-specific configurations—we create it as a golden image.
+
+Before creating the AMI, I ensure the application is in a consistent state. For stateless application servers, we can usually create the AMI without downtime using the --no-reboot option if acceptable, but for stateful workloads, we prefer a reboot or brief maintenance window to ensure filesystem consistency. Then, from the EC2 console or AWS CLI, I create the AMI, which automatically takes snapshots of all attached EBS volumes and registers the image.
+
+In our environment, we never launch production instances directly from old AMIs. Instead, we version our AMIs, update the Launch Template with the new AMI ID, and perform a rolling deployment through the Auto Scaling Group. If any issue occurs, rollback is straightforward—we simply point the Launch Template back to the previous AMI version. This approach gives us consistent infrastructure, eliminates configuration drift, and significantly reduces provisioning time for new servers."
 
 ### 🔹 Q26. How do you migrate an EC2 instance to another Subnet, Availability Zone, or Region?
 
+The migration approach depends on whether we're moving the instance to another subnet, Availability Zone, or AWS Region, because AWS doesn't allow us to directly move a running EC2 instance between them.
+
+In production, the first step is to create an AMI of the existing EC2 instance after validating that the application is stable.
+
+If the application stores data on EBS volumes, those volumes are captured as snapshots along with the AMI.
+
+Then, I launch a new EC2 instance from that AMI in the target subnet or Availability Zone by selecting the appropriate VPC, subnet, security groups, IAM role, and key pair.
+
+After the instance is up, I validate the application, update any required configurations such as private IPs or database connection strings if needed, and then switch traffic using the Load Balancer or update DNS records. Once everything is verified, I decommission the old instance.
+
+For **cross-region migration**, the process is similar, but first I copy the AMI to the target region because AMIs are region-specific
+
+After the copy completes, I launch the new instance in the destination region and perform the same validation and cutover process.
+
+We always plan the migration with a rollback strategy, so the original instance remains available until the new environment is fully tested."
+
+
 ### 🔹 Q27. How do you recover a stopped EC2 instance that won't start?
 
+The first thing I do is identify why the instance isn't starting rather than immediately trying random fixes. I begin by checking the EC2 instance state, System Status Checks, Instance Status Checks, and the EC2 console output to determine whether it's an infrastructure issue or an operating system issue.
+
+If the system status check fails, it's usually an AWS host issue, and a stop/start operation often moves the instance to healthy underlying hardware.
+
+If the instance status check fails, it's typically an OS-level problem such as a corrupted file system, failed boot process, or incorrect network configuration.
+
+If the instance still doesn't boot, I stop it, detach the root EBS volume, and attach it as a secondary volume to a healthy recovery EC2 instance in the same Availability Zone. From there, I inspect system logs, repair configuration files, fix disk issues, or correct boot-related problems. Once the issue is resolved, I detach the volume, reattach it as the root volume to the original instance, and start it again.
+
+If recovery isn't possible within the expected maintenance window, I don't spend hours troubleshooting production. If we have an Auto Scaling Group or a recent golden AMI, I launch a replacement instance immediately to restore service and then investigate the failed instance separately. Our priority in production is always service availability before root cause analysis."
+
+
 ### 🔹 Q28. How do you handle EC2 key pair loss when SSM is disabled?
+If the EC2 key pair is lost and AWS Systems Manager (SSM) isn't enabled, we can't simply retrieve or regenerate the existing private key because AWS never stores it. In production, my priority is to regain access without risking data loss.
+
+If the EC2 key pair is lost and AWS Systems Manager (SSM) isn't enabled, we can't simply retrieve or regenerate the existing private key because AWS never stores it. In production, my priority is to regain access without risking data loss.
+
+I then mount the filesystem and manually add a new public SSH key to the authorized_keys file for the required user, or fix any SSH configuration issues if needed.
+
+After that, I detach the volume, reattach it to the original instance as the root volume, and start the instance. Once it's running, I can log in using the new private key.
+
+After that, I detach the volume, reattach it to the original instance as the root volume, and start the instance. Once it's running, I can log in using the new private key.
+
 
 ### 🔹 Q29. How do you connect to EC2 through a Bastion Host?
+In production, we never expose private EC2 instances directly to the internet. Instead, we deploy a Bastion Host in a public subnet, while application and database servers remain in private subnets with no public IPs.
+
+To connect, I first SSH into the Bastion Host using its public IP and my authorized key or enterprise authentication.
+
+From the Bastion Host, I SSH into the target EC2 instance using its private IP.
+
+The security groups are configured so that the Bastion Host accepts SSH only from our corporate IP range or VPN, and the private EC2 instances allow SSH only from the Bastion Host's security group—not from the internet.
+
+This ensures that administrative access is tightly controlled and all production servers remain isolated from public networks.
+
+in modern AWS environments, our preferred approach is AWS Systems Manager Session Manager, which eliminates the need for a Bastion Host altogether by providing secure, auditable access without opening port 22. We use a Bastion Host only when there's a specific business or legacy requirement."
 
 ### 🔹 Q30. How do you troubleshoot slow SSH connections to EC2?
+When SSH is slow, I don't assume it's a network issue immediately. I first identify where the delay is occurring—whether it's during connection establishment, authentication, or after login. If the delay is before the SSH prompt appears
+
+I check the Security Groups, NACLs, route tables, VPN connectivity, and network latency. I also verify the instance health and CloudWatch metrics to ensure the EC2 instance isn't under CPU, memory, or disk pressure.
+
+If the delay occurs after authentication, I log in and check system resource utilization using tools like top, htop, iostat, vmstat, and df -h
+
+One common issue I've seen is high CPU utilization, low memory causing swap usage, or a full root filesystem, all of which can make SSH sessions appear slow.
+
+
 
 ### 🔹 Q31. How do you check EC2 system logs for boot errors?
 
+When an EC2 instance fails to boot or doesn't become reachable, the first thing I do is determine whether it's an AWS infrastructure issue or an operating system issue by checking the EC2 System Status Checks and Instance Status Checks.
+
+If the instance is failing at the OS level, I review the EC2 System Log (Console Output) from the AWS Console because it captures the boot sequence even if I can't SSH into the server.
+
+In the EC2 Console, I select the instance and navigate to Actions → Monitor and troubleshoot → Get system log (or Get console output). I review the boot messages for errors such as kernel panic, filesystem corruption, failed services, disk mount failures, or bootloader issues. These logs often indicate why the instance didn't complete the boot process.
+
+If the instance boots but SSH isn't available, I use the EC2 Serial Console (if enabled) to access the instance and investigate further. If neither method helps and the instance remains inaccessible, I detach the root EBS volume, attach it to a recovery instance, and inspect logs like /var/log/messages, /var/log/boot.log, /var/log/dmesg, or journalctl depending on the operating system
+
+
+
 ### 🔹 Q32. How do you troubleshoot failed EC2 status checks?
 
+The first thing I do is identify which status check is failing, because AWS performs two different health checks: System Status Check and Instance Status Check. My troubleshooting approach depends on the failed check rather than applying a generic fix.
+
+If the System Status Check fails, it usually indicates an issue with the underlying AWS infrastructure, such as host hardware, networking, or power. In that case, I perform a stop/start operation, which migrates the instance to healthy underlying hardware. I also verify the AWS Health Dashboard to check if there's an ongoing infrastructure event.
+
+If the Instance Status Check fails, the problem is inside the operating system. I first review the EC2 Console Output and Serial Console to identify boot errors. If I can access the server, I check CPU, memory, disk usage, filesystem health, failed services, and system logs using journalctl and dmesg. If the instance is inaccessible, I detach the root EBS volume, attach it to a recovery instance, and analyze the logs offline.
+
+
+
 ### 🔹 Q33. How do you schedule EC2 instances to stop/start automatically?
+
+In production, we don't schedule critical application or database servers because they need to be available 24/7. However, for non-production environments like Development, QA, or UAT, we automate start and stop schedules to optimize costs.
+
+The approach I've used is Amazon EventBridge with AWS Lambda. We create EventBridge schedules using cron expressions—for example, starting EC2 instances at 8 AM and stopping them at 8 PM on weekdays.
+
+The EventBridge rule triggers a Lambda function, which uses the AWS SDK to start or stop EC2 instances based on tags such as Environment=Dev or AutoSchedule=True. This tag-based approach avoids hardcoding instance IDs and makes the solution scalable as new instances are added.
+
+
+
+
 
 ### 🔹 Q34. How do you use User Data to install software automatically on EC2?
 
