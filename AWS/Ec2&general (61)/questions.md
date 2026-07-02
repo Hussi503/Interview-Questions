@@ -486,8 +486,55 @@ The ALB continuously performs health checks on the application. If an instance b
 # 📈 Auto Scaling & Deployments
 
 ### 🔹 Q43. How does Auto Scaling work and how do you handle sudden traffic spikes?
+In production, I never treat Auto Scaling as just adding more EC2 instances. It's a combination of Elastic Load Balancer, Auto Scaling Groups, CloudWatch metrics, and application design working together.
+
+Typically, I configure an Auto Scaling Group with a minimum, desired, and maximum capacity spread across at least two or three Availability Zones for high availability.
+
+The Auto Scaling Group continuously monitors CloudWatch metrics such as CPU utilization, Request Count per Target, ALB response time, or custom application metrics. When the configured threshold is breached, it launches new EC2 instances automatically using a Launch Template.
+
+These instances bootstrap themselves, pull the latest application version, complete health checks, and only then are registered with the Application Load Balancer.
+
+Similarly, when traffic reduces, instances are terminated gracefully after connection draining so that users don't experience interrupted sessions.
+
+One lesson I've learned in production is that Auto Scaling alone cannot solve performance issues. If the application has a database bottleneck or memory leak, adding more EC2 instances simply increases the load on the backend
+
+So, before tuning scaling policies, I always identify the actual bottleneck using CloudWatch dashboards, ALB metrics, application logs, and APM tools, and then scale the appropriate layer rather than blindly increasing compute capacity.
 
 ### 🔹 Q44. How do you achieve Zero-Downtime Deployments?
+
+In production, zero-downtime deployment is not just about deploying new code—it's about ensuring users never notice the deployment.
+
+The approach I follow depends on the application architecture, but for EC2-based applications behind an ALB, I typically use Blue-Green or Rolling deployments with an Auto Scaling Group.
+
+The deployment pipeline first creates or updates a new set of instances with the latest application version. These instances are validated through application health checks, and only after they become healthy are they registered with the Application Load Balancer.
+
+The ALB starts routing traffic gradually to the new instances while the old instances continue serving requests.
+
+Once the new environment is stable, the old instances are drained using the ALB's deregistration delay, allowing existing user sessions to complete before the instances are terminated.
+
+If any health checks fail or CloudWatch alarms are triggered, the deployment is automatically rolled back by directing traffic back to the previous healthy version.
+
+
+
+
+****Kubernetes** AKS/EKS**
+In Kubernetes environments like EKS or AKS, I achieve zero-downtime deployments using the **Rolling Update** strategy, which is the default deployment strategy. I configure parameters like maxUnavailable: 0 and maxSurge: 1 or 25%, so Kubernetes first 
+creates new pods before terminating the old ones. This ensures the desired number of healthy pods are always available to serve traffic.
+
+In Kubernetes environments like EKS or AKS, I achieve zero-downtime deployments using the Rolling Update strategy, which is the default deployment strategy. I configure parameters like maxUnavailable: 0 and maxSurge: 1 or 25%, so Kubernetes first creates new pods before terminating the old ones. This ensures the desired number of healthy pods are always available to serve traffic.
+
+During deployment, the old pods continue serving requests while the new pods start up, initialize, and become healthy.
+
+Once the new pods are ready, Kubernetes gradually terminates the old pods. We also configure a Pod Disruption Budget (PDB) to ensure a minimum number of replicas remain available during deployments or node maintenance, preventing service interruptions.
+
+For critical production applications, we don't rely only on Rolling Updates. We implement Blue-Green or Canary deployments using tools like Argo Rollouts.
+
+This allows us to shift traffic gradually—for example, 10%, then 30%, then 50%, and finally 100%—while continuously monitoring latency, error rates, and business metrics.
+
+If any issue is detected, traffic is immediately shifted back to the stable version without affecting users. This approach significantly reduces deployment risk compared to sending all traffic to the new version at once.
+
+
+
 
 ### 🔹 Q45. If a web application experiences unpredictable traffic spikes, how would you configure Auto Scaling?
 
