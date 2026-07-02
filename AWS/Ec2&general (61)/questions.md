@@ -537,14 +537,46 @@ If any issue is detected, traffic is immediately shifted back to the stable vers
 
 
 ### 🔹 Q45. If a web application experiences unpredictable traffic spikes, how would you configure Auto Scaling?
+In production, for unpredictable traffic, I avoid using only simple CPU-based scaling because CPU often reacts after the application is already under load. Instead, I use a combination of Target Tracking, Step Scaling, and proper application design.
+
+I configure the application behind an Application Load Balancer with an Auto Scaling Group spread across multiple Availability Zones.
+
+The ASG has a minimum capacity to handle normal traffic, a desired capacity based on average load, and a maximum capacity to protect against runaway scaling.
+
+For scaling, I primarily use Target Tracking Policies, for example maintaining average CPU around 50–60% or scaling based on ALB Request Count Per Target, which is a much better metric for web applications than CPU alone.
+
+If traffic increases rapidly, additional instances are launched automatically. For extreme spikes, I also configure Step Scaling so that if CPU exceeds a higher threshold, such as 80–85%, multiple instances are added in a single scaling event instead of one at a time.
 
 ### 🔹 Q46. In what scenario is Scheduled Scaling more appropriate than Dynamic Scaling?
+
+In production, I use Scheduled Scaling when the traffic pattern is predictable. If I already know that traffic will increase at a specific time every day, week, or month, it's better to scale the infrastructure before the traffic arrives instead of waiting for CloudWatch metrics to trigger Dynamic Scaling.
+
+For example, in one scenario, if an application receives heavy traffic every weekday between 9 AM and 11 AM, or during month-end processing, payroll generation, or a planned marketing campaign, I configure Scheduled Scaling to increase the desired capacity about 15–30 minutes before the expected traffic spike.
+
+This ensures the additional EC2 instances are already running and registered with the Application Load Balancer when users start accessing the application. After the peak period ends, another scheduled action reduces the desired capacity to optimize costs.
+
+However, I don't rely only on Scheduled Scaling. In production, I usually combine it with Target Tracking Auto Scaling
 
 ---
 
 # 🗄️ Database Administration
 
 ### 🔹 Q47. How do you install a Database on EC2? What are the prerequisites?
+
+In production, installing a database on an EC2 instance is generally not the preferred approach because AWS offers managed services like Amazon RDS and Amazon Aurora, which provide automated backups, patching, Multi-AZ high availability, monitoring, and easier maintenance.
+
+First, I provision an EC2 instance with the appropriate instance type, EBS storage, and operating system based on the database workload.
+
+I place the instance in a private subnet so it isn't directly accessible from the internet.
+
+The Security Group is configured to allow database traffic, such as 3306 for MySQL, 5432 for PostgreSQL, or 1433 for SQL Server, only from the application servers or a bastion host—not from 0.0.0.0/0
+
+I also ensure the VPC, route tables, NACLs, IAM role (if the database needs to access AWS services), DNS resolution, and KMS encryption for EBS volumes are configured correctly.
+
+After the infrastructure is ready, I install the required database software using the package manager or vendor installation media, initialize the database, configure the data directory on a dedicated EBS volume, enable automatic startup, and tune parameters such as memory allocation, connection limits, and logging based on the server capacity.
+
+I then create database users, enforce strong authentication, enable SSL/TLS if required, configure automated backups or EBS snapshots, and integrate monitoring using CloudWatch Agent or other monitoring tools.
+
 
 ### 🔹 Q48. How do you secure a Database running on EC2?
 
