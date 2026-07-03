@@ -121,7 +121,7 @@ container with a sidecar container for log collection, monitoring, or service me
 ---
 
 ## Section 2: Workload Controllers
-###🔴 4. What is the difference between a Deployment and a StatefulSet?
+### 🔴 4. What is the difference between a Deployment and a StatefulSet?
 The main difference is that Deployment is used for stateless applications, while StatefulSet is used for
 stateful applications that need stable identities and persistent storage.
 
