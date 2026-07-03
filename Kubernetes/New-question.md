@@ -337,7 +337,7 @@ We primarily use Headless Services with StatefulSets, where each Pod requires a 
 example, in databases like MongoDB, Cassandra, Kafka, Elasticsearch, or Redis Cluster, each node needs to 
 communicate with a specific peer rather than through a load balancer.
     
-###🔴 22. What are the different Service types?
+### 🔴22. What are the different Service types?
 **1. ClusterIP (Default)**
 ClusterIP exposes the application only within the Kubernetes cluster. Kubernetes assigns a virtual IP,
 and kube-proxy load balances traffic across healthy Pods behind the Service. This is the most commonly used
@@ -388,7 +388,7 @@ service without changing application configuration.
   type: ExternalName
   externalName: db.company.com**
   
-###🔴 23. What is the difference between Ingress and LoadBalancer?
+### 🔴23. What is the difference between Ingress and LoadBalancer?
  The main difference is that a LoadBalancer Service exposes a single Kubernetes Service externally, whereas
  Ingress provides Layer 7 (HTTP/HTTPS) routing and can expose multiple Services through a single 
  external Load Balancer.
@@ -576,7 +576,7 @@ When I apply this manifest:
 
 The AWS Load Balancer Controller detects the Ingress, configures the ALB HTTPS listener, attaches the ACM certificate, and optionally creates an HTTP listener that redirects traffic to HTTPS.
  
-###🔴 26. What type of Load Balancer is created when using Ingress in EKS?
+### 🔴26. What type of Load Balancer is created when using Ingress in EKS?
 
 The type of Load Balancer created in Amazon EKS depends on the **Ingress Controller** being used.
 
@@ -655,7 +655,7 @@ Instead:
 
       
  
-###🔴 27. Where will you mention the Load Balancer type in Ingress YAML?
+### 🔴27. Where will you mention the Load Balancer type in Ingress YAML?
 
 The **Load Balancer type is not mentioned directly** in the Ingress YAML.
 
@@ -823,7 +823,7 @@ In production, we use Network Policies to implement micro-segmentation, meaning 
 
 In production, we first apply a default deny Network Policy for each namespace and then create explicit allow rules for required communication. This prevents accidental exposure of internal services. We also ensure our CNI plugin supports Network Policies—for example, Calico, Cilium, or Amazon VPC CNI with Network Policy support. We use labels consistently because policies are label-based, and we validate them thoroughly to avoid breaking application communication.
 
-###🔴 72. Service reachable internally but not externally.
+### 🔴72. Service reachable internally but not externally.
 
 If a Service is reachable internally but not externally, it tells me the application and Service are most likely healthy, and the issue is somewhere in the ingress path. In production, I troubleshoot layer by layer instead of guessing. I start from the application and move outward until I identify where the traffic is getting blocked.
 
@@ -849,7 +849,7 @@ Finally, I review the Ingress Controller logs and application logs for errors li
 - Check Security Groups, NACLs, and firewall rules.
 - Verify DNS resolution and SSL certificate if HTTPS is used.
 
-###🔴 74. Ingress returns 502 error — what are possible reasons.
+### 🔴74. Ingress returns 502 error — what are possible reasons.
 
 A 502 Bad Gateway from an Ingress means the Ingress Controller was able to receive the request, but it couldn't get a valid response from the backend Service. In production, I don't assume it's an application issue—I troubleshoot each layer systematically because a 502 can occur due to multiple reasons.
 
@@ -967,7 +967,7 @@ kubectl exec -it <test-pod> -- cat /etc/resolv.conf
 - CNI or kube-proxy networking issues.
 - Network Policies blocking access to CoreDNS.
 - Incorrect DNS configuration in Pods (`resolv.conf`).
-### 77. A NetworkPolicy is blocking traffic — how do you confirm?
+### 🔴77. A NetworkPolicy is blocking traffic — how do you confirm?
 
 If I suspect a NetworkPolicy is blocking traffic, I first verify that the application itself is healthy. In production, I never assume the NetworkPolicy is the problem until I've confirmed that the Pods are running, the Service has healthy Endpoints, and the application is reachable when the policy is not in the path.
 
@@ -1080,7 +1080,7 @@ kubectl exec -it <source-pod> -- nc -zv <destination-pod-ip> <port>
 ## Interview Closing Statement
 
 > "If one Pod cannot reach another Pod's IP, I first verify the Pods and their IP assignments, then check Network Policies, followed by the CNI plugin and node networking. If the Pods are on different nodes, I focus heavily on CNI routing and cloud network configuration. I also avoid relying solely on ping because many containers don't respond to ICMP; application-level tests like curl give a more accurate picture of connectivity."
-### 114. How does DNS resolution work inside a pod?
+### 🔴114. How does DNS resolution work inside a pod?
 
 Inside a Pod, DNS resolution is handled by CoreDNS. Every Pod gets a `/etc/resolv.conf` file automatically created by Kubernetes, which points to the Cluster DNS Service IP (CoreDNS). When an application tries to access a Service using its name, the DNS query is sent to CoreDNS, which resolves the Service name to its ClusterIP. The application then sends traffic to that ClusterIP, and kube-proxy forwards the request to one of the healthy backend Pods.
 
@@ -1186,7 +1186,7 @@ If DNS isn't working, I verify it in this order:
 ## Interview Closing Statement
 
 > "Inside a Pod, DNS resolution starts with `/etc/resolv.conf`, which points to the CoreDNS Service. CoreDNS resolves the Service name to its ClusterIP by querying the Kubernetes API, and kube-proxy then forwards the traffic to a healthy backend Pod. In production, if DNS fails, I first test `nslookup` from the Pod, then verify CoreDNS health, its Service and Endpoints, and finally check networking components like kube-proxy and the CNI plugin."
-### 124. Suppose a Pod is running an application. How will you expose it to the internet using ALB in EKS?
+### 🔴124. Suppose a Pod is running an application. How will you expose it to the internet using ALB in EKS?
 
 In EKS, I expose a Pod to the internet using an Ingress resource together with the AWS Load Balancer Controller, which automatically provisions an Application Load Balancer (ALB). We never expose Pods directly because Pod IPs are ephemeral. Instead, we expose the application through a Service, and then the Ingress routes external traffic from the ALB to that Service.
 
@@ -1267,7 +1267,7 @@ spec:
 - Enable ALB access logs and monitor target group health and Ingress Controller logs for troubleshooting.---
 
 ## Section 5: Scheduling
-### 16. How does the scheduler decide where to place pods?
+### 🔴16. How does the scheduler decide where to place pods?
 
 The Kubernetes Scheduler is responsible for assigning Pods to worker nodes. It doesn't randomly pick a node—it follows a two-phase process: **Filtering** and **Scoring**.
 
@@ -1307,7 +1307,7 @@ It then scores both nodes, considering factors such as:
 If **Node-4** receives the highest score, the scheduler binds the Pod to **Node-4**.
 
 The kubelet running on that node then pulls the container image and starts the Pod.
-### 17. What are taints and tolerations?
+### 🔴 17. What are taints and tolerations?
 
 Taints and Tolerations are used to control where Pods can be scheduled. In production, we use them to dedicate specific worker nodes for certain workloads such as databases, monitoring, GPU workloads, or critical applications. A taint is applied to a node to repel Pods, and a toleration is added to a Pod to allow it to be scheduled on that tainted node. It's important to note that a toleration doesn't force a Pod onto a node—it only allows the scheduler to consider that node. If we want to force scheduling, we combine tolerations with node affinity or node selectors.
 
@@ -1344,7 +1344,7 @@ There are three taint effects that we commonly use:
 - **NoSchedule** – New Pods without a matching toleration are not scheduled on the node. Existing Pods continue running.
 - **PreferNoSchedule** – Kubernetes tries to avoid scheduling Pods on the node, but may still schedule them if necessary.
 - **NoExecute** – Existing Pods without the required toleration are evicted, and new Pods are also prevented from being scheduled.
-### 18. What are node affinity and anti-affinity?
+### 🔴 18. What are node affinity and anti-affinity?
 
 Node Affinity and Node Anti-Affinity are used to control where a Pod should or should not run based on node labels.
 
@@ -1377,7 +1377,7 @@ Similarly, if we don't want test applications to run on production nodes, we use
 
 - **Taints & Tolerations** → Node decides who is allowed to enter.
 - **Node Affinity** → Pod decides where it wants to run.
-### 19. How do you assign pods using taints/tolerations and affinity?
+### 🔴 19. How do you assign pods using taints/tolerations and affinity?
 
 In production, I assign Pods to specific nodes by combining taints/tolerations and node affinity.
 
@@ -1437,7 +1437,7 @@ spec:
 - If I use only Node Affinity, another application with the same affinity could also run on that node.
 
 - If I use only Taints/Tolerations, the Pod is allowed to run on the node, but Kubernetes may still schedule it on another suitable node.### 20. What happens when a node goes NotReady?
-### 21. Node is Ready but pods are not scheduling.
+### 🔴 21. Node is Ready but pods are not scheduling.
 
 If a node is in Ready state but Pods are not getting scheduled, it means the node is healthy, but the scheduler has found some constraint that prevents scheduling. In production, I don't assume it's a node issue. I first check why the scheduler rejected the node by describing the Pod.
 
@@ -1494,7 +1494,7 @@ kubectl describe node <node-name> | grep Taints
 ## Interview Closing Statement
 
 > "In production, whenever a Ready node isn't scheduling Pods, my first step is `kubectl describe pod` because the scheduler events usually tell the exact reason. Then I verify resources, node labels, affinity rules, taints and tolerations, and PVC status. This systematic approach helps identify the root cause quickly instead of guessing."### 90. What is pod priority and preemption?
-### 91. What are pod topology spread constraints?
+### 🔴91. What are pod topology spread constraints?
 
 Pod Topology Spread Constraints are used to evenly distribute Pods across failure domains, such as worker nodes or availability zones (AZs). The main goal is to improve high availability and avoid placing all replicas in the same location.
 
@@ -1537,7 +1537,7 @@ In production, we use topology spread constraints for:
 - Payment applications
 - Authentication services
 - Any application with multiple replicas that requires high availability
-### 111. How do you troubleshoot if pods are not getting scheduled?
+### 🔴 111. How do you troubleshoot if pods are not getting scheduled?
 
 When Pods are not getting scheduled and remain in the **Pending** state, I follow a structured troubleshooting approach instead of guessing. My first step is always to identify why the Kubernetes Scheduler rejected the Pod.
 
@@ -1663,10 +1663,10 @@ In production environments, we always:
 
 > In Kubernetes, both ConfigMap and Secret are used to externalize configuration from the application, but the main difference is the type of data they store. A ConfigMap is used for non-sensitive configuration like environment variables, API endpoints, feature flags, log levels, and port numbers. This allows us to change configuration without rebuilding the Docker image. A Secret is used for sensitive information such as database passwords, API keys, OAuth tokens, SSH keys, and TLS certificates. Although Kubernetes stores Secrets as Base64-encoded values, Base64 is not encryption. In production, we always enable etcd encryption at rest, restrict access using RBAC, and ensure only authorized workloads can access Secrets. So, ConfigMaps are for application configuration, while Secrets are for confidential data.
 
-### 33. How are Secrets stored and encrypted in etcd?
+### 🔴33. How are Secrets stored and encrypted in etcd?
 
 
-### 34. Kubernetes Secrets are Base64 encoded — how do you prevent exposure in Git?
+### 🔴34. Kubernetes Secrets are Base64 encoded — how do you prevent exposure in Git?
 By default, Kubernetes stores **Secrets** in **etcd** as **Base64-encoded** data, which is **not encryption**—it's just encoding. Anyone with access to etcd can decode and read the Secret values.
 
 In production environments, we always enable **Encryption at Rest** using an **EncryptionConfiguration** file on the **Kubernetes API Server**.
@@ -1708,7 +1708,7 @@ Base64 is only an **encoding** mechanism used to represent binary data as text. 
 - TLS
 - External Secret Management
 
-### 35. What is RBAC? What are its components (Role, ClusterRole, RoleBinding, ClusterRoleBinding)?
+### 🔴35. What is RBAC? What are its components (Role, ClusterRole, RoleBinding, ClusterRoleBinding)?
 
 **RBAC (Role-Based Access Control)** is the authorization mechanism in Kubernetes that controls **who can perform what actions on which resources**. It implements the **Principle of Least Privilege**, ensuring that users and ServiceAccounts have only the permissions required to perform their tasks.
 
@@ -1785,7 +1785,7 @@ Instead of giving the pipeline **cluster-admin** access, we:
 
 This ensures the pipeline cannot modify resources in other namespaces or perform cluster-wide administrative actions.
 
-### 36. How do you provide least-privileged access to pods using RBAC?
+### 🔴36. How do you provide least-privileged access to pods using RBAC?
 
 o provide **least-privileged access** to Pods using RBAC, we first identify exactly what the application running inside the Pod needs to access. Instead of granting broad permissions, we create a **dedicated ServiceAccount** for the application, define a **Role** with only the minimum required permissions, and then associate that Role with the ServiceAccount using a **RoleBinding**.
 
@@ -1826,7 +1826,7 @@ This ensures the application has only the permissions it requires, reducing the 
 
 > "In production, we never grant Pods unnecessary Kubernetes permissions. We create a dedicated ServiceAccount for each application, define a Role with only the minimum permissions required, and bind it using a RoleBinding. Namespace-scoped Roles are preferred, and cluster-wide permissions are granted only when absolutely necessary using ClusterRoles and ClusterRoleBindings. This approach follows the Principle of Least Privilege and significantly improves the security of the Kubernetes cluster."
 
-### 37. What is the difference between a Role and a ClusterRole?
+### 🔴37. What is the difference between a Role and a ClusterRole?
 
 The main difference between a **Role** and a **ClusterRole** is the **scope of permissions** they provide.
 
@@ -1912,70 +1912,69 @@ This allowed Prometheus to collect metrics across the entire Kubernetes cluster 
 
 > "The key difference is the scope of permissions. A Role is namespace-scoped and is used when users or applications need access only within a specific namespace. A ClusterRole is cluster-scoped and is used for cluster-wide resources or applications that need access across multiple namespaces. In production, we use Roles for application teams and namespace-specific workloads, while ClusterRoles are typically used for infrastructure components like Prometheus, logging agents, and ingress controllers. We always follow the principle of least privilege and grant only the minimum permissions required."
 
-### 38. What is a ServiceAccount, and how is it different from a user?
+### 🔴38. What is a ServiceAccount, and how is it different from a user?
 
-### 100. How do you implement network security in Kubernetes?
+### 🔴100. How do you implement network security in Kubernetes?
 
-### 104. How do you secure Kubernetes clusters?
+### 🔴104. How do you secure Kubernetes clusters?
 
-### 136. If you want to store secrets in Kubernetes, where can you store them securely?
+### 🔴 136. If you want to store secrets in Kubernetes, where can you store them securely?
 
-### 137. Is there scope for NetworkPolicies? What is a NetworkPolicy?
+### 🔴 137. Is there scope for NetworkPolicies? What is a NetworkPolicy?
 
 ---
 
 ## Section 7: Resource Management & Autoscaling
-### 40. What is the difference between resource requests and limits?
+### 🔴 40. What is the difference between resource requests and limits?
 
-### 41. What happens if no resource limits are defined?
+### 🔴 41. What happens if no resource limits are defined?
 
-### 42. What is an overcommit scenario, and what is its impact?
+### 🔴 42. What is an overcommit scenario, and what is its impact?
 
-### 43. HPA vs VPA vs Cluster Autoscaler.
+### 🔴 43. HPA vs VPA vs Cluster Autoscaler.
 
-### 44. Why might HPA not scale even when CPU usage is high?
+### 🔴 44. Why might HPA not scale even when CPU usage is high?
 
-### 45. How does HPA get metrics?
+### 🔴 45. How does HPA get metrics?
 
-### 46. What is Karpenter, and how does it differ from Cluster Autoscaler?
+### 🔴 46. What is Karpenter, and how does it differ from Cluster Autoscaler?
 
-### 132. How to tune Cluster Autoscaler?
+### 🔴 132. How to tune Cluster Autoscaler?
 
-### 133. Pod uses less CPU but node overloaded - why and how to detect noisy neighbor?
+### 🔴 133. Pod uses less CPU but node overloaded - why and how to detect noisy neighbor?
 
-### 134. Suppose one pod consumes more CPU/memory causing another to crash - how to prevent?
+### 🔴 134. Suppose one pod consumes more CPU/memory causing another to crash - how to prevent?
 
-### 135. Are you aware of namespaces? Can they help achieve resource isolation?
+### 🔴 135. Are you aware of namespaces? Can they help achieve resource isolation?
 
 ---
 
 ## Section 8: Deployments & Release Strategies
-### 47. What are the different deployment strategies (RollingUpdate, Recreate, Blue-Green, Canary), and how do you implement them?
+### 🔴 47. What are the different deployment strategies (RollingUpdate, Recreate, Blue-Green, Canary), and how do you implement them?
 
-### 48. How do you ensure zero downtime?
+### 🔴 48. How do you ensure zero downtime?
 
-### 49. What deployment strategies are you following in your organization?
+### 🔴 49. What deployment strategies are you following in your organization?
 
-### 50. How do you handle a rolling update that gets stuck?
+### 🔴 50. How do you handle a rolling update that gets stuck?
 
-### 51. What is a canary release? How do you implement it?
+### 🔴 51. What is a canary release? How do you implement it?
 
-### 97. A canary release is unstable — what actions will you take?
+### 🔴 97. A canary release is unstable — what actions will you take?
 
-### 98. How do you handle configuration drift between environments?
+### 🔴 98. How do you handle configuration drift between environments?
 
-### 99. Why should you avoid using the latest tag in production?
+### 🔴 99. Why should you avoid using the latest tag in production?
 
-### 125. Can you write a Kubernetes Deployment YAML file for NGINX?
+### 🔴 125. Can you write a Kubernetes Deployment YAML file for NGINX?
 
-### 126. Why are you using a hyphen ("-") before the container name in YAML, and what does it represent?
+### 🔴 126. Why are you using a hyphen ("-") before the container name in YAML, and what does it represent?
 
-### 127. If you want to write a Service YAML for a Deployment, what will you write?
-
+### 🔴 127. If you want to write a Service YAML for a Deployment, what will you write?
 ---
 
 ## Section 9: Troubleshooting
-### 53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
+### 🔴53. How do you troubleshoot a pod stuck in CrashLoopBackOff?
 
 When a Pod is in **CrashLoopBackOff**, it means the container starts, crashes, and Kubernetes keeps restarting it with an increasing backoff time. In production, I don't restart the Pod immediately. My goal is to identify why the application is crashing.
 
@@ -2096,7 +2095,7 @@ Error response from registry: manifest unknown
 The CI/CD pipeline had pushed the image as **v2.4**, but the Deployment YAML referenced **v2.5**. After updating the Deployment with the correct image tag and redeploying, the Pods started successfully.
 
 In another case, the image existed, but the `imagePullSecret` had expired. After updating the registry credentials, Kubernetes was able to pull the image successfully.
-### 55. What causes a pod to be evicted?
+### 🔴 55. What causes a pod to be evicted?
 
 A Pod is evicted when the kubelet removes it from a node because the node is under resource pressure or due to a scheduling policy. In production, the most common reason is resource exhaustion, especially memory pressure, where Kubernetes evicts lower-priority Pods to keep the node healthy.
 
@@ -2155,7 +2154,7 @@ kubectl get events --sort-by=.metadata.creationTimestamp
 - Node drain during maintenance.
 - NoExecute taints.
 - Node failure or prolonged NotReady state.
-### 56. How do you troubleshoot OOMKilled pods?
+### 🔴 56. How do you troubleshoot OOMKilled pods?
 
 An **OOMKilled** Pod means the container exceeded its configured memory limit, so the Linux OOM (Out of Memory) Killer terminated the process. In production, this is usually caused by either an application memory leak, insufficient memory limits, or incorrect resource sizing. My goal is to determine whether the issue is with the application or the Kubernetes resource configuration.
 
@@ -2231,7 +2230,7 @@ Exit Code: 137
 ```
 
 The Deployment had a **512Mi** memory limit, but during peak load the application was consuming around **900Mi**. We confirmed this using monitoring dashboards and `kubectl top pod`. As an immediate fix, we increased the memory limit to **1Gi** and adjusted the JVM heap settings. Later, the development team optimized the application to reduce memory consumption. After that, the OOMKilled events stopped.
-### 57. What is the difference between `kubectl logs` and `kubectl describe`?
+### 🔴57. What is the difference between `kubectl logs` and `kubectl describe`?
 
 I use `kubectl logs` and `kubectl describe` together because they provide different information.
 
@@ -2291,7 +2290,7 @@ to check the application logs and identify the exact error, such as:
 ## Interview Closing Statement
 
 > "kubectl describe tells me why Kubernetes is having trouble with the Pod, while kubectl logs tells me why the application inside the Pod is failing. In production, I always start with `kubectl describe` to understand the Pod's state and events, then use `kubectl logs` to identify the application-level root cause."
-### 58. A pod is running but the application is not accessible — walk through the troubleshooting steps.
+### 🔴 58. A pod is running but the application is not accessible — walk through the troubleshooting steps.
 
 If the Pod is in **Running** state but the application is not accessible, I don't assume the application is healthy because **Running** only means the container is running, not that the application inside it is working. In production, I troubleshoot layer by layer—from the application to the network.
 
@@ -2377,7 +2376,7 @@ kubectl describe ingress <ingress-name>
 For example, one of our APIs was in the **Running** state, but users were getting **503 Service Unavailable**. The application logs were clean, but `kubectl get endpoints` returned no endpoints. We found that the Service selector was `app=backend`, while the Deployment label had been changed to `app=backend-v2` during the last release. Because the labels didn't match, the Service had no backend Pods. After correcting the selector, the Endpoints were populated, and the application became accessible immediately.
 ### 59. Pods are running but the Service is unreachable — what are the possible causes?
 
-### 60. A pod is stuck in the Pending state — how do you debug it?
+### 🔴60. A pod is stuck in the Pending state — how do you debug it?
 
 If a Pod is stuck in the **Pending** state, it means the Pod has been created, but the Kubernetes Scheduler hasn't been able to assign it to a worker node. In production, I don't start by checking the nodes—I first check why the scheduler couldn't place the Pod.
 
@@ -2450,7 +2449,7 @@ kubectl describe limitrange
 - Node is cordoned (`SchedulingDisabled`).
 - Maximum Pods per node reached.
 - ResourceQuota or LimitRange restrictions.
-### 61. If `kubectl describe pod` says "node is out of capacity," what will you do?
+### 🔴61. If `kubectl describe pod` says "node is out of capacity," what will you do?
 
 If `kubectl describe pod` shows that the node is out of capacity, it means the scheduler couldn't find a worker node with enough available resources to run the Pod. In production, I first identify which resource is exhausted—CPU, memory, ephemeral storage, or the maximum Pod limit.
 
@@ -2495,7 +2494,7 @@ For example, during a production deployment, a new version of a Java application
 ```
 
 When I checked the Deployment, I found that the memory request had been increased from **1Gi** to **6Gi**. None of our worker nodes had that much free memory. Since the application genuinely needed more memory, we scaled the node pool using the Cluster Autoscaler, and once the new nodes joined the cluster, the Pods were scheduled successfully.
-### 62. A node has 8 GB RAM free, and you request 2 GB for a pod, but it remains in the Pending state with "Insufficient memory." Why?
+### 🔴 62. A node has 8 GB RAM free, and you request 2 GB for a pod, but it remains in the Pending state with "Insufficient memory." Why?
 
 Just because a node appears to have **8 GB free** doesn't mean Kubernetes can use all **8 GB** for Pods. The scheduler makes its decision based on the node's **Allocatable** memory, not the total or visible free memory.
 
@@ -2558,7 +2557,7 @@ kubectl describe pod <pod-name>
 ## Interview Tip (This impresses interviewers)
 
 > **"Kubernetes schedules based on requests, not actual resource usage."**
-### 63. How do you check resource usage in Kubernetes?
+### 🔴 63. How do you check resource usage in Kubernetes?
 
 In production, when I need to check resource usage, I look at both actual resource consumption and configured resource requests/limits. I don't rely on a single command because each provides different information.
 
@@ -2646,7 +2645,7 @@ and noticed the memory limit was configured too low. We increased the memory lim
 ## Interview Closing Statement
 
 > "In production, I primarily use `kubectl top` to monitor live CPU and memory usage, `kubectl describe pod` to verify resource requests and limits, and `kubectl describe node` to check node capacity and allocatable resources. Using these commands together helps me quickly identify whether the issue is resource exhaustion, incorrect sizing, or node capacity."
-### 64. How do you debug if a pod is scheduled on the wrong node?
+### 🔴 64. How do you debug if a pod is scheduled on the wrong node?
 
 If a Pod is scheduled on the wrong node, I first verify why the scheduler selected that node. In production, this is usually caused by incorrect or missing node affinity, node selector, taints/tolerations, or node labels.
 
@@ -2742,7 +2741,7 @@ Because of this label mismatch, the scheduler couldn't identify the correct node
 ## Interview Tip
 
 > If the interviewer says **"the Pod is already running on the wrong node"**, remember that Kubernetes does **not** automatically move running Pods when labels or affinity change. You typically fix the scheduling rule and recreate or roll out the Pod so the scheduler can place it on the correct node.
-### 64. How do you debug if a pod is scheduled on the wrong node?
+### 🔴 64. How do you debug if a pod is scheduled on the wrong node?
 
 If a Pod is scheduled on the wrong node, I first verify why the scheduler selected that node. In production, this is usually caused by incorrect or missing node affinity, node selector, taints/tolerations, or node labels.
 
@@ -2838,7 +2837,7 @@ Because of this label mismatch, the scheduler couldn't identify the correct node
 ## Interview Tip
 
 > If the interviewer says **"the Pod is already running on the wrong node"**, remember that Kubernetes does **not** automatically move running Pods when labels or affinity change. You typically fix the scheduling rule and recreate or roll out the Pod so the scheduler can place it on the correct node.
-### 66. A pod is stuck in the Terminating state — how do you safely force delete it?
+###  🔴66. A pod is stuck in the Terminating state — how do you safely force delete it?
 
 If a Pod is stuck in the **Terminating** state, it usually means Kubernetes is trying to gracefully delete the Pod, but something is preventing it from completing. In production, I don't force delete it immediately because that can lead to data corruption or incomplete cleanup, especially for stateful applications.
 
@@ -2901,7 +2900,7 @@ Since the application was already running on another replica and there was no im
 > If the interviewer asks **"When should you NOT force delete a Pod?"**, answer:
 >
 > **"I avoid force deleting Pods that belong to StatefulSets or are actively writing to a database unless I've confirmed that all data has been flushed or replicated. Force deletion should always be the last resort."**
-### 67. A node is in the NotReady state — what are the possible reasons and their impact?
+### 🔴67. A node is in the NotReady state — what are the possible reasons and their impact?
 
 **NotReady** node means the control plane has detected that the worker node is unhealthy or is no longer able to run workloads properly. In production, this is a high-priority issue because Kubernetes stops scheduling new Pods on that node, and if the problem persists, the Pods running on that node are eventually evicted and recreated on healthy nodes.
 
@@ -2967,7 +2966,7 @@ journalctl -u kubelet
 For example, during a production deployment, one worker node suddenly became **NotReady**. When I checked the node, I found the kubelet service had stopped after the VM ran out of disk space. Since the node couldn't communicate with the API Server, Kubernetes marked it as NotReady and stopped scheduling new Pods.
 
 We cleaned up disk space, restarted the kubelet service, and the node returned to the **Ready** state. Because our application had multiple replicas, the service remained available throughout the incident.
-### 68. What are DiskPressure, MemoryPressure, and PIDPressure node conditions? What happens when they occur?
+### 🔴68. What are DiskPressure, MemoryPressure, and PIDPressure node conditions? What happens when they occur?
 
 These are node conditions in Kubernetes that indicate resource exhaustion at the node level. They are continuously monitored by the kubelet, and when any of these conditions are triggered, Kubernetes takes corrective actions like rejecting new Pods or evicting existing Pods to protect node stability.
 
@@ -3080,7 +3079,7 @@ ps aux --sort=-%mem
 ps -eLf | wc -l
 ```
 
-### 69. How do you cordon and drain a node safely? What happens to DaemonSet pods during a drain?
+### 🔴69. How do you cordon and drain a node safely? What happens to DaemonSet pods during a drain?
 
 In production, when I need to perform maintenance on a node (like patching, upgrading, or replacing a VM), I first cordon the node and then drain it safely to ensure no new workloads are scheduled and existing workloads are gracefully moved.
 
@@ -3138,9 +3137,9 @@ If needed, we manage DaemonSet Pods separately, but in most production cases we 
 ## Interview Closing Statement
 
 > "In production, I first cordon the node to stop new workloads and then drain it to safely evict existing Pods. Kubernetes respects Pod Disruption Budgets and gracefully reschedules Pods on other nodes. DaemonSet Pods are not evicted during drain by default because they are meant to run on every node, so we use `--ignore-daemonsets` to allow the drain operation to proceed."
-### 70. A node's CPU utilization is at 100% — how do you identify the root cause?
+### 🔴70. A node's CPU utilization is at 100% — how do you identify the root cause?
 
-### 71. Pods are being evicted — why does this happen, and how does the kubelet eviction policy work?
+### 🔴71. Pods are being evicted — why does this happen, and how does the kubelet eviction policy work?
 
 When Pods are being evicted in production, it means the node is under resource pressure and kubelet is actively reclaiming resources to protect node stability. Eviction is not a failure—it is a controlled safety mechanism used by Kubernetes.
 
