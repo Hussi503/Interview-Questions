@@ -71,7 +71,7 @@ blocked privileged containers, prevented pods from running as the root user, and
 We also enforced mandatory labels like environment, application, and owner, because our monitoring, cost reporting, and deployment automation depended on those labels. 
 If any of these policies were violated, the deployment was rejected immediately before it reached the cluster.
 
-### 102. How does Kubernetes help with reliability
+### 🔴102. How does Kubernetes help with reliability
 Kubernetes improves reliability by continuously ensuring that applications stay in their desired state, 
 even when failures happen.
 
@@ -93,7 +93,7 @@ stable during traffic spikes.
 In our production environment, we use multiple replicas across different worker nodes, health probes, HPA, 
 rolling updates, and Pod Disruption Budgets. This combination ensures high availability, self-healing, and
 minimal downtime during failures, deployments, or maintenance.
-### 106. How does Kubernetes manage a large number of Docker containers?
+### 🔴106. How does Kubernetes manage a large number of Docker containers?
 Kubernetes manages a large number of Docker containers by grouping them into Pods and continuously 
 monitoring their desired state. Instead of managing individual containers manually, we tell Kubernetes how 
 many replicas we need, and it takes care of scheduling, scaling, networking, and recovery automatically.
@@ -121,7 +121,7 @@ container with a sidecar container for log collection, monitoring, or service me
 ---
 
 ## Section 2: Workload Controllers
-### 4. What is the difference between a Deployment and a StatefulSet?
+###🔴 4. What is the difference between a Deployment and a StatefulSet?
 The main difference is that Deployment is used for stateless applications, while StatefulSet is used for
 stateful applications that need stable identities and persistent storage.
 
@@ -133,11 +133,11 @@ applications like web servers, APIs, and microservices.
 its own persistent volume. Even if a pod is recreated, it keeps the same name and reconnects to the same
 storage. StatefulSets also start and stop pods in a specific order, which is important for databases and 
 clustered applications.
-### 5. What is a DaemonSet? Give examples of when you would use it.
+### 🔴5. What is a DaemonSet? Give examples of when you would use it.
 A DaemonSet ensures that one copy of a pod runs on every worker node, making it ideal for node-level services 
 like log collection, monitoring, networking, and security agents.
-### 7. What is the difference between a ReplicaSet and a Deployment?
-### 8. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
+### 🔴7. What is the difference between a ReplicaSet and a Deployment?
+### 🔴8. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
 
  **Pod** is the smallest deployable unit in Kubernetes. It contains one or more containers that share the 
   same network and storage. In production, we rarely create Pods directly because if a Pod fails, 
@@ -172,7 +172,7 @@ For Azure Disk or AWS EBS, a volume can generally be attached to only one node a
 one Pod needs to write. If multiple Pods across different nodes need to read and write the same data, I use a shared filesystem like 
 Azure Files or AWS EFS, which supports ReadWriteMany.
 
-### 9. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+### 🔴9. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
 One of the most common reasons is the Persistent Volume (PV) is tied to a specific Availability Zone (AZ). In production, 
 if a StatefulSet pod is using storage like Azure Managed Disk or AWS EBS, the disk is created in a particular AZ and 
 cannot be attached to a node in another AZ.
@@ -189,7 +189,7 @@ To avoid this in production, we follow a few best practices:
    ii. If the application requires storage accessible from multiple AZs, use a shared storage solution like Azure Files, 
        AWS EFS, or another ReadWriteMany (RWX) storage instead of zonal block storage.
        
-### 94. If a DaemonSet pod is pending, how would you troubleshoot?
+### 🔴94. If a DaemonSet pod is pending, how would you troubleshoot?
 If a DaemonSet pod is stuck in the Pending state, I start by checking why the scheduler couldn't place it on 
 the node rather than guessing.
 
@@ -210,7 +210,7 @@ In one production incident, our log collection DaemonSet stopped scheduling on n
 because those nodes had a new taint, and the DaemonSet didn't have the corresponding toleration. 
 After updating the DaemonSet with the required toleration, the pods were scheduled immediately.
 
-### 95. Why would a DaemonSet create two pods per node?
+### 🔴95. Why would a DaemonSet create two pods per node?
 Under normal circumstances, a DaemonSet should create only one pod per eligible node. If I see two 
 DaemonSet pods on the same node, I immediately investigate because it's usually due to a configuration or
 rollout issue rather than expected behavior.
@@ -223,7 +223,7 @@ Another possibility is a rolling update. During a DaemonSet upgrade, Kubernetes 
 the old and new pod on the same node depending on the update strategy (especially with maxSurge, which
 is supported for DaemonSets in newer Kubernetes versions). Once the new pod becomes healthy, the old 
 one is terminated, so this is expected and temporary.
-### 116. What is the difference between a Job and a CronJob?
+### 🔴116. What is the difference between a Job and a CronJob?
 A **Job** is used to run a task only once until it completes successfully. Kubernetes ensures the task finishes, 
 and if the pod fails, it automatically retries based on the Job configuration. We typically use Jobs for one
 -time activities like database migrations, data imports, application initialization, or backup restoration.
@@ -240,7 +240,7 @@ without manual intervention.
 ---
 
 ## Section 3: Storage
-### 10. How do PV and PVC behave across zones?
+### 🔴10. How do PV and PVC behave across zones?
 The behavior of Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) across Availability Zones
 depends on the type of storage backend being used.
 
@@ -257,7 +257,7 @@ If the application needs to be accessible from multiple AZs, we don't use zonal 
 use shared storage like Azure Files or AWS EFS, which supports ReadWriteMany (RWX). In that case, pods 
 running in different AZs can mount the same storage simultaneously. 
 
-### 117. What is the difference between a PV and PVC?
+### 🔴117. What is the difference between a PV and PVC?
 Persistent Volume (**PV**) is the actual storage available in the Kubernetes cluster.
 Persistent Volume Claim (**PVC**) is a request for that storage made by an application.
 
@@ -266,7 +266,7 @@ mode, and StorageClass. Kubernetes then dynamically provisions a PV using the co
 backend, such as Azure Managed Disk, Azure Files, AWS EBS, or AWS EFS, and binds it to the PVC. The
 application pod simply mounts the PVC and doesn't need to know where the storage actually resides.
 
-### 118. What is the difference between a StorageClass and a PV?
+### 🔴118. What is the difference between a StorageClass and a PV?
 A StorageClass is a template or blueprint that tells Kubernetes how to create storage. It defines things like 
 the storage provisioner (Azure Disk, Azure Files, AWS EBS, AWS EFS), disk type (SSD/HDD), reclaim policy,
 volume binding mode, and other storage parameters. It does not provide storage by itself.
@@ -284,12 +284,12 @@ For example, if my application has 5 replicas, I can configure a PDB with minAva
 maxUnavailable: 1. This means Kubernetes will never voluntarily evict more than one pod at a time. As a
 result, even during maintenance or upgrades, the application continues serving traffic without significant
 downtime.
-### 52. How do you handle database migrations safely in Kubernetes?
+### 🔴52. How do you handle database migrations safely in Kubernetes?
 I run database migrations as a separate Kubernetes Job or CI/CD pipeline stage before deploying the application,
 with backups, backward-compatible changes, and deployment gates so the application is updated only after the 
 database migration succeeds.
 
-### 80. What happens if etcd is corrupted? How do you recover?
+### 🔴80. What happens if etcd is corrupted? How do you recover?
 etcd is the brain of the Kubernetes cluster. It stores the entire cluster state, including Pods, Deployments,
 Services, ConfigMaps, Secrets, RBAC, and node information. If etcd becomes corrupted or unavailable, the
 Kubernetes API Server cannot read or write the cluster state. As a result, you won't be able to create, update,
@@ -306,7 +306,7 @@ restore the latest healthy snapshot using etcdctl snapshot restore, replace the 
 one, and restart the etcd and control plane components. After recovery, I verify the cluster health by checking nodes,
 workloads, and application functionality.
 
-### 82. How do you backup and restore etcd?
+### 🔴82. How do you backup and restore etcd?
 In a self-managed Kubernetes cluster, I back up etcd by taking regular snapshots using etcdctl. Since etcd
 contains the entire cluster state, these backups are critical for disaster recovery. After taking the snapshot, I
  store it in a secure location such as remote storage or object storage and periodically verify that it can be
@@ -328,7 +328,7 @@ After the restore, I update etcd to use the restored data directory, restart the
 
 
 ## Section 4: Services, Ingress & Networking
-### 11. What is a headless service?  how does it work?
+### 🔴11. What is a headless service?  how does it work?
 A Headless Service is a Kubernetes Service created by setting clusterIP: None. Unlike a normal Service, it 
 does not allocate a virtual ClusterIP and does not perform load balancing. Instead, when a client performs
 a DNS lookup, Kubernetes returns the IP addresses of all matching Pods directly.
@@ -337,7 +337,7 @@ We primarily use Headless Services with StatefulSets, where each Pod requires a 
 example, in databases like MongoDB, Cassandra, Kafka, Elasticsearch, or Redis Cluster, each node needs to 
 communicate with a specific peer rather than through a load balancer.
     
-### 22. What are the different Service types?
+###🔴 22. What are the different Service types?
 **1. ClusterIP (Default)**
 ClusterIP exposes the application only within the Kubernetes cluster. Kubernetes assigns a virtual IP,
 and kube-proxy load balances traffic across healthy Pods behind the Service. This is the most commonly used
@@ -388,7 +388,7 @@ service without changing application configuration.
   type: ExternalName
   externalName: db.company.com**
   
-### 23. What is the difference between Ingress and LoadBalancer?
+###🔴 23. What is the difference between Ingress and LoadBalancer?
  The main difference is that a LoadBalancer Service exposes a single Kubernetes Service externally, whereas
  Ingress provides Layer 7 (HTTP/HTTPS) routing and can expose multiple Services through a single 
  external Load Balancer.
@@ -408,7 +408,7 @@ path.
 | No built-in SSL termination    | Supports SSL termination and TLS            |
 | Higher cost if many Services   | More cost-effective for many web services   |
 
-### 24. How does Ingress work? How do you create an ingress controller in AWS EKS?
+### 🔴24. How does Ingress work? How do you create an ingress controller in AWS EKS?
 
 Ingress itself doesn't handle traffic. It is simply a set of routing rules. The actual traffic handling is done by 
 an Ingress Controller such as NGINX Ingress Controller, Azure Application Gateway Ingress Controller
@@ -528,7 +528,7 @@ kube-proxy distributes traffic to an available Pod.
 
       
 
-### 25. How will you manage SSL certificates for ALB in EKS?
+### 🔴25. How will you manage SSL certificates for ALB in EKS?
 In EKS, I manage SSL certificates using AWS Certificate Manager (ACM) and the AWS Load Balancer 
 Controller. This is the AWS-recommended approach because ACM handles certificate lifecycle, including renewals, 
 and the controller automatically attaches the certificate to the Application Load Balancer (ALB).
@@ -576,7 +576,7 @@ When I apply this manifest:
 
 The AWS Load Balancer Controller detects the Ingress, configures the ALB HTTPS listener, attaches the ACM certificate, and optionally creates an HTTP listener that redirects traffic to HTTPS.
  
-### 26. What type of Load Balancer is created when using Ingress in EKS?
+###🔴 26. What type of Load Balancer is created when using Ingress in EKS?
 
 The type of Load Balancer created in Amazon EKS depends on the **Ingress Controller** being used.
 
@@ -655,7 +655,7 @@ Instead:
 
       
  
-### 27. Where will you mention the Load Balancer type in Ingress YAML?
+###🔴 27. Where will you mention the Load Balancer type in Ingress YAML?
 
 The **Load Balancer type is not mentioned directly** in the Ingress YAML.
 
@@ -746,7 +746,7 @@ This **does not explicitly specify the load balancer type**. Instead, it tells K
 
 > We don't explicitly mention **ALB** or **NLB** anywhere in the Ingress specification. The type of load balancer is determined by the **Ingress Controller** associated with the IngressClass. In AWS EKS, if we're using the **AWS Load Balancer Controller**, we specify `ingressClassName: alb` (or the older `kubernetes.io/ingress.class: alb` annotation). The controller watches those Ingress resources and automatically provisions an **Application Load Balancer (ALB)**. If we need to customize the ALB—for example, making it internet-facing or internal, selecting IP or instance target type, configuring SSL certificates, listener ports, subnets, or AWS WAF—we do that using **ALB-specific annotations** in the Ingress YAML, not by specifying the load balancer type directly.
 
-### 28 How does kube-proxy work?
+### 🔴28 How does kube-proxy work?
 
 kube-proxy is a networking component that runs as a DaemonSet, meaning one pod runs on every worker node. Its primary responsibility is to implement the Kubernetes Service abstraction by routing traffic from a Service IP (ClusterIP) to one of the healthy backend Pods.
 
@@ -794,7 +794,7 @@ Here's what happens internally:
 - The frontend sends traffic to that ClusterIP.
 - kube-proxy uses its iptables/IPVS rules to load balance the request to one of the healthy payment Pods.
 - If Pods scale up, restart, or fail, CoreDNS and kube-proxy automatically update their records, so the application continues working without any configuration changes.
-### 30. Explain the Kubernetes networking model.
+### 🔴30. Explain the Kubernetes networking model.
 
 The Kubernetes networking model is based on a simple principle: every Pod gets its own unique IP address, and every Pod can communicate directly with every other Pod across the cluster without NAT. This is achieved using a Container Network Interface (CNI) plugin such as Calico, Cilium, or Amazon VPC CNI in EKS. The CNI is responsible for assigning Pod IPs, configuring network interfaces, and ensuring connectivity between Pods running on different worker nodes.
 
@@ -813,7 +813,7 @@ The Kubernetes networking model is based on a simple principle: every Pod gets i
 
 In production, we use a reliable CNI plugin based on the environment—for example, Amazon VPC CNI in EKS or Calico when advanced network policies are required. We never rely on Pod IPs because Pods are recreated during deployments or failures. Instead, all application communication happens through Services, and we enforce Network Policies to restrict unnecessary Pod-to-Pod communication following the principle of least privilege.
 
-### 31. How do you restrict pod-to-pod communication using Network Policies?
+### 🔴31. How do you restrict pod-to-pod communication using Network Policies?
 
 In production, we use Network Policies to implement micro-segmentation, meaning Pods are only allowed to communicate with the Pods they actually need. By default, Kubernetes allows all Pod-to-Pod communication. Once a Network Policy selects a Pod, that Pod becomes isolated, and only the traffic explicitly allowed by the policy is permitted. This helps enforce the principle of least privilege and limits the impact of a compromised Pod.
 
@@ -823,7 +823,7 @@ In production, we use Network Policies to implement micro-segmentation, meaning 
 
 In production, we first apply a default deny Network Policy for each namespace and then create explicit allow rules for required communication. This prevents accidental exposure of internal services. We also ensure our CNI plugin supports Network Policies—for example, Calico, Cilium, or Amazon VPC CNI with Network Policy support. We use labels consistently because policies are label-based, and we validate them thoroughly to avoid breaking application communication.
 
-### 72. Service reachable internally but not externally.
+###🔴 72. Service reachable internally but not externally.
 
 If a Service is reachable internally but not externally, it tells me the application and Service are most likely healthy, and the issue is somewhere in the ingress path. In production, I troubleshoot layer by layer instead of guessing. I start from the application and move outward until I identify where the traffic is getting blocked.
 
@@ -849,7 +849,7 @@ Finally, I review the Ingress Controller logs and application logs for errors li
 - Check Security Groups, NACLs, and firewall rules.
 - Verify DNS resolution and SSL certificate if HTTPS is used.
 
-### 74. Ingress returns 502 error — what are possible reasons.
+###🔴 74. Ingress returns 502 error — what are possible reasons.
 
 A 502 Bad Gateway from an Ingress means the Ingress Controller was able to receive the request, but it couldn't get a valid response from the backend Service. In production, I don't assume it's an application issue—I troubleshoot each layer systematically because a 502 can occur due to multiple reasons.
 
@@ -887,7 +887,7 @@ kubectl logs <ingress-controller-pod>
 kubectl exec -it <test-pod> -- curl http://<service-name>:<port>
 ```
 
-### 75. How do you debug CNI plugin issues?
+### 🔴75. How do you debug CNI plugin issues?
 
 When I suspect a CNI plugin issue, my first step is to confirm whether it's actually a networking problem and not an application issue. In production, the common symptoms are Pods unable to communicate with each other, DNS failures, Pods stuck in ContainerCreating, or new Pods not getting an IP address. I follow a layer-by-layer approach instead of immediately restarting the CNI.
 
@@ -932,7 +932,7 @@ kubectl exec -it <test-pod> -- curl http://<service-name>
 
 > "In production, I first confirm whether it's truly a CNI issue by checking Pod IP allocation and connectivity. Then I verify the CNI DaemonSet, review its logs, test Pod-to-Pod and Service communication, and finally inspect node-level networking and IP allocation. This structured approach helps isolate whether the problem is the CNI itself, the node, or a Network Policy instead of making unnecessary changes."
 > 
-### 76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
+### 🔴76. CoreDNS crashes — what is the impact, and how do you debug DNS resolution?
 
 If CoreDNS crashes, the biggest impact is on service discovery. Existing applications that already communicate using cached DNS entries may continue to work for some time, but any new DNS lookup will fail. As a result, microservices won't be able to resolve Service names like `payment-service`, causing inter-service communication failures. This can lead to application errors, API timeouts, failed database connections, and even readiness or liveness probe failures if they depend on DNS.
 
