@@ -604,10 +604,332 @@ I then create database users, enforce strong authentication, enable SSL/TLS if r
 
 # 🏗️ Real-Time Project Experience
 
-### 🔹 Q55. What AWS services have you worked on?
+# AWS Interview Questions (Production Grade)
 
-### 🔹 Q56. Can you elaborate on AWS services and your confidence level?
+---
 
-### 🔹 Q57. What are the services you have end-to-end configured in past projects?
+# 🔴Q55. What AWS services have you worked on?
 
-### 🔹 Q58. Write code to create an EC2 instance and attach a Load Balancer and Auto Scaling Group.
+In my projects, I've primarily worked on AWS services related to infrastructure provisioning, CI/CD, container orchestration, networking, security, monitoring, and storage. My day-to-day work involved designing, deploying, automating, and supporting production workloads rather than just using the services.
+
+The major AWS services I've worked on include:
+
+### Compute
+
+- EC2
+- Auto Scaling Groups (ASG)
+- Launch Templates
+
+### Containers
+
+- Amazon EKS
+- Amazon ECR
+
+### Networking
+
+- VPC
+- Public & Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Route Tables
+- Security Groups
+- Network ACLs
+- Application Load Balancer (ALB)
+
+### Storage
+
+- Amazon S3
+- Amazon EBS
+
+### Databases
+
+- Amazon RDS
+
+### Identity & Security
+
+- IAM
+- IAM Roles
+- IAM Policies
+- AWS Secrets Manager
+- KMS
+
+### Monitoring & Logging
+
+- CloudWatch
+- CloudTrail
+- SNS
+
+### Infrastructure as Code
+
+- Terraform
+
+### Automation
+
+- GitHub Actions
+- Ansible
+
+### Real-Time Example
+
+In one of our production projects, Terraform provisioned the AWS infrastructure including the VPC, networking, EKS cluster, EC2 instances, ALB, Auto Scaling Groups, IAM roles, and RDS. After infrastructure provisioning, GitHub Actions triggered Ansible to configure the servers, install application dependencies, deploy Docker containers, and validate the deployment. CloudWatch monitored infrastructure health, while CloudTrail provided auditing for AWS API activities.
+
+---
+
+# 🔴Q56. Can you elaborate on AWS services and your confidence level?
+
+I usually classify my AWS experience based on how extensively I've worked with each service in production.
+
+| Service | Confidence Level | Experience |
+|----------|-----------------|------------|
+| EC2 | ⭐⭐⭐⭐⭐ | Provisioning, Launch Templates, AMIs, troubleshooting, patching |
+| IAM | ⭐⭐⭐⭐⭐ | Users, Roles, Policies, Cross-account Roles, Least Privilege |
+| VPC | ⭐⭐⭐⭐⭐ | Complete network setup including Subnets, Route Tables, NAT, IGW |
+| ALB | ⭐⭐⭐⭐⭐ | Listener Rules, Target Groups, SSL, Health Checks |
+| Auto Scaling | ⭐⭐⭐⭐⭐ | Target Tracking, Scheduled Scaling, Launch Templates |
+| EKS | ⭐⭐⭐⭐⭐ | Cluster deployment, Node Groups, RBAC, Ingress, Monitoring |
+| ECR | ⭐⭐⭐⭐⭐ | Image repositories, lifecycle policies, CI/CD integration |
+| S3 | ⭐⭐⭐⭐⭐ | Artifact storage, backend storage, lifecycle rules |
+| CloudWatch | ⭐⭐⭐⭐⭐ | Metrics, Dashboards, Alarms, Logs |
+| CloudTrail | ⭐⭐⭐⭐☆ | Auditing and security investigations |
+| SNS | ⭐⭐⭐⭐☆ | Production alert notifications |
+| RDS | ⭐⭐⭐⭐☆ | Deployment, backups, monitoring, security |
+| Secrets Manager | ⭐⭐⭐⭐☆ | Managing application secrets |
+| KMS | ⭐⭐⭐⭐☆ | Encryption for S3, EBS, and Secrets |
+| Route53 | ⭐⭐⭐⭐☆ | DNS management and routing |
+| Terraform | ⭐⭐⭐⭐⭐ | Infrastructure provisioning and state management |
+| GitHub Actions | ⭐⭐⭐⭐⭐ | End-to-end CI/CD automation |
+| Ansible | ⭐⭐⭐⭐⭐ | Configuration management and deployments |
+
+### Real-Time Example
+
+Most of my daily work revolves around Terraform, GitHub Actions, EKS, EC2, IAM, ALB, CloudWatch, and Ansible. Services like CloudTrail, Route53, KMS, and Secrets Manager are used as supporting services to improve security, auditing, and operational reliability.
+
+---
+
+# 🔴Q57. What are the services you have end-to-end configured in past projects?
+
+In one of my recent production projects, I was responsible for setting up and automating the complete AWS infrastructure and deployment pipeline.
+
+The implementation included:
+
+### Networking
+
+- VPC
+- Public and Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Route Tables
+- Security Groups
+
+### Compute
+
+- EC2 Launch Templates
+- Auto Scaling Groups
+- Application Load Balancer
+
+### Kubernetes
+
+- Amazon EKS
+- Managed Node Groups
+- IAM Roles for Service Accounts (IRSA)
+- Ingress Controller
+- Cluster Autoscaler
+
+### Storage
+
+- Amazon S3
+- EBS Volumes
+
+### Container Platform
+
+- Amazon ECR
+
+### Security
+
+- IAM Roles
+- IAM Policies
+- AWS Secrets Manager
+- KMS Encryption
+
+### Monitoring
+
+- CloudWatch Dashboards
+- CloudWatch Alarms
+- CloudWatch Logs
+- CloudTrail
+- SNS Notifications
+
+### CI/CD
+
+- GitHub Actions
+- Terraform
+- Ansible
+- Helm
+
+### Deployment Flow
+
+```text
+Developer
+      │
+      ▼
+GitHub Repository
+      │
+      ▼
+GitHub Actions
+      │
+      ├──────── Build Docker Image
+      │
+      ├──────── Push Image to Amazon ECR
+      │
+      ├──────── Terraform Apply
+      │
+      ├──────── Provision AWS Infrastructure
+      │
+      ├──────── Configure EC2 using Ansible
+      │
+      ├──────── Deploy Application to Amazon EKS
+      │
+      ├──────── Helm Upgrade
+      │
+      └──────── Health Check Validation
+```
+
+### Real-Time Responsibilities
+
+My responsibilities included:
+
+- Designing Terraform modules.
+- Provisioning AWS infrastructure.
+- Managing IAM permissions.
+- Configuring EKS clusters.
+- Automating deployments using GitHub Actions.
+- Managing Kubernetes manifests and Helm charts.
+- Configuring monitoring and alerts.
+- Troubleshooting production incidents.
+
+The entire deployment process was fully automated with minimal manual intervention.
+
+---
+
+# 🔴Q58. Write code to create an EC2 instance and attach a Load Balancer and Auto Scaling Group.
+
+In production, we typically don't create standalone EC2 instances behind a Load Balancer. Instead, we use a **Launch Template**, an **Auto Scaling Group (ASG)**, and an **Application Load Balancer (ALB)** to achieve scalability and high availability.
+
+### Terraform Example
+
+### Create Launch Template
+
+```hcl
+resource "aws_launch_template" "app" {
+  name_prefix   = "app-template"
+
+  image_id      = "ami-xxxxxxxx"
+
+  instance_type = "t3.medium"
+
+  key_name      = "production-key"
+
+  vpc_security_group_ids = [
+    aws_security_group.app.id
+  ]
+}
+```
+
+---
+
+### Create Target Group
+
+```hcl
+resource "aws_lb_target_group" "app" {
+
+  name     = "app-tg"
+
+  port     = 80
+
+  protocol = "HTTP"
+
+  vpc_id   = aws_vpc.main.id
+}
+```
+
+---
+
+### Create Application Load Balancer
+
+```hcl
+resource "aws_lb" "app" {
+
+  name               = "production-alb"
+
+  internal           = false
+
+  load_balancer_type = "application"
+
+  security_groups    = [aws_security_group.alb.id]
+
+  subnets            = aws_subnet.public[*].id
+}
+```
+
+---
+
+### Create Listener
+
+```hcl
+resource "aws_lb_listener" "http" {
+
+  load_balancer_arn = aws_lb.app.arn
+
+  port              = 80
+
+  protocol          = "HTTP"
+
+  default_action {
+
+    type             = "forward"
+
+    target_group_arn = aws_lb_target_group.app.arn
+  }
+}
+```
+
+---
+
+### Create Auto Scaling Group
+
+```hcl
+resource "aws_autoscaling_group" "app" {
+
+  desired_capacity = 2
+
+  min_size         = 2
+
+  max_size         = 6
+
+  target_group_arns = [
+    aws_lb_target_group.app.arn
+  ]
+
+  launch_template {
+
+    id      = aws_launch_template.app.id
+
+    version = "$Latest"
+  }
+
+  vpc_zone_identifier = aws_subnet.private[*].id
+}
+```
+
+### Real-Time Explanation
+
+In production, we always deploy EC2 instances through an Auto Scaling Group rather than creating standalone instances. The Auto Scaling Group launches instances using a Launch Template and automatically registers them with the Application Load Balancer's Target Group. The ALB performs health checks and routes traffic only to healthy instances. If an instance becomes unhealthy, the Auto Scaling Group replaces it automatically. During traffic spikes, scaling policies increase the number of EC2 instances, and when traffic decreases, excess instances are terminated, ensuring both high availability and cost optimization.
+
+### Best Practices
+
+- Use Launch Templates instead of Launch Configurations.
+- Deploy EC2 instances in private subnets.
+- Place the ALB in public subnets.
+- Configure health checks on the Target Group.
+- Enable Auto Scaling policies based on CloudWatch metrics.
+- Use IAM Roles instead of storing AWS credentials on EC2 instances.
+- Store application configuration and secrets securely using AWS Secrets Manager or Parameter Store.
