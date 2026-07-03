@@ -5,9 +5,7 @@
 
 ---
 
-# 2. What are the roles of kubelet, kube-apiserver, kube-proxy, etcd, scheduler, and controller-manager?
-
-## Production-Grade Interview Answer
+# 🔴2. What are the roles of kubelet, kube-apiserver, kube-proxy, etcd, scheduler, and controller-manager?
 
 ### kube-apiserver
 
@@ -112,7 +110,7 @@ In production, whenever a Service IP receives traffic, kube-proxy routes request
 
 ---
 
-# Easy Way to Remember
+## Easy Way to Remember
 
 | Component | Responsibility |
 |-----------|----------------|
@@ -125,9 +123,7 @@ In production, whenever a Service IP receives traffic, kube-proxy routes request
 
 ---
 
-# 3. What happens internally when you run `kubectl apply`?
-
-## Production-Grade Interview Answer
+# 🔴3. What happens internally when you run `kubectl apply`?
 
 When `kubectl apply` is executed, Kubernetes performs several steps internally.
 
@@ -219,7 +215,7 @@ Applications become reachable through Kubernetes Services.
 
 ---
 
-# Flow Diagram
+## Flow Diagram
 
 ```text
 kubectl apply
@@ -266,9 +262,7 @@ Service Traffic
 
 ---
 
-# 87. What is a Static Pod?
-
-## Production-Grade Interview Answer
+# 🔴87. What is a Static Pod?
 
 A **Static Pod** is a Pod that is **managed directly by the kubelet** on a specific node instead of being managed through the Kubernetes API Server or controllers.
 
@@ -288,7 +282,7 @@ If a manifest is:
 
 Static Pods are **not scheduled** by the Kubernetes Scheduler because they are already tied to a specific node.
 
-### Production Use Case
+### Real-Time Use Case
 
 Static Pods are commonly used for Kubernetes control plane components in self-managed clusters, including:
 
@@ -299,9 +293,7 @@ Static Pods are commonly used for Kubernetes control plane components in self-ma
 
 These components must always run, even before the API Server becomes available.
 
----
-
-# Easy Way to Remember
+### Easy Way to Remember
 
 - Managed by **kubelet**
 - Stored as **local manifest files**
@@ -311,9 +303,7 @@ These components must always run, even before the API Server becomes available.
 
 ---
 
-# 89. What are Kubernetes Operators? Have you used them?
-
-## Production-Grade Interview Answer
+# 🔴89. What are Kubernetes Operators? Have you used them?
 
 A **Kubernetes Operator** is a custom controller that extends Kubernetes to automate the lifecycle of complex applications.
 
@@ -348,9 +338,7 @@ The Operator automatically handled reconciliation, upgrades, and Pod recovery.
 
 ---
 
-# 90. What are Admission Controllers? How have you used them?
-
-## Production-Grade Interview Answer
+# 🔴90. What are Admission Controllers? How have you used them?
 
 **Admission Controllers** act as the **final checkpoint** before a resource is stored in **etcd**.
 
@@ -364,7 +352,7 @@ Before Kubernetes creates or updates the resource, Admission Controllers can:
 
 They help enforce security, governance, and compliance across the cluster.
 
-### Production Use Cases
+### Real-Time Use Cases
 
 In our projects, Admission Controllers were used to enforce:
 
@@ -382,11 +370,9 @@ If any deployment violated these policies, it was rejected before reaching the c
 
 This ensured consistent security standards across all environments without relying on developers to remember every policy.
 
----
+### Easy Way to Remember
 
-# Easy Way to Remember
-
-Admission Controllers = **Validate → Mutate → Enforce**
+**Admission Controllers = Validate → Mutate → Enforce**
 
 They act as Kubernetes' final security and compliance gate before objects are persisted in **etcd**.
 
