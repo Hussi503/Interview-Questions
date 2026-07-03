@@ -1595,6 +1595,74 @@ kubectl get nodes --show-labels
 
 ## Section 6: Security
 ### 32. ConfigMap vs Secret.
+
+# ConfigMap vs Secret in Kubernetes
+
+In Kubernetes, both **ConfigMap** and **Secret** are used to externalize configuration from the application, but the key difference is the type of data they store.
+
+## ConfigMap
+
+A **ConfigMap** is used to store **non-sensitive configuration** such as:
+
+- Application properties
+- Environment variables
+- Feature flags
+- API endpoints
+- Log levels
+- Port numbers
+- Timeout values
+
+### Production Example
+In production, we store values like:
+
+- `APP_ENV=production`
+- API URLs
+- Timeout configurations
+- Feature toggle values
+
+Using a ConfigMap allows us to **modify application configuration without rebuilding the Docker image**, making deployments more flexible.
+
+---
+
+## Secret
+
+A **Secret** is used to store **sensitive information** such as:
+
+- Database passwords
+- API keys
+- OAuth tokens
+- SSH keys
+- TLS certificates
+
+Although Kubernetes stores Secret values as **Base64-encoded data**, **Base64 is not encryption**.
+
+### Production Best Practices
+
+In production environments, we always:
+
+- Enable **etcd encryption at rest**
+- Restrict access using **RBAC (Role-Based Access Control)**
+- Grant Secret access only to the required pods and service accounts
+- Avoid storing plaintext secrets in Git repositories
+
+---
+
+## Key Differences
+
+| Feature | ConfigMap | Secret |
+|---------|-----------|--------|
+| Purpose | Non-sensitive configuration | Sensitive data |
+| Examples | Environment variables, URLs, log levels | Passwords, API keys, certificates |
+| Storage | Plain text | Base64-encoded |
+| Security | No special protection | Should use RBAC + etcd encryption |
+| Production Usage | Application configuration | Credentials and confidential information |
+
+---
+
+## Interview Answer (1 Minute)
+
+> In Kubernetes, both ConfigMap and Secret are used to externalize configuration from the application, but the main difference is the type of data they store. A ConfigMap is used for non-sensitive configuration like environment variables, API endpoints, feature flags, log levels, and port numbers. This allows us to change configuration without rebuilding the Docker image. A Secret is used for sensitive information such as database passwords, API keys, OAuth tokens, SSH keys, and TLS certificates. Although Kubernetes stores Secrets as Base64-encoded values, Base64 is not encryption. In production, we always enable etcd encryption at rest, restrict access using RBAC, and ensure only authorized workloads can access Secrets. So, ConfigMaps are for application configuration, while Secrets are for confidential data.
+
 ### 33. How are Secrets stored and encrypted in etcd?
 
 ### 34. Kubernetes Secrets are Base64 encoded — how do you prevent exposure in Git?
