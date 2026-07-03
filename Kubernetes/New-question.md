@@ -1,8 +1,8 @@
 # Kubernetes Interview Preparation Roadmap (5-6+ Years DevOps)
 
 ## Section 1: Kubernetes Architecture & Core Components
-### 1. Explain the architecture of Kubernetes with master and worker node components.
-### 2. What are the roles of kubelet, kube-apiserver, kube-proxy, etcd, scheduler, and controller manager?
+### 🔴1. Explain the architecture of Kubernetes with master and worker node components.
+### 🔴2. What are the roles of kubelet, kube-apiserver, kube-proxy, etcd, scheduler, and controller manager?
 **kube-apiserver** is the central control plane entry point.  it first goes through the API server. It validates requests, enforces authentication and authorization, '
 and updates the desired state in etcd. So practically, it acts like the “front door and brain coordinator” of the entire cluster.
 
@@ -21,7 +21,7 @@ from the API server and ensures the container is running using the container run
 **kube-proxy** handles the networking layer inside the cluster. It maintains network rules using iptables or IPVS so that Kubernetes Services can route traffic correctly to backend pods.
 In real production scenarios, whenever a service IP is accessed, kube-proxy ensures the request is load balanced across healthy pods.
 
-### 3. What happens internally when you run kubectl apply?
+### 🔴3. What happens internally when you run kubectl apply?
 First, the kubectl client reads the YAML manifest and sends it as a REST request to the kube-apiserver. The API server authenticates the request using credentials,
 then authorizes it using RBAC policies.
 
@@ -40,7 +40,7 @@ It also starts health checks (liveness/readiness probes) and reports status back
 
 Finally, kube-proxy configures networking rules so the service can route traffic to the newly created pods, making them reachable inside the cluster.
 
-### 87. What is a static pod?
+### 🔴87. What is a static pod?
 **A static pod is a pod that is directly managed by the kubelet on a specific node instead of being managed by the Kubernetes API server or controllers**
 In a production Kubernetes cluster, most pods are created through the API server and managed via Deployments, ReplicaSets, or StatefulSets.
 However, static pods are different—they are defined locally on each node in a directory like /etc/kubernetes/manifests.
@@ -52,7 +52,7 @@ static pods are different—they are defined locally on each node in a directory
 In real-world use cases, static pods are mainly used for critical control plane components in self-managed clusters, such as API server, controller manager, and scheduler.
 
 **So in simple terms, static pods are node-level pods managed directly by kubelet, mainly used for system or control plane components, and they bypass the Kubernetes scheduler.**
-### 89. What are Kubernetes operators? Have you used them?
+### 🔴89. What are Kubernetes operators? Have you used them?
 A Kubernetes Operator is a custom controller that extends Kubernetes to automate the complete lifecycle of complex applications. It uses Custom Resource Definitions (CRDs) to 
 introduce new resource types into the cluster, and the Operator continuously watches those resources to perform tasks such as installation, configuration, scaling, upgrades, backups, 
 failover, and recovery automatically.
@@ -61,7 +61,7 @@ In my projects, I have not developed a custom Operator, but I have worked with O
 and the Operator automatically handled version upgrades, configuration reconciliation, and Pod recovery. From a DevOps perspective, my responsibility was deploying the Operator 
 through Helm or manifests, managing RBAC and CRDs, and monitoring its health.
 
-### 90. What are admission controllers? How have you used them?
+### 🔴90. What are admission controllers? How have you used them?
 In Kubernetes, Admission Controllers act as the last checkpoint before a resource is stored in etcd. When someone runs kubectl apply, the request reaches the API Server, 
 and before Kubernetes creates or updates the resource, admission controllers validate it or even modify it automatically. This is where we enforce organization-wide security
 and compliance policies, so developers don't have to remember every standard manually.
