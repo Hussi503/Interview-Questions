@@ -1665,7 +1665,48 @@ In production environments, we always:
 
 ### 33. How are Secrets stored and encrypted in etcd?
 
+
 ### 34. Kubernetes Secrets are Base64 encoded — how do you prevent exposure in Git?
+By default, Kubernetes stores **Secrets** in **etcd** as **Base64-encoded** data, which is **not encryption**—it's just encoding. Anyone with access to etcd can decode and read the Secret values.
+
+In production environments, we always enable **Encryption at Rest** using an **EncryptionConfiguration** file on the **Kubernetes API Server**.
+
+This ensures that before Secrets are written to etcd, they are encrypted using encryption providers such as:
+
+- **AES-CBC (aescbc)**
+- **Secretbox**
+- **KMS (Key Management Service)** integrated with:
+  - AWS KMS
+  - Azure Key Vault
+  - Google Cloud KMS
+
+When an authorized application or user requests a Secret, the **Kubernetes API Server transparently decrypts** it before returning it. Applications never need to perform the decryption themselves.
+
+## Production Security Best Practices
+
+- Restrict Secret access using **RBAC** (Principle of Least Privilege).
+- Encrypt communication between the **API Server** and **etcd** using **TLS**.
+- Rotate Secrets and encryption keys regularly.
+- Enable **Encryption at Rest** for all Secrets.
+- Avoid storing sensitive values directly in Git repositories.
+- Use external secret management solutions such as:
+  - External Secrets Operator
+  - AWS Secrets Manager
+  - Azure Key Vault
+  - HashiCorp Vault
+
+## Interview Follow-up
+
+### Is Base64 encryption?
+
+**No.**
+
+Base64 is only an **encoding** mechanism used to represent binary data as text. It provides **no security** because anyone can decode it. The actual security comes from:
+
+- Encryption at Rest
+- RBAC
+- TLS
+- External Secret Management
 
 ### 35. What is RBAC? What are its components (Role, ClusterRole, RoleBinding, ClusterRoleBinding)?
 
