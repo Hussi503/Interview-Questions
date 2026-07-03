@@ -1,7 +1,0 @@
-1. What is CloudWatch, and how do you monitor CPU, memory, and disk across many EC2
-instances?
-2. What is Amazon CloudWatch? Difference between CloudWatch metrics and logs?
-3. How do you monitor EC2 CPU, memory, disk, and ALB 5XX errors?
-4. What is the role of CloudTrail?
-5. How do you set alerts for production incidents?
-6. What are EKS control plane logs?
