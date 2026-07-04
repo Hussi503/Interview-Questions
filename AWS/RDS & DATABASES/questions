@@ -1,8 +1,0 @@
-1. What is RDS, and how is it different from running a database on EC2?
-2. How does RDS Multi-AZ failover work?
-3. How do you troubleshoot a slow RDS database?
-4. How do you install a database on EC2? What are prerequisites?
-5. How do you secure a database running on EC2?
-6. How do you allow database access only from application servers?
-7. How do you monitor and backup a database running on EC2?
-8. Database on EC2 vs RDS — which do you prefer and why?
