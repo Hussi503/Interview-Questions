@@ -97,10 +97,7 @@ Whenever a database becomes slow, I first identify the bottleneck instead of dir
 **Closing Line**
 
 > "My approach is optimize first, scale later."
-# AWS Database on EC2 Interview Questions
-**Production Grade | Easy to Remember | 5–6+ Years DevOps Engineer**
 
----
 
 # 🔴 4. How do you install a database on EC2? What are the prerequisites?
 
@@ -242,5 +239,77 @@ Instead of allowing access using IP addresses, I use Security Groups. I configur
 ### Closing Line
 
 > **"In production, I never whitelist public IPs. I always use Security Group-to-Security Group communication because it's more secure and easier to manage."**
-7. How do you monitor and backup a database running on EC2?
-8. Database on EC2 vs RDS — which do you prefer and why?
+
+
+---
+
+# 🔴 7. How do you monitor and backup a database running on EC2?
+
+
+Since the database is running on EC2, AWS doesn't manage it for us like RDS. So, monitoring and backup become our responsibility. In production, I ensure the database is continuously monitored and regular backups are scheduled to minimize data loss.
+
+
+### • Monitor Server Health
+
+- Monitor CPU, Memory, Disk, and Network using CloudWatch.
+- Configure CloudWatch alarms to notify the team if thresholds are exceeded.
+
+### • Monitor Database
+
+- Check database logs regularly.
+- Monitor slow queries, deadlocks, and active connections.
+- Track database performance and storage usage.
+
+### • Backup Strategy
+
+- Take regular database backups (logical backups like `mysqldump` or native DB backups).
+- Schedule EBS snapshots for volume-level backup.
+- Store backups securely in S3.
+
+### • Recovery Testing
+
+- Periodically restore backups in a test environment.
+- Verify backup integrity and recovery process.
+
+### • Real-Time Example
+
+- In one project, we scheduled daily MySQL backups to S3 and weekly EBS snapshots. CloudWatch alarms monitored CPU, disk usage, and storage, helping us detect issues before they impacted the application.
+
+### Closing Line
+
+> **"In production, taking backups is not enough. I always ensure backups are monitored, tested, and can be restored successfully."**
+
+---
+
+# 🔴 8. Database on EC2 vs RDS — which do you prefer and why?
+
+
+For most production applications, I prefer **Amazon RDS** because it reduces operational effort and provides built-in features like automated backups, patching, monitoring, and Multi-AZ failover. I choose a database on EC2 only when the application requires complete control over the database or operating system.
+
+
+### • Choose RDS When
+
+- Need a fully managed database.
+- Want automated backups and patching.
+- Need Multi-AZ High Availability.
+- Want minimal maintenance.
+
+### • Choose EC2 When
+
+- Database requires custom plugins or configurations.
+- Need OS-level access.
+- Application has vendor-specific requirements.
+- Full database control is mandatory.
+
+### • Operational Difference
+
+- RDS → AWS manages the infrastructure.
+- EC2 → We manage installation, backups, patching, monitoring, and failover.
+
+### • Real-Time Example
+
+- In most of my projects, we use RDS because it reduces operational overhead. However, in one project, we deployed MySQL on EC2 because the application required custom database configurations that were not supported by RDS.
+
+### Closing Line
+
+> **"My default choice for production is RDS because it is managed, highly available, and easier to maintain. I choose EC2 only when there's a specific technical requirement that RDS cannot support."**
