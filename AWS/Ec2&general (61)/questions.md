@@ -578,7 +578,21 @@ After the infrastructure is ready, I install the required database software usin
 I then create database users, enforce strong authentication, enable SSL/TLS if required, configure automated backups or EBS snapshots, and integrate monitoring using CloudWatch Agent or other monitoring tools.
 
 
-### 🔹 Q48. How do you secure a Database running on EC2?
+### 🔹  Q48. How do you secure a Database running on EC2?
+
+## Answer
+
+When a database is running on EC2, AWS only provides the infrastructure. Securing the operating system, the database, and the network becomes our responsibility. So, in production, I always follow a layered security approach instead of depending on a single control.
+
+The first thing I do is place the database server in a **private subnet** so it doesn't have a public IP and cannot be accessed directly from the internet. Then, I configure the **Security Group** to allow the database port, like **1433 for SQL Server** or **3306 for MySQL**, only from the application servers. This ensures that even if someone knows the database IP, they still can't connect unless they come from an authorized application server.
+
+Next comes OS and database hardening. I make sure the EC2 instance is regularly patched, unused ports and services are disabled, and only the required database users are created with the minimum permissions needed. I never use the database admin account for application connectivity because following the **least privilege principle** reduces security risks.
+
+For data protection, I enable **EBS encryption** so the database files are encrypted at rest, and I use **SSL/TLS** between the application and database so data is encrypted while travelling over the network. Database passwords are never stored inside application configuration files or pipelines. Instead, we store them securely in **AWS Secrets Manager** and allow the application to retrieve them securely during runtime.
+
+From an operational perspective, I configure **CloudWatch** to monitor CPU, memory, disk utilization, and database logs. I also schedule regular database backups and EBS snapshots, and we periodically perform restore testing to make sure backups are actually usable during a disaster.
+
+For example, in one of my Sitecore environments, the SQL Server was hosted on a private EC2 instance. Only the Sitecore CM and CD servers could communicate with it through Security Groups, the storage was encrypted, credentials were managed securely, and monitoring and backups were automated. This approach gave us a secure, production-ready database environment while keeping maintenance manageable.
 
 ### 🔹 Q49. How do you allow Database access only from Application Servers?
 
