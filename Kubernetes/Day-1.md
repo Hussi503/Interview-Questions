@@ -1,38 +1,29 @@
 # 🔴 1. Kubernetes Architecture & Core Components
 
-## 🔴 Direct Interview Answer
-
 **"Kubernetes follows a Control Plane and Worker Node architecture. The Control Plane is responsible for managing the cluster, while Worker Nodes run the actual application workloads. The core Control Plane components are API Server, ETCD, Scheduler, and Controller Manager. Worker Nodes contain Kubelet, Kube Proxy, and Container Runtime. Kubernetes continuously compares the desired state with the actual state and automatically takes corrective actions to maintain application availability."**
+---
+##  Why Do We Need It?
+
+   Centralized cluster management
+
+   Automated scheduling
+
+   Self-healing
+
+   Auto-scaling
+
+   High availability
 
 ---
-
-## 🔴 Why Do We Need It?
-
-🔴 Centralized cluster management
-
-🔴 Automated scheduling
-
-🔴 Self-healing
-
-🔴 Auto-scaling
-
-🔴 High availability
-
----
-
-## 🔴 Production Usage
 
 **"In our EKS environment, the Control Plane manages scheduling, scaling, and cluster operations, while application workloads run on worker nodes spread across multiple Availability Zones."**
-
 ---
-
-## 🔴 Real-Time Scenario
 
 **"We had pods stuck in Pending state. After investigating Scheduler events, we identified that worker nodes lacked sufficient CPU resources. After scaling the node group, pods were scheduled successfully."**
 
 ---
 
-## 🔴 Troubleshooting
+##  Troubleshooting
 
 ```bash
 kubectl get nodes
@@ -55,7 +46,7 @@ Control plane communication
 
 ---
 
-## 🔴 Strong Closing Line
+## Strong Closing Line
 
 **"Kubernetes architecture is built around desired state management, enabling automated deployment, scaling, recovery, and high availability of applications."**
 
@@ -63,31 +54,29 @@ Control plane communication
 
 # 🔴 2. What happens internally when you run kubectl apply?
 
-## 🔴 Direct Interview Answer
-
 **"When we run kubectl apply, the manifest is sent to the Kubernetes API Server. The API Server validates the request and stores the desired state in ETCD. The Controller Manager continuously monitors this desired state, and if pods need to be created, the Scheduler selects an appropriate node. The Kubelet on that node then communicates with the container runtime to create and start the containers."**
 
 ---
 
-## 🔴 Why Do We Need It?
+##  Why Do We Need It?
 
-🔴 Declarative deployments
+   Declarative deployments
 
-🔴 Automated reconciliation
+   Automated reconciliation
 
-🔴 Configuration management
+   Configuration management
 
-🔴 Infrastructure consistency
+   Infrastructure consistency
 
 ---
 
-## 🔴 Production Usage
+## Production Usage
 
 **"Our CI/CD pipelines use kubectl apply to deploy Deployments, Services, ConfigMaps, and Ingress resources into EKS clusters."**
 
 ---
 
-## 🔴 Real-Time Scenario
+##  Real-Time Scenario
 
 "A Static Pod is a pod that runs directly on a node using a local manifest file rather than being created through the normal Kubernetes deployment process. 
 
@@ -99,7 +88,7 @@ The Kubelet monitors the local manifest file and ensures the pod remains running
 
 ---
 
-## 🔴 Troubleshooting
+##  Troubleshooting
 
 ```bash
 kubectl get events
@@ -122,7 +111,7 @@ Resource shortages
 
 ---
 
-## 🔴 Strong Closing Line
+##  Strong Closing Line
 
 **"kubectl apply updates the desired state in Kubernetes, and the control plane works continuously to make the actual state match it."**
 
@@ -130,23 +119,21 @@ Resource shortages
 
 # 🔴 3. What is a Static Pod?
 
-## 🔴 Direct Interview Answer
 
 **"A Static Pod is a pod managed directly by the Kubelet instead of the Kubernetes API Server. The pod definition file exists on the node itself, and Kubelet continuously ensures the pod remains running. Even if the API Server is unavailable, the Static Pod continues running because it is locally managed."**
 
 ---
+## Why Do We Need It?
 
-## 🔴 Why Do We Need It?
+    Critical services must start before Kubernetes is fully available
 
-🔴 Critical services must start before Kubernetes is fully available
+    Local node-level management
 
-🔴 Local node-level management
-
-🔴 Control plane dependency reduction
+    Control plane dependency reduction
 
 ---
 
-## 🔴 Production Usage
+##  Production Usage
 
 Static Pods are commonly used for:
 
@@ -159,13 +146,13 @@ kube-controller-manager
 
 ---
 
-## 🔴 Real-Time Scenario
+##  Real-Time Scenario
 
 **"In kubeadm-based clusters, I verified control plane health by checking Static Pod manifests located under `/etc/kubernetes/manifests`."**
 
 ---
 
-## 🔴 Troubleshooting
+##  Troubleshooting
 
 ```bash
 ls /etc/kubernetes/manifests
@@ -188,7 +175,7 @@ Node resources
 
 ---
 
-## 🔴 Strong Closing Line
+##  Strong Closing Line
 
 **"Static Pods are mainly used for critical Kubernetes control-plane components that must remain available independently of the API Server."**
 
@@ -196,25 +183,23 @@ Node resources
 
 # 🔴 4. What are Kubernetes Operators? Have you used them?
 
-## 🔴 Direct Interview Answer
-
 **"Kubernetes Operators extend Kubernetes functionality by automating the lifecycle management of complex applications. They use Custom Resource Definitions (CRDs) and custom controllers to automate deployment, upgrades, backups, failover, and scaling activities. Operators essentially bring operational knowledge into Kubernetes."**
 
 ---
 
-## 🔴 Why Do We Need It?
+##  Why Do We Need It?
 
-🔴 Automate repetitive operational tasks
+   Automate repetitive operational tasks
 
-🔴 Reduce manual intervention
+   Reduce manual intervention
 
-🔴 Simplify lifecycle management
+   Simplify lifecycle management
 
-🔴 Enable self-healing for complex applications
+   Enable self-healing for complex applications
 
 ---
 
-## 🔴 Production Usage
+##  Production Usage
 
 Examples:
 
@@ -227,13 +212,13 @@ Kafka Operator
 
 ---
 
-## 🔴 Real-Time Scenario
+##  Real-Time Scenario
 
 **"We used the Prometheus Operator to deploy and manage monitoring infrastructure. It automated upgrades, ServiceMonitor creation, and configuration management without manual changes."**
 
 ---
 
-## 🔴 Troubleshooting
+##  Troubleshooting
 
 ```bash
 kubectl get crds
@@ -256,7 +241,7 @@ Custom resource status
 
 ---
 
-## 🔴 Strong Closing Line
+##  Strong Closing Line
 
 **"Operators automate complex operational procedures and make Kubernetes capable of managing sophisticated stateful applications efficiently."**
 
@@ -264,25 +249,23 @@ Custom resource status
 
 # 🔴 5. What are Admission Controllers? How have you used them?
 
-## 🔴 Direct Interview Answer
-
 **"Admission Controllers are Kubernetes components that intercept API requests after authentication and authorization but before objects are stored in ETCD. They can validate, modify, or reject requests based on organizational policies and security requirements."**
 
 ---
 
-## 🔴 Why Do We Need It?
+##  Why Do We Need It?
 
-🔴 Governance
+   Governance
 
-🔴 Security
+   Security
 
-🔴 Compliance
+   Compliance
 
-🔴 Policy enforcement
+   Policy enforcement
 
 ---
 
-## 🔴 Production Usage
+##  Production Usage
 
 Examples:
 
@@ -296,13 +279,13 @@ Restrict hostPath volumes
 
 ---
 
-## 🔴 Real-Time Scenario
+## Real-Time Scenario
 
 **"We used Kyverno Admission Policies to block containers running as root and to ensure every deployment had CPU and memory limits defined before being admitted into the cluster."**
 
 ---
 
-## 🔴 Troubleshooting
+## Troubleshooting
 
 ```bash
 kubectl describe pod
@@ -323,12 +306,11 @@ Validation errors
 
 ---
 
-## 🔴 Strong Closing Line
+##  Strong Closing Line
 
 **"Admission Controllers act as a gatekeeper for the Kubernetes API and are critical for enforcing security, governance, and compliance policies in production environments."**
-# 🔴 6. How does Kubernetes help with reliability?
 
-## 🔴 Direct Interview Answer
+# 🔴 6. How does Kubernetes help with reliability?
 
 **"Kubernetes improves application reliability through self-healing, replication, health checks, rolling updates, auto-scaling, and automatic workload rescheduling. If a pod crashes, Kubernetes recreates it automatically. If a node fails, workloads are rescheduled to healthy nodes. This ensures applications remain available with minimal manual intervention."**
 
