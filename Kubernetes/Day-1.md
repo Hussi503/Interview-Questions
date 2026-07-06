@@ -89,7 +89,13 @@ Control plane communication
 
 ## 🔴 Real-Time Scenario
 
-**"During a deployment, manifests were applied successfully, but pods remained Pending because node resources were exhausted. Scheduler events helped identify the root cause."**
+"A Static Pod is a pod that runs directly on a node using a local manifest file rather than being created through the normal Kubernetes deployment process. 
+
+Its primary purpose is to run critical system components that need to be available even if the Kubernetes API Server is down. 
+
+In kubeadm clusters, control plane components like kube-apiserver, etcd, scheduler, and controller-manager are deployed as Static Pods. 
+
+The Kubelet monitors the local manifest file and ensures the pod remains running."
 
 ---
 
