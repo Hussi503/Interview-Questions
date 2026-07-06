@@ -74,19 +74,6 @@ Control plane communication
 
 **"Our CI/CD pipelines use kubectl apply to deploy Deployments, Services, ConfigMaps, and Ingress resources into EKS clusters."**
 
----
-
-##  Real-Time Scenario
-
-"A Static Pod is a pod that runs directly on a node using a local manifest file rather than being created through the normal Kubernetes deployment process. 
-
-Its primary purpose is to run critical system components that need to be available even if the Kubernetes API Server is down. 
-
-In kubeadm clusters, control plane components like kube-apiserver, etcd, scheduler, and controller-manager are deployed as Static Pods. 
-
-The Kubelet monitors the local manifest file and ensures the pod remains running."
-
----
 
 ##  Troubleshooting
 
@@ -120,7 +107,13 @@ Resource shortages
 # 🔴 3. What is a Static Pod?
 
 
-**"A Static Pod is a pod managed directly by the Kubelet instead of the Kubernetes API Server. The pod definition file exists on the node itself, and Kubelet continuously ensures the pod remains running. Even if the API Server is unavailable, the Static Pod continues running because it is locally managed."**
+**"A Static Pod is a pod that runs directly on a node using a local manifest file rather than being created through the normal Kubernetes deployment process. 
+
+Its primary purpose is to run critical system components that need to be available even if the Kubernetes API Server is down. 
+
+In kubeadm clusters, control plane components like kube-apiserver, etcd, scheduler, and controller-manager are deployed as Static Pods. 
+
+The Kubelet monitors the local manifest file and ensures the pod remains running.
 
 ---
 ## Why Do We Need It?
