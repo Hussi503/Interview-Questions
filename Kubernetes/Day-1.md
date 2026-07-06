@@ -1,7 +1,15 @@
 # 🔴 1. Kubernetes Architecture & Core Components
 
-**"Kubernetes follows a Control Plane and Worker Node architecture. The Control Plane is responsible for managing the cluster, while Worker Nodes run the actual application workloads. The core Control Plane components are API Server, ETCD, Scheduler, and Controller Manager. Worker Nodes contain Kubelet, Kube Proxy, and Container Runtime. Kubernetes continuously compares the desired state with the actual state and automatically takes corrective actions to maintain application availability."**
----
+  Kubernetes follows a Control Plane and Worker Node architecture. 
+  
+  The Control Plane is responsible for managing the cluster, while Worker Nodes run the actual application workloads. 
+  
+  The core Control Plane components are API Server,ETCD, Scheduler, and Controller Manager.
+  
+  Worker Nodes contain Kubelet, Kube Proxy, and Container Runtime. 
+  
+  Kubernetes continuously compares the desired state with the actual state and automatically takes corrective actions to     maintain application availability."
+ 
 ##  Why Do We Need It?
 
    Centralized cluster management
@@ -16,10 +24,10 @@
 
 ---
 
-**"In our EKS environment, the Control Plane manages scheduling, scaling, and cluster operations, while application workloads run on worker nodes spread across multiple Availability Zones."**
+In our EKS environment, the Control Plane manages scheduling, scaling, and cluster operations, while application workloads run on worker nodes spread across multiple Availability Zones
 ---
 
-**"We had pods stuck in Pending state. After investigating Scheduler events, we identified that worker nodes lacked sufficient CPU resources. After scaling the node group, pods were scheduled successfully."**
+We had pods stuck in Pending state. After investigating Scheduler events, we identified that worker nodes lacked sufficient CPU resources. After scaling the node group, pods were scheduled successfully.
 
 ---
 
