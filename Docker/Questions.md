@@ -1,5 +1,16 @@
 
-1. Docker images vs Docker containers - what's the difference?
+## 1. Docker images vs Docker containers - what's the difference?
+A **Docker image** is a read-only blueprint or template that contains everything required to run an application, such as application code, runtime, libraries, dependencies, and configurations.
+A **Docker container** is the actual running instance of that image.
+
+| Docker Image | Docker Container |
+|-------------|------------------|
+| Blueprint of the application | Running instance of the application |
+| Immutable | Ephemeral and runtime-based |
+| Stored in Registry | Runs on Docker/Kubernetes host |
+| Built using Dockerfile | Created from an image |
+| Versioned artifact | Consumes CPU and Memory |
+
 2. What are the advantages of containerizing applications?
 3. What is a Dockerfile and what instructions do you use in it?
 4. How do you reduce Docker image size using multi-stage builds?
