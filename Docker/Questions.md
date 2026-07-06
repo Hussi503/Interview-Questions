@@ -30,34 +30,44 @@ A Dockerfile is a text file that contains a set of instructions used to automati
 Instead of manually installing dependencies and configuring environments, we define everything as code in a Dockerfile, which ensures consistency and repeatability across all environments.
 
   **FROM** : Defines the base image.
+  
   **WORKDIR**: Sets the working directory inside the container.
+  
   **COPY** : Copies files from host to container.
+  
   **ADD** : Copies files and supports URL download and archive extraction.
+  
   **RUN**:  Executes commands during image build.
+  
   **ENV** :Sets environment variables.
+  
   **ARG** : Defines build-time variables.
+  
   **EXPOSE** :Documents the port used by the application.
+  
   **USER** :Runs the container as a non-root user.
+  
   **CMD** : Provides the default command executed when the container starts.
+  
   **ENTRYPOINT** :Defines the main executable of the container.
 
             ```dockerfile
-FROM python:3.11-slim
+                FROM python:3.11-slim
 
-WORKDIR /app
+                WORKDIR /app
 
-COPY requirements.txt .
+                COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+                RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+                COPY . .
 
-EXPOSE 5000
+                EXPOSE 5000
 
-USER 1001
+                USER 1001
 
-CMD ["python","app.py"]
-```
+                CMD ["python","app.py"]
+              ```
   
 
 ## 🔴 4. How do you reduce Docker image size using multi-stage builds?
