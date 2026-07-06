@@ -1,5 +1,5 @@
 
-## 1. Docker images vs Docker containers - what's the difference?
+## 🔴 1. Docker images vs Docker containers - what's the difference?
 A **Docker image** is a read-only blueprint or template that contains everything required to run an application, such as application code, runtime, libraries, dependencies, and configurations.
 A **Docker container** is the actual running instance of that image.
 
@@ -11,32 +11,101 @@ A **Docker container** is the actual running instance of that image.
 | Built using Dockerfile | Created from an image |
 | Versioned artifact | Consumes CPU and Memory |
 
-2. What are the advantages of containerizing applications?
-3. What is a Dockerfile and what instructions do you use in it?
-4. How do you reduce Docker image size using multi-stage builds?
-5. Why should containers run as non-root?
-6. What is image immutability?
-7. Difference between ADD and COPY in Dockerfile
-8. Difference between CMD and ENTRYPOINT - can we use both?
-9. What happens if both CMD and ENTRYPOINT are defined?
-10. What challenges do you face when containerizing legacy monolithic applications?
-11. How do you make a legacy application stateless for containers?
-12. How do you handle filesystem dependencies and background jobs in containers?
-13. What is the "one process per container" principle?
-14. How do sidecars help in containerizing legacy applications?
-15. What security considerations do you take while containerizing old applications?
-16. How is the Docker client different from the Docker daemon?
-17. What is Docker networking and which commands create bridge/overlay networks?
-18. What is the difference between Docker, Dockerfile, and Docker Compose?
-19. What are three best practices to secure a Docker container?
-20. What is the difference between a Dockerfile and a Docker registry?
-21. Have you worked with Docker volumes? What happens to volume if container is removed?
-22. Can you create a Dockerfile for a Python application?
-23. If requirements.txt is at remote location, how will you copy it in Dockerfile?
-24. What are the kinds of Docker volumes that are available?
-25. Can you tell me with Docker volume on the host /app/db and your container it should be mounted to /opt/data.
-     What is the command that you use to run the Docker container with this mapping?The container name should be test. Can you give that command?
-26. In Docker, how do you inspect a container?
+## 🔴2. What are the advantages of containerizing applications?
+
+The biggest advantage of containerizing applications is consistency.
+
+A container packages the application code, runtime, libraries, and dependencies together, so the application behaves the same across a developer's machine, testing environments, and production.
+
+This eliminates the classic 'works on my machine' problem.
+
+Containers are also lightweight compared to virtual machines because they share the host operating system kernel. This results in faster startup times, better resource utilization, and higher application density on servers.
+
+Another major advantage is portability. The same container image can run on any environment that supports Docker or Kubernetes, whether it's on-premises, AWS, Azure, or GCP. This makes migrations and multi-cloud deployments much easier.
+
+## 🔴 3. What is a Dockerfile and what instructions do you use in it?
+
+A Dockerfile is a text file that contains a set of instructions used to automatically build a Docker image.
+
+Instead of manually installing dependencies and configuring environments, we define everything as code in a Dockerfile, which ensures consistency and repeatability across all environments.
+
+  **FROM** : Defines the base image.
+  **WORKDIR**: Sets the working directory inside the container.
+  **COPY** : Copies files from host to container.
+  **ADD** : Copies files and supports URL download and archive extraction.
+  **RUN**:  Executes commands during image build.
+  **ENV** :Sets environment variables.
+  **ARG** : Defines build-time variables.
+  **EXPOSE** :Documents the port used by the application.
+  **USER** :Runs the container as a non-root user.
+  **CMD** : Provides the default command executed when the container starts.
+  **ENTRYPOINT** :Defines the main executable of the container.
+
+            ```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+USER 1001
+
+CMD ["python","app.py"]
+```
+  
+
+## 🔴 4. How do you reduce Docker image size using multi-stage builds?
+
+## 🔴 5. Why should containers run as non-root?
+
+## 🔴 6. What is image immutability?
+
+## 🔴 7. Difference between ADD and COPY in Dockerfile
+
+## 🔴 8. Difference between CMD and ENTRYPOINT - can we use both?
+
+## 🔴 9. What happens if both CMD and ENTRYPOINT are defined?
+
+## 🔴 10. What challenges do you face when containerizing legacy monolithic applications?
+
+## 🔴 11. How do you make a legacy application stateless for containers?
+
+## 🔴 12. How do you handle filesystem dependencies and background jobs in containers?
+
+## 🔴 13. What is the "one process per container" principle?
+
+## 🔴 14. How do sidecars help in containerizing legacy applications?
+
+## 🔴 15. What security considerations do you take while containerizing old applications?
+
+## 🔴 16. How is the Docker client different from the Docker daemon?
+
+## 🔴 17. What is Docker networking and which commands create bridge/overlay networks?
+
+## 🔴 18. What is the difference between Docker, Dockerfile, and Docker Compose?
+
+## 🔴 19. What are three best practices to secure a Docker container?
+
+## 🔴 20. What is the difference between a Dockerfile and a Docker registry?
+
+## 🔴 21. Have you worked with Docker volumes? What happens to a volume if a container is removed?
+
+## 🔴 22. Can you create a Dockerfile for a Python application?
+
+## 🔴 23. If requirements.txt is at a remote location, how will you copy it in Dockerfile?
+
+## 🔴 24. What are the kinds of Docker volumes that are available?
+
+## 🔴 25. Can you tell me, with Docker volume on the host `/app/db` and inside the container it should be mounted to `/opt/data`?
+### 🔴 The container name should be `test`. Can you give that command?
+
+## 🔴 26. In Docker, how do you inspect a container?
 
 Narayana
 ------------------------------
