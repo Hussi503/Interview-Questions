@@ -22,10 +22,9 @@
 
    High availability
 
----
 
 In our EKS environment, the Control Plane manages scheduling, scaling, and cluster operations, while application workloads run on worker nodes spread across multiple Availability Zones
----
+
 
 We had pods stuck in Pending state. After investigating Scheduler events, we identified that worker nodes lacked sufficient CPU resources. After scaling the node group, pods were scheduled successfully.
 
