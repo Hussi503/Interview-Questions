@@ -1,0 +1,15 @@
+1.Kubernetes Architecture & Core Components
+2. What happens internally when you run kubectl apply
+3. What is a Static Pod?
+4. What are Kubernetes Operators? Have you used them?
+5. What are Admission Controllers? How have you used them?
+6. How does Kubernetes help with reliability
+7. How does Kubernetes manage a large number of Docker containers?
+8. What is the difference between a Pod and a container?
+9. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
+10. Can you attach a volume to a Deployment? How is it different from a StatefulSet
+11. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+12. If a DaemonSet pod is pending, how would you troubleshoot?
+13. Why would a DaemonSet create two pods per node?
+14. What is the difference between a Job and a CronJob?
+15. How do PV and PVC behave across zones?
