@@ -402,10 +402,9 @@ Scheduling issues
 
 ### 🔴 7. How does Kubernetes manage a large number of Docker containers?
 
-**"Kubernetes manages large numbers of containers through abstractions such as Pods, Deployments, ReplicaSets, Services, and Controllers. Instead of managing containers individually, we define the desired state, and Kubernetes automatically handles scheduling, scaling, networking, monitoring, and recovery."**
+Kubernetes manages large numbers of containers through abstractions such as Pods, Deployments, ReplicaSets, Services, and Controllers. Instead of managing containers individually, we define the desired state, and Kubernetes automatically handles scheduling, scaling, networking, monitoring, and recovery.
 
 ---
-
 ### 🔴 Why Do We Need It?
 
 🔴 Container Orchestration
@@ -465,7 +464,7 @@ Pod distribution
 
 ### 🔴 8. What is the difference between a Pod and a Container?
 
-**"A Container is the actual running application process packaged with its dependencies. A Pod is the smallest deployable unit in Kubernetes that contains one or more containers. Containers inside the same pod share networking, storage, and can communicate through localhost."**
+"A Container is the actual running application process packaged with its dependencies. A Pod is the smallest deployable unit in Kubernetes that contains one or more containers. Containers inside the same pod share networking, storage, and can communicate through localhost."
 
 ---
 
@@ -483,7 +482,7 @@ Pod distribution
 
 #### 🔴 Production Usage
 
-**"Most of our microservices run one container per pod. For logging and monitoring use cases, we deploy sidecar containers within the same pod."**
+"Most of our microservices run one container per pod. For logging and monitoring use cases, we deploy sidecar containers within the same pod."
 
 ---
 
