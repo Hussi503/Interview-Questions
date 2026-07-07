@@ -189,9 +189,16 @@ Node resources
 
 ### 🔴 4. What are Kubernetes Operators? Have you used them?
 
-Kubernetes Operators extend Kubernetes functionality by automating the lifecycle management of complex applications.
+Kubernetes Operators are a way to extend Kubernetes to automate the lifecycle management of complex applications. 
 
-They use Custom Resource Definitions (CRDs) and custom controllers to automate deployment, upgrades, backups, failover, and scaling activities. Operators essentially bring operational knowledge into Kubernetes.
+An Operator uses Custom Resource Definitions (CRDs) to introduce new resource types and a custom controller that continuously watches those resources and reconciles the desired state with the actual state.
+
+
+Operators are commonly used for repetitive operational tasks such as deployment, scaling, backup, upgrades, patching, failover, and recovery.
+
+For example, if we want to deploy Prometheus in a Kubernetes cluster, instead of manually creating Deployments, Services, ConfigMaps, and upgrade procedures, we can use the Prometheus Operator. 
+
+The Operator provides a Prometheus CRD, and when we create a Prometheus custom resource, the Operator automatically creates and manages all the required Kubernetes resources and handles ongoing operations.
 
 ---
 
