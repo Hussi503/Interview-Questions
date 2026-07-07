@@ -61,7 +61,13 @@ Control plane communication
 
 ### 🔴 2. What happens internally when you run kubectl apply?
 
-**"When we run kubectl apply, the manifest is sent to the Kubernetes API Server. The API Server validates the request and stores the desired state in ETCD. The Controller Manager continuously monitors this desired state, and if pods need to be created, the Scheduler selects an appropriate node. The Kubelet on that node then communicates with the container runtime to create and start the containers."**
+When we run kubectl apply, the manifest is sent to the Kubernetes API Server.
+
+The API Server validates the request and stores the desired state in ETCD. 
+
+The Controller Manager continuously monitors this desired state, and if pods need to be created, the Scheduler selects an appropriate node. 
+
+The Kubelet on that node then communicates with the container runtime to create and start the containers.
 
 ---
 
