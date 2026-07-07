@@ -183,7 +183,9 @@ Node resources
 
 ### 🔴 4. What are Kubernetes Operators? Have you used them?
 
-**"Kubernetes Operators extend Kubernetes functionality by automating the lifecycle management of complex applications. They use Custom Resource Definitions (CRDs) and custom controllers to automate deployment, upgrades, backups, failover, and scaling activities. Operators essentially bring operational knowledge into Kubernetes."**
+Kubernetes Operators extend Kubernetes functionality by automating the lifecycle management of complex applications.
+
+They use Custom Resource Definitions (CRDs) and custom controllers to automate deployment, upgrades, backups, failover, and scaling activities. Operators essentially bring operational knowledge into Kubernetes.
 
 ---
 
@@ -249,7 +251,7 @@ Custom resource status
 
 ### 🔴 5. What are Admission Controllers? How have you used them?
 
-**"Admission Controllers are Kubernetes components that intercept API requests after authentication and authorization but before objects are stored in ETCD. They can validate, modify, or reject requests based on organizational policies and security requirements."**
+Admission Controllers are Kubernetes components that intercept API requests after authentication and authorization but before objects are stored in ETCD. They can validate, modify, or reject requests based on organizational policies and security requirements.
 
 ---
 
@@ -312,7 +314,11 @@ Validation errors
 
 ### 🔴 6. How does Kubernetes help with reliability?
 
-**"Kubernetes improves application reliability through self-healing, replication, health checks, rolling updates, auto-scaling, and automatic workload rescheduling. If a pod crashes, Kubernetes recreates it automatically. If a node fails, workloads are rescheduled to healthy nodes. This ensures applications remain available with minimal manual intervention."**
+Kubernetes improves application reliability through self-healing, replication, health checks, rolling updates, auto-scaling, and automatic workload rescheduling. 
+
+If a pod crashes, Kubernetes recreates it automatically. If a node fails, workloads are rescheduled to healthy nodes. 
+
+This ensures applications remain available with minimal manual intervention.
 
 ---
 
