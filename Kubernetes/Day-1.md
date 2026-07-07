@@ -333,6 +333,16 @@ If a pod crashes, Kubernetes recreates it automatically. If a node fails, worklo
 
 This ensures applications remain available with minimal manual intervention.
 
+First, Kubernetes ensures the desired number of application instances are always running using ReplicaSets and Deployments. For example, if I define 3 replicas and one pod crashes, Kubernetes automatically creates a new pod to maintain the desired state.
+
+Second, it provides node-level fault tolerance. If a worker node becomes unavailable, the control plane detects that the node is unhealthy and schedules the affected pods onto other healthy nodes. This minimizes downtime without manual intervention.
+
+Third, Kubernetes uses liveness and readiness probes. A liveness probe detects unhealthy containers and automatically restarts them, while a readiness probe ensures traffic is only sent to pods that are actually ready to serve requests. This prevents users from being routed to unhealthy instances.
+
+Another reliability feature is Service-based load balancing. Traffic is distributed across multiple healthy pod replicas, eliminating a single point of failure at the application layer.
+
+Kubernetes also supports rolling updates and rollbacks. During deployments, new versions are introduced gradually, and if issues are detected, Kubernetes can roll back to the previous stable version, reducing deployment-related outages.
+
 ---
 
 ### 🔴 Why Do We Need It?
