@@ -1,4 +1,4 @@
-# 🔴 1. Kubernetes Architecture & Core Components
+### 🔴 1. Kubernetes Architecture & Core Components
 
   Kubernetes follows a Control Plane and Worker Node architecture. 
   
@@ -10,7 +10,7 @@
   
   Kubernetes continuously compares the desired state with the actual state and automatically takes corrective actions to     maintain application availability."
  
-##  Why Do We Need It?
+####  Why Do We Need It?
 
    Centralized cluster management
 
@@ -30,7 +30,7 @@ We had pods stuck in Pending state. After investigating Scheduler events, we ide
 
 ---
 
-##  Troubleshooting
+####  Troubleshooting
 
 ```bash
 kubectl get nodes
@@ -53,19 +53,19 @@ Control plane communication
 
 ---
 
-## Strong Closing Line
+#### Strong Closing Line
 
 **"Kubernetes architecture is built around desired state management, enabling automated deployment, scaling, recovery, and high availability of applications."**
 
 ---
 
-# 🔴 2. What happens internally when you run kubectl apply?
+### 🔴 2. What happens internally when you run kubectl apply?
 
 **"When we run kubectl apply, the manifest is sent to the Kubernetes API Server. The API Server validates the request and stores the desired state in ETCD. The Controller Manager continuously monitors this desired state, and if pods need to be created, the Scheduler selects an appropriate node. The Kubelet on that node then communicates with the container runtime to create and start the containers."**
 
 ---
 
-##  Why Do We Need It?
+####  Why Do We Need It?
 
    Declarative deployments
 
@@ -77,12 +77,12 @@ Control plane communication
 
 ---
 
-## Production Usage
+#### Production Usage
 
 **"Our CI/CD pipelines use kubectl apply to deploy Deployments, Services, ConfigMaps, and Ingress resources into EKS clusters."**
 
 
-##  Troubleshooting
+####  Troubleshooting
 
 ```bash
 kubectl get events
@@ -105,13 +105,13 @@ Resource shortages
 
 ---
 
-##  Strong Closing Line
+####  Strong Closing Line
 
 **"kubectl apply updates the desired state in Kubernetes, and the control plane works continuously to make the actual state match it."**
 
 ---
 
-# 🔴 3. What is a Static Pod?
+### 🔴 3. What is a Static Pod?
 
 
 **"A Static Pod is a pod that runs directly on a node using a local manifest file rather than being created through the normal Kubernetes deployment process. 
@@ -123,7 +123,7 @@ In kubeadm clusters, control plane components like kube-apiserver, etcd, schedul
 The Kubelet monitors the local manifest file and ensures the pod remains running.
 
 ---
-## Why Do We Need It?
+### Why Do We Need It?
 
     Critical services must start before Kubernetes is fully available
 
@@ -133,7 +133,7 @@ The Kubelet monitors the local manifest file and ensures the pod remains running
 
 ---
 
-##  Production Usage
+####  Production Usage
 
 Static Pods are commonly used for:
 
@@ -146,13 +146,13 @@ kube-controller-manager
 
 ---
 
-##  Real-Time Scenario
+###  Real-Time Scenario
 
 **"In kubeadm-based clusters, I verified control plane health by checking Static Pod manifests located under `/etc/kubernetes/manifests`."**
 
 ---
 
-##  Troubleshooting
+###  Troubleshooting
 
 ```bash
 ls /etc/kubernetes/manifests
@@ -175,19 +175,19 @@ Node resources
 
 ---
 
-##  Strong Closing Line
+###  Strong Closing Line
 
 **"Static Pods are mainly used for critical Kubernetes control-plane components that must remain available independently of the API Server."**
 
 ---
 
-# 🔴 4. What are Kubernetes Operators? Have you used them?
+### 🔴 4. What are Kubernetes Operators? Have you used them?
 
 **"Kubernetes Operators extend Kubernetes functionality by automating the lifecycle management of complex applications. They use Custom Resource Definitions (CRDs) and custom controllers to automate deployment, upgrades, backups, failover, and scaling activities. Operators essentially bring operational knowledge into Kubernetes."**
 
 ---
 
-##  Why Do We Need It?
+###  Why Do We Need It?
 
    Automate repetitive operational tasks
 
@@ -199,7 +199,7 @@ Node resources
 
 ---
 
-##  Production Usage
+####  Production Usage
 
 Examples:
 
@@ -212,13 +212,13 @@ Kafka Operator
 
 ---
 
-##  Real-Time Scenario
+####  Real-Time Scenario
 
 **"We used the Prometheus Operator to deploy and manage monitoring infrastructure. It automated upgrades, ServiceMonitor creation, and configuration management without manual changes."**
 
 ---
 
-##  Troubleshooting
+####  Troubleshooting
 
 ```bash
 kubectl get crds
@@ -241,19 +241,19 @@ Custom resource status
 
 ---
 
-##  Strong Closing Line
+####  Strong Closing Line
 
 **"Operators automate complex operational procedures and make Kubernetes capable of managing sophisticated stateful applications efficiently."**
 
 ---
 
-# 🔴 5. What are Admission Controllers? How have you used them?
+### 🔴 5. What are Admission Controllers? How have you used them?
 
 **"Admission Controllers are Kubernetes components that intercept API requests after authentication and authorization but before objects are stored in ETCD. They can validate, modify, or reject requests based on organizational policies and security requirements."**
 
 ---
 
-##  Why Do We Need It?
+####  Why Do We Need It?
 
    Governance
 
@@ -265,7 +265,7 @@ Custom resource status
 
 ---
 
-##  Production Usage
+####  Production Usage
 
 Examples:
 
@@ -279,13 +279,13 @@ Restrict hostPath volumes
 
 ---
 
-## Real-Time Scenario
+#### Real-Time Scenario
 
 **"We used Kyverno Admission Policies to block containers running as root and to ensure every deployment had CPU and memory limits defined before being admitted into the cluster."**
 
 ---
 
-## Troubleshooting
+#### Troubleshooting
 
 ```bash
 kubectl describe pod
@@ -306,17 +306,17 @@ Validation errors
 
 ---
 
-##  Strong Closing Line
+####  Strong Closing Line
 
 **"Admission Controllers act as a gatekeeper for the Kubernetes API and are critical for enforcing security, governance, and compliance policies in production environments."**
 
-# 🔴 6. How does Kubernetes help with reliability?
+### 🔴 6. How does Kubernetes help with reliability?
 
 **"Kubernetes improves application reliability through self-healing, replication, health checks, rolling updates, auto-scaling, and automatic workload rescheduling. If a pod crashes, Kubernetes recreates it automatically. If a node fails, workloads are rescheduled to healthy nodes. This ensures applications remain available with minimal manual intervention."**
 
 ---
 
-## 🔴 Why Do We Need It?
+### 🔴 Why Do We Need It?
 
 🔴 High Availability
 
@@ -330,19 +330,19 @@ Validation errors
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 **"In production, our applications run with multiple replicas across worker nodes in different Availability Zones. Kubernetes automatically handles pod failures and node failures without impacting users."**
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"One of our worker nodes became unhealthy during peak traffic. Kubernetes automatically evicted pods from the failed node and scheduled them onto healthy nodes, preventing service disruption."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl get pods
@@ -365,21 +365,19 @@ Scheduling issues
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Kubernetes provides reliability by continuously maintaining the desired state and automatically recovering from failures."**
 
 ---
 
-# 🔴 7. How does Kubernetes manage a large number of Docker containers?
-
-## 🔴 Direct Interview Answer
+### 🔴 7. How does Kubernetes manage a large number of Docker containers?
 
 **"Kubernetes manages large numbers of containers through abstractions such as Pods, Deployments, ReplicaSets, Services, and Controllers. Instead of managing containers individually, we define the desired state, and Kubernetes automatically handles scheduling, scaling, networking, monitoring, and recovery."**
 
 ---
 
-## 🔴 Why Do We Need It?
+### 🔴 Why Do We Need It?
 
 🔴 Container Orchestration
 
@@ -393,19 +391,19 @@ Scheduling issues
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 **"Our EKS clusters manage hundreds of application pods across multiple worker nodes. Kubernetes automatically distributes workloads and maintains the required replica count."**
 
 ---
 
-## 🔴 Real-Time Scenario
+### 🔴 Real-Time Scenario
 
 **"During a product launch, traffic increased significantly. HPA automatically increased pod replicas while Cluster Autoscaler added more worker nodes to handle the load."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl get deployments
@@ -430,21 +428,19 @@ Pod distribution
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Kubernetes allows us to manage thousands of containers efficiently by automating deployment, scaling, recovery, and resource management."**
 
 ---
 
-# 🔴 8. What is the difference between a Pod and a Container?
-
-## 🔴 Direct Interview Answer
+### 🔴 8. What is the difference between a Pod and a Container?
 
 **"A Container is the actual running application process packaged with its dependencies. A Pod is the smallest deployable unit in Kubernetes that contains one or more containers. Containers inside the same pod share networking, storage, and can communicate through localhost."**
 
 ---
 
-## 🔴 Why Do We Need Pods?
+#### 🔴 Why Do We Need Pods?
 
 🔴 Shared Networking
 
@@ -456,19 +452,19 @@ Pod distribution
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 **"Most of our microservices run one container per pod. For logging and monitoring use cases, we deploy sidecar containers within the same pod."**
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"We used a Fluent Bit sidecar container alongside application containers to collect and forward logs to Elasticsearch."**
 
 ---
 
-## 🔴 Quick Comparison
+#### 🔴 Quick Comparison
 
 ```text
 Container → Runs Application
@@ -480,7 +476,7 @@ Pod → Wraps one or more containers
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl describe pod <pod-name>
@@ -492,39 +488,37 @@ kubectl get pods -o wide
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Containers run applications, while Pods provide the Kubernetes abstraction that manages and schedules those containers."**
 
 ---
 
-# 🔴 9. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
+### 🔴 9. What is the difference between Pod, Deployment, ReplicaSet, StatefulSet, and DaemonSet?
 
-## 🔴 Direct Interview Answer
-
-### 🔴 Pod
+#### 🔴 Pod
 
 **"Smallest deployable unit in Kubernetes that runs one or more containers."**
 
-### 🔴 ReplicaSet
+#### 🔴 ReplicaSet
 
 **"Ensures a specified number of pod replicas are always running."**
 
-### 🔴 Deployment
+#### 🔴 Deployment
 
 **"Manages ReplicaSets and provides rolling updates, rollbacks, and version control."**
 
-### 🔴 StatefulSet
+#### 🔴 StatefulSet
 
 **"Used for stateful applications requiring stable identities and persistent storage."**
 
-### 🔴 DaemonSet
+#### 🔴 DaemonSet
 
 **"Ensures one pod runs on every eligible node."**
 
 ---
 
-## 🔴 Why Do We Need Them?
+#### 🔴 Why Do We Need Them?
 
 ```text
 Pod         → Run Containers
@@ -540,7 +534,7 @@ DaemonSet   → Node-Level Services
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 ```text
 Deployment  → Java APIs, Microservices
@@ -552,13 +546,13 @@ DaemonSet   → Fluent Bit, Datadog Agent, Node Exporter
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"Our microservices use Deployments, MongoDB runs as StatefulSets, and Fluent Bit runs as a DaemonSet on every worker node for centralized logging."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl get deploy
@@ -574,21 +568,19 @@ kubectl describe deployment <name>
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Each Kubernetes controller serves a specific workload type, and choosing the correct controller is essential for stability and maintainability."**
 
 ---
 
-# 🔴 10. Can you attach a volume to a Deployment? How is it different from a StatefulSet?
-
-## 🔴 Direct Interview Answer
+### 🔴 10. Can you attach a volume to a Deployment? How is it different from a StatefulSet?
 
 **"Yes, a Deployment can use Persistent Volumes through PVCs. However, Deployment pods are generally interchangeable and do not have stable identities. StatefulSets provide stable pod identities and dedicated persistent storage for each pod, making them suitable for databases and other stateful applications."**
 
 ---
 
-## 🔴 Why Do We Need StatefulSets?
+#### 🔴 Why Do We Need StatefulSets?
 
 🔴 Stable Network Identity
 
@@ -600,7 +592,7 @@ kubectl describe deployment <name>
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 ```text
 Deployment → Stateless Applications
@@ -612,13 +604,13 @@ StatefulSet → Databases
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"We used Deployments for Spring Boot microservices because pods were stateless. For MongoDB, we used StatefulSets because each database pod required its own persistent volume and stable hostname."**
 
 ---
 
-## 🔴 Quick Comparison
+#### 🔴 Quick Comparison
 
 ```text
 Deployment
@@ -637,7 +629,7 @@ StatefulSet
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl get pvc
@@ -660,18 +652,17 @@ Node affinity issues
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"While Deployments can use persistent storage, StatefulSets are specifically designed for applications that require stable identities, persistent data, and predictable pod management."**
-# 🔴 11. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
+### 🔴 11. What could cause a StatefulSet pod to fail when rescheduled to a different AZ?
 
-## 🔴 Direct Interview Answer
 
 **"The most common reason is storage affinity. In cloud environments like AWS, EBS volumes are tied to a specific Availability Zone. If a StatefulSet pod gets scheduled to a node in a different AZ, Kubernetes may not be able to attach the existing volume, causing the pod to remain in Pending state."**
 
 ---
 
-## 🔴 Why Do We Need to Understand This?
+#### 🔴 Why Do We Need to Understand This?
 
 🔴 Stateful applications depend on persistent storage
 
@@ -681,7 +672,7 @@ Node affinity issues
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 ```text
 MongoDB
@@ -695,13 +686,13 @@ All these workloads store persistent data and commonly run as StatefulSets.
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"In EKS, one of our worker nodes became unavailable. Kubernetes attempted to schedule a MongoDB pod on another node in a different AZ. Since the EBS volume was attached to the original AZ, the pod remained pending until scheduling aligned with the volume's zone."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 ```bash
 kubectl describe pod <pod-name>
@@ -724,21 +715,19 @@ PVC binding issues
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"For StatefulSets, storage design is critical because persistent volumes may have zone-specific limitations that directly impact pod scheduling."**
 
 ---
 
-# 🔴 12. If a DaemonSet pod is pending, how would you troubleshoot?
-
-## 🔴 Direct Interview Answer
+### 🔴 12. If a DaemonSet pod is pending, how would you troubleshoot?
 
 **"If a DaemonSet pod is stuck in Pending state, I start by checking pod events and node conditions. Common causes include insufficient node resources, node selectors, taints and tolerations mismatch, image pull failures, or node affinity restrictions."**
 
 ---
 
-## 🔴 Why Do We Need This Troubleshooting?
+#### 🔴 Why Do We Need This Troubleshooting?
 
 🔴 DaemonSets are usually used for cluster-level services
 
@@ -748,7 +737,7 @@ PVC binding issues
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 ```text
 Fluent Bit
@@ -759,13 +748,13 @@ CloudWatch Agent
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"A Fluent Bit DaemonSet was not scheduled on newly added worker nodes. Investigation showed that node taints existed, but the DaemonSet lacked the required tolerations."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 Check pod details:
 
@@ -800,21 +789,19 @@ Image pull errors
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Most DaemonSet scheduling issues are caused by node constraints, taints, tolerations, or insufficient resources."**
 
 ---
 
-# 🔴 13. Why would a DaemonSet create two pods per node?
-
-## 🔴 Direct Interview Answer
+### 🔴 13. Why would a DaemonSet create two pods per node?
 
 **"Under normal circumstances, a DaemonSet should run only one pod per node. If two pods are observed on a node, it is usually due to a rolling update, duplicate DaemonSets, overlapping selectors, or a terminating old pod while a new pod is being created."**
 
 ---
 
-## 🔴 Why Do We Need to Understand This?
+#### 🔴 Why Do We Need to Understand This?
 
 🔴 Helps identify deployment issues
 
@@ -824,7 +811,7 @@ Image pull errors
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
 Commonly seen with:
 
@@ -836,13 +823,13 @@ Security agent upgrades
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"While upgrading Fluent Bit, a new pod was created before the old pod was completely terminated. For a short period, two pods existed on the same node."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 Check DaemonSet configuration:
 
@@ -869,23 +856,21 @@ Selector conflicts
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Two DaemonSet pods on a node are usually temporary during upgrades or indicate a configuration problem that needs investigation."**
 
 ---
 
-# 🔴 14. What is the difference between a Job and a CronJob?
-
-## 🔴 Direct Interview Answer
+### 🔴 14. What is the difference between a Job and a CronJob?
 
 **"A Job is used to run a task once until completion, whereas a CronJob is used to run Jobs on a recurring schedule similar to Linux cron. Jobs are typically used for one-time activities, while CronJobs automate repeated operational tasks."**
 
 ---
 
-## 🔴 Why Do We Need Them?
+#### 🔴 Why Do We Need Them?
 
-### Job
+#### Job
 
 🔴 One-time execution
 
@@ -893,7 +878,7 @@ Selector conflicts
 
 🔴 Data migration
 
-### CronJob
+#### CronJob
 
 🔴 Scheduled execution
 
@@ -903,9 +888,9 @@ Selector conflicts
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
-### Job
+#### Job
 
 ```text
 Database Migration
@@ -913,7 +898,7 @@ Schema Updates
 One-Time Scripts
 ```
 
-### CronJob
+#### CronJob
 
 ```text
 Daily Backups
@@ -924,13 +909,13 @@ Cache Cleanup
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"We used a Job during a release to migrate database schemas and a CronJob to perform nightly backups of production databases."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 Check Job status:
 
@@ -965,21 +950,19 @@ Application errors
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"Jobs perform one-time tasks, while CronJobs automate recurring operations based on a defined schedule."**
 
 ---
 
-# 🔴 15. How do PV and PVC behave across zones?
-
-## 🔴 Direct Interview Answer
+### 🔴 15. How do PV and PVC behave across zones?
 
 **"PVC is a request for storage, while PV is the actual storage resource. Their behavior across Availability Zones depends on the underlying storage technology. Some storage systems are zone-bound, while others support multi-zone access."**
 
 ---
 
-## 🔴 Why Do We Need to Understand This?
+#### 🔴 Why Do We Need to Understand This?
 
 🔴 Impacts workload scheduling
 
@@ -989,16 +972,16 @@ Application errors
 
 ---
 
-## 🔴 Production Usage
+#### 🔴 Production Usage
 
-### EBS
+#### EBS
 
 ```text
 Single Availability Zone
 Used for databases
 ```
 
-### EFS
+#### EFS
 
 ```text
 Multi-AZ
@@ -1007,13 +990,13 @@ Shared storage
 
 ---
 
-## 🔴 Real-Time Scenario
+#### 🔴 Real-Time Scenario
 
 **"In EKS, StatefulSet workloads used EBS-backed PVCs, which required scheduling within the same AZ. Shared application data was stored on EFS because it could be accessed from multiple Availability Zones."**
 
 ---
 
-## 🔴 Troubleshooting
+#### 🔴 Troubleshooting
 
 Check PVC status:
 
@@ -1043,6 +1026,6 @@ Volume Attachments
 
 ---
 
-## 🔴 Strong Closing Line
+#### 🔴 Strong Closing Line
 
 **"PVCs provide storage abstraction, but cross-zone behavior depends on the underlying storage platform. Understanding storage architecture is essential for designing highly available Kubernetes workloads."**
