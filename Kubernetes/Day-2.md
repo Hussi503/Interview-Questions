@@ -24,6 +24,17 @@ The newly created PV is then bound to the PVC automatically.
 
 
 ### 🔴3. How do you handle database migrations safely in Kubernetes?
+In production, I never perform database migrations as part of the application container startup because if multiple pod replicas start simultaneously, the migration can run multiple times and cause schema conflicts or application downtime.
+
+Instead, I execute migrations as a separate Kubernetes Job or as part of the CI/CD pipeline before deploying the new application version.
+
+The approach I typically follow is: 
+
+first take a database backup or ensure a rollback strategy exists, then run the migration job, validate that it completes successfully, and only after that proceed with the application deployment.
+
+For critical systems, I prefer backward-compatible migrations, such as adding new columns or tables first, deploying the application, and removing old columns in a later release. This avoids breaking running services during rolling updates.
+
+
 ### 🔴4. What happens if etcd is corrupted? How do you recover?
 ### 🔴5. How do you backup and restore etcd?
 ### 🔴6. What is a headless service? how does it work?
