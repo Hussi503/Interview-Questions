@@ -9,6 +9,20 @@ Application teams don't directly consume PVs; instead, they create PVCs by speci
 
 Kubernetes then automatically binds the PVC to a matching PV.
 ### 🔴2. What is the difference between a StorageClass and a PV?
+
+A **Persistent Volume (PV)** is the actual storage resource that gets attached to a pod, 
+
+whereas a **StorageClass** is a template or blueprint that defines how that storage should be created. 
+
+In production, StorageClass sits one level above PV and automates the provisioning process.
+
+For example, in AWS, a StorageClass can define whether the storage should be gp3, io2, encrypted, replication settings, reclaim policy, and other parameters.
+
+When an application creates a PVC, Kubernetes checks the StorageClass associated with that PVC and dynamically provisions a PV based on the StorageClass configuration.
+
+The newly created PV is then bound to the PVC automatically.
+
+
 ### 🔴3. How do you handle database migrations safely in Kubernetes?
 ### 🔴4. What happens if etcd is corrupted? How do you recover?
 ### 🔴5. How do you backup and restore etcd?
