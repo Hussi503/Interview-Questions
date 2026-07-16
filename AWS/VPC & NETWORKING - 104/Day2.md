@@ -1,4 +1,4 @@
-### 🔴 77. What are the main components of Three-Tier Architecture?
+### 🔴 1. What are the main components of Three-Tier Architecture?
 
 
 Three-tier architecture is a design pattern where an application is divided into **three separate layers**: **Presentation Layer**, **Application Layer**, and **Database Layer**. Each layer has its own responsibility, making the application more secure, scalable, and easier to maintain.
@@ -39,7 +39,7 @@ Three-tier architecture is a design pattern where an application is divided into
 
 ---
 
-### 🔴 78. In AWS VPC, where will each layer (Frontend, App, DB) belong? Which Subnet?
+### 🔴 2. In AWS VPC, where will each layer (Frontend, App, DB) belong? Which Subnet?
 
 
 In a production VPC, each layer is placed in a different subnet based on its purpose. Only the frontend needs internet access, while the application and database layers remain private for security.
@@ -78,7 +78,7 @@ In a production VPC, each layer is placed in a different subnet based on its pur
 
 ---
 
-### 🔴 79. Which layer will you put in a Public Subnet?
+### 🔴 3. Which layer will you put in a Public Subnet?
 
 In production, **only the Presentation Layer** is placed in a **public subnet** because it needs to receive requests from internet users. The application and database layers always remain in private subnets.
 
@@ -124,7 +124,7 @@ In production, **only the Presentation Layer** is placed in a **public subnet** 
 
 ---
 
-### 🔴 7. What are the types of Load Balancers in AWS?
+### 🔴 4. What are the types of Load Balancers in AWS?
 
 
 AWS provides multiple types of Load Balancers, but in production I mostly work with **Application Load Balancer (ALB)** and **Network Load Balancer (NLB)**. The choice depends on the application protocol and traffic requirements.
@@ -163,7 +163,7 @@ AWS provides multiple types of Load Balancers, but in production I mostly work w
 
 ---
 
-### 🔴 15. At which OSI layer does ALB work? NLB?
+### 🔴 5. At which OSI layer does ALB work? NLB?
 
 
 The main difference is the protocol they understand.
@@ -199,7 +199,7 @@ The main difference is the protocol they understand.
 
 ---
 
-### 🔴 16. Where exactly is an ALB placed inside a VPC?
+### 🔴 6. Where exactly is an ALB placed inside a VPC?
 
 
 In a production environment, the **Application Load Balancer is deployed in Public Subnets** across multiple Availability Zones. It acts as the entry point for internet traffic and forwards requests to application servers running in private subnets.
@@ -237,7 +237,7 @@ In a production environment, the **Application Load Balancer is deployed in Publ
 
 ---
 
-### 🔴 17. What is the difference between Internet-facing ALB and Internal ALB?
+### 🔴 7. What is the difference between Internet-facing ALB and Internal ALB?
 
 
 The main difference is **who can access the Load Balancer**. An **Internet-facing ALB** accepts traffic from the internet, whereas an **Internal ALB** accepts traffic only from within the VPC. The choice depends on whether the application is public-facing or internal.
@@ -267,7 +267,7 @@ The main difference is **who can access the Load Balancer**. An **Internet-facin
 
 ---
 
-### 🔴 18. When would you choose NLB over ALB?
+### 🔴 8. When would you choose NLB over ALB?
 
 I choose **NLB** when the application requires **TCP/UDP traffic, very high performance, low latency, or static IP addresses**. For web applications using HTTP/HTTPS, I prefer **ALB** because it provides advanced routing features.
 
@@ -296,7 +296,7 @@ I choose **NLB** when the application requires **TCP/UDP traffic, very high perf
 
 ---
 
-### 🔴 19. Does NLB support Security Groups? Why or why not?
+### 🔴 9. Does NLB support Security Groups? Why or why not?
 
 
 Traditionally, **Network Load Balancers did not support Security Groups** because they operate at **Layer 4** and simply forward TCP/UDP traffic. Security was enforced on the backend resources like EC2 instances. **However, AWS now supports attaching Security Groups to NLBs**, but only when the NLB is associated with a VPC. This provides an additional layer of traffic filtering.
@@ -331,7 +331,7 @@ Traditionally, **Network Load Balancers did not support Security Groups** becaus
 
 ---
 
-### 🔴 21. Can ALB targets be in Private Subnets?
+### 🔴 10. Can ALB targets be in Private Subnets?
 
 Yes. In fact, **this is the recommended production architecture**. The ALB is deployed in **public subnets** to receive internet traffic, while its targets (EC2, ECS tasks, or EKS pods) are deployed in **private subnets**. This keeps the backend servers secure because they are not directly accessible from the internet.
 
@@ -370,7 +370,7 @@ Yes. In fact, **this is the recommended production architecture**. The ALB is de
 
 ---
 
-### 🔴 22. Explain Client IP handling in ALB vs NLB.
+### 🔴 11. Explain Client IP handling in ALB vs NLB.
 
 
 The main difference is **how the backend application receives the client's IP address**.
@@ -405,7 +405,7 @@ The main difference is **how the backend application receives the client's IP ad
 ### Closing Line
 
 > **"ALB passes the client IP through the X-Forwarded-For header, whereas NLB preserves the original client IP at the network layer."**
-### 🔴 23. ALB is up but the application is not reachable — how do you troubleshoot?
+### 🔴 12. ALB is up but the application is not reachable — how do you troubleshoot?
 
 
 If the **ALB is healthy but the application isn't reachable**, I troubleshoot layer by layer instead of making assumptions. I start from the Load Balancer and move towards the application. This helps identify whether the issue is with networking, security, target health, or the application itself.
@@ -452,3 +452,7 @@ If the **ALB is healthy but the application isn't reachable**, I troubleshoot la
 
 > **"I always troubleshoot from the Load Balancer to the application—Target Health, Application, Security Groups, Health Checks, Network, and Logs. This systematic approach helps identify the root cause quickly."**
 ---
+
+### 🔴13. How does ALB integrate with EKS?  
+### 🔴14. For deploying a Kubernetes cluster in AWS, what things do you consider? 
+### 🔴15.If an architect gave a design (1 master, 3 workers), how would you implement it?  
