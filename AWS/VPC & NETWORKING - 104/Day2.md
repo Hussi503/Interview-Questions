@@ -454,5 +454,45 @@ If the **ALB is healthy but the application isn't reachable**, I troubleshoot la
 ---
 
 ### 🔴13. How does ALB integrate with EKS?  
+In EKS, ALB is typically integrated through the AWS Load Balancer Controller. 
+
+In a real production setup, developers create an Ingress resource, and the controller automatically provisions the ALB, creates target groups, configures listener rules, and keeps everything in sync with the Kubernetes cluster.
+
+The main reason we use ALB is for Layer-7 routing. For example, if multiple microservices are running in the same EKS cluster, I can use a single ALB to route /users, /orders, and /payments to different services using path-based routing. 
+
+This reduces the number of load balancers and lowers infrastructure cost.
+
 ### 🔴14. For deploying a Kubernetes cluster in AWS, what things do you consider? 
+
+When deploying a Kubernetes cluster in AWS, I don't just focus on getting the cluster up and running. 
+
+I focus on security, scalability, reliability, networking, observability, and operational management because those are the areas that impact production the most.
+
+First, I design the VPC carefully with public and private subnets across multiple Availability Zones
+
+Worker nodes and workloads should generally run in private subnets, while only the load balancers are exposed publicly. This improves security and reduces the attack surface.
+
+Next, I consider cluster sizing and scalability. I decide on managed node groups, instance types, Cluster Autoscaler or Karpenter, and ensure the architecture can handle future growth without excessive cost.
+
+Security is a major consideration. I implement IAM Roles for Service Accounts (IRSA), least-privilege IAM policies, Secrets Manager or External Secrets, pod security standards, encrypted EBS volumes, and network policies wherever required.
+
+For networking, I plan VPC CIDR ranges carefully, install the VPC CNI, configure ALB integration through AWS Load Balancer Controller, and ensure DNS resolution through Route53 and ExternalDNS if needed.
+
+
 ### 🔴15.If an architect gave a design (1 master, 3 workers), how would you implement it?  
+
+my approach would be to first understand whether it's a self-managed Kubernetes cluster or EKS.
+
+In modern AWS environments, I would recommend EKS because AWS manages the control plane, reducing operational overhead and improving reliability.
+
+For implementation, I would start by creating the VPC with public and private subnets across multiple Availability Zones.
+
+The worker nodes would be deployed in private subnets, while public subnets would host NAT Gateways and Load Balancers.
+
+Then I would provision the EKS cluster and create a managed node group with 3 worker nodes spread across different AZs for high availability.
+
+Once the cluster is up, I would configure IAM roles, OIDC, and IRSA to provide secure access to AWS services.
+
+After the infrastructure is ready, I would validate node registration, networking, DNS resolution, storage provisioning, and pod scheduling.
+
+
