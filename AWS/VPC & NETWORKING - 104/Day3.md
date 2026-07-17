@@ -103,9 +103,64 @@ Before switching traffic, I would validate that the tasks can register successfu
 Once validation is complete, I would perform a rolling deployment or blue-green deployment, monitor CloudWatch metrics, ALB target health, and application logs, and then gradually shift traffic to the new tasks. After confirming stability, I would decommission the old public-subnet deployment.
 
 
-10. What happens if ECS tasks in private subnets don't have NAT Gateway access?
-11. Why must an internet-facing ALB be replaced with an internal ALB when making ECS private?
-12. Can we convert an existing public ALB to internal? Why or why not?
-13. How do ECS tasks pull images from ECR when running in private subnets?
-14. What security group changes are required when converting ECS from public to private?
-15. How do you expose a private ECS service to on-prem users?
+### 🔴10. What happens if ECS tasks in private subnets don't have NAT Gateway access?
+
+If ECS tasks in private subnets don't have NAT Gateway access, the first impact is that they lose outbound internet connectivity.
+
+The tasks can still communicate with resources inside the VPC, but they won't be able to reach AWS public endpoints or external services.
+
+In a real production environment, this usually causes issues such as ECS tasks failing to pull Docker images from ECR, applications being unable to call third-party APIs, failures in fetching secrets or updates, and problems sending logs or metrics if the required VPC endpoints are not configured.
+
+When troubleshooting, one of the first things I check is whether the private subnet route table has a default route (0.0.0.0/0) pointing to a NAT Gateway.
+
+If NAT is intentionally removed for security or cost reasons, then I ensure VPC Endpoints are configured for services like ECR, S3, CloudWatch, Secrets Manager, and SSM so the tasks can still access AWS services privately without internet access.
+
+
+
+
+
+### 🔴11. Why must an internet-facing ALB be replaced with an internal ALB when making ECS private?
+
+If the application is customer-facing or accessed from the internet, I would keep the ALB internet-facing and move only the ECS tasks into private subnets. This is the most common production architecture. Users access the public ALB, and the ALB forwards traffic to ECS tasks running securely in private subnets.
+
+I would replace an internet-facing ALB with an internal ALB only when the application itself should not be publicly accessible. For example, internal APIs, backend microservices, internal admin portals, or services that are accessed only through VPN, Direct Connect, Transit Gateway, or another internal load balancer.
+
+
+### 🔴12. Can we convert an existing public ALB to internal? Why or why not?
+
+No, in AWS you cannot directly convert an existing ALB from internet-facing to internal or vice versa. The ALB's scheme is defined at creation time and is not editable later.
+
+In a real production environment, if the requirement changes, I would create a new ALB with the desired scheme (internal), attach the same target groups or ECS services, validate health checks and routing, and then perform a controlled DNS cutover using Route53.
+
+Once traffic is confirmed on the new ALB, I would decommission the old one.
+
+The reason AWS doesn't allow this modification is that the networking model is fundamentally different.
+
+An internet-facing ALB gets public IP addresses and routes traffic from the internet, whereas an internal ALB only gets private IP addresses and is reachable only within the VPC or connected networks.
+
+Switching between these modes requires recreating the underlying networking infrastructure.
+
+In production, I never delete the old ALB immediately. I create the new ALB, validate end-to-end traffic flow, monitor target health and application logs, update DNS, and keep the old ALB available until the migration is fully verified. That minimizes risk and avoids downtime.
+
+
+### 🔴13. How do ECS tasks pull images from ECR when running in private subnets?
+
+In production, ECS tasks running in private subnets can still pull images from ECR as long as they have outbound connectivity. There are two common approaches.
+
+The traditional approach is through a NAT Gateway. The ECS task reaches ECR over the internet via the NAT Gateway, authenticates using the task execution role, and pulls the image. This works, but it incurs NAT costs and sends traffic through internet-routable paths.
+
+The preferred production approach is using VPC Endpoints. For ECS to pull images without internet access, I create Interface Endpoints for ecr.api and ecr.dkr, and a Gateway Endpoint for S3 because ECR image layers are stored in S3. If CloudWatch logging is enabled, I also create a CloudWatch Logs endpoint.
+
+In my production environments, if the workload only needs AWS services, I prefer VPC Endpoints over NAT Gateway because it reduces cost, improves security, and removes dependency on internet connectivity."
+
+### 🔴14. What security group changes are required when converting ECS from public to private?
+
+When moving ECS tasks from public to private subnets, the biggest security group change is that the tasks can no longer receive traffic directly from the internet. Instead, they should accept traffic only from the ALB security group.
+
+In a public setup, you may sometimes see ECS tasks allowing inbound traffic from broad CIDR ranges like 0.0.0.0/0 on application ports. When moving to private subnets, I remove those rules and allow inbound traffic only from the ALB Security Group on the required application port, such as 8080 or 80.
+
+For outbound rules, I ensure the ECS tasks can still reach required dependencies. If we're using a NAT Gateway, outbound access remains open as needed. If we're using VPC Endpoints, I verify that the task security group allows HTTPS (443) communication to services like ECR, CloudWatch, Secrets Manager, and SSM through their endpoint security groups.
+
+I also review database access. For example, RDS should not allow traffic from an entire subnet or CIDR range. Instead, the RDS security group should allow inbound traffic only from the ECS task security group. This creates security-group-to-security-group trust rather than IP-based access.
+
+### 🔴15. How do you expose a private ECS service to on-prem users?
